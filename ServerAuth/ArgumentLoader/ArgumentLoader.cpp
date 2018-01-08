@@ -14,8 +14,7 @@ rtp::ArgumentLoader::Argument::~Argument() = default;
 
 rtp::ArgumentLoader::ArgumentLoader() {
     _argumentList.push_back(Argument("-d", false));
-    _argumentList.push_back(Argument("-p", true));
-    _argumentList.push_back(Argument("--port", true));
+    _argumentList.push_back(Argument("--server-port", true));
 }
 
 bool    rtp::ArgumentLoader::loadArguments(int ac, char **av) {

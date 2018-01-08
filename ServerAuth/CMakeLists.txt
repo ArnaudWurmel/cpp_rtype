@@ -3,7 +3,7 @@ project(ServerAuth)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(ServerAuth main.cpp ServerRegister/ServerRegister.cpp ServerRegister/ServerRegister.hh Logger/Logger.hpp Logger/LoggerHelper.cpp Logger/LoggerHelper.hh ArgumentLoader/ArgumentLoader.cpp ArgumentLoader/ArgumentLoader.hh ArgumentLoader/Configure.cpp ArgumentLoader/Configure.hh NetworkAbstract/IAcceptor.hh NetworkAbstract/BoostAcceptor.cpp NetworkAbstract/BoostAcceptor.hh NetworkAbstract/Message/Message.cpp NetworkAbstract/Message/Message.h NetworkAbstract/Message/endpacked.h NetworkAbstract/Message/packed.h NetworkAbstract/BoostSocket.cpp NetworkAbstract/BoostSocket.h NetworkAbstract/ISocket.cpp NetworkAbstract/ISocket.h RTypeManager/RTypeManager.cpp RTypeManager/RTypeManager.hh ServerRegister/RegisteredServer.cpp ServerRegister/RegisteredServer.hh)
+add_executable(ServerAuth main.cpp ServerRegister/ServerRegister.cpp ServerRegister/ServerRegister.hh Logger/Logger.hpp Logger/LoggerHelper.cpp Logger/LoggerHelper.hh ArgumentLoader/ArgumentLoader.cpp ArgumentLoader/ArgumentLoader.hh ArgumentLoader/Configure.cpp ArgumentLoader/Configure.hh NetworkAbstract/IAcceptor.hh NetworkAbstract/BoostAcceptor.cpp NetworkAbstract/BoostAcceptor.hh NetworkAbstract/Message/Message.cpp NetworkAbstract/Message/Message.h NetworkAbstract/Message/endpacked.h NetworkAbstract/Message/packed.h NetworkAbstract/BoostSocket.cpp NetworkAbstract/BoostSocket.h NetworkAbstract/ISocket.cpp NetworkAbstract/ISocket.h RTypeManager/RTypeManager.cpp RTypeManager/RTypeManager.hh ServerRegister/RegisteredServer.cpp ServerRegister/RegisteredServer.hh NetworkAbstract/SocketReceiver.cpp NetworkAbstract/SocketReceiver.hh)
 
 #BOOST
 set(Boost_USE_STATIC_LIBS        ON)

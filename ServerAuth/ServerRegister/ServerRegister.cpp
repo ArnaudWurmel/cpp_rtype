@@ -27,6 +27,17 @@ void    rtp::ServerRegister::serverLooping() {
 
             _serverList.push_back(server);
         }
+
+        auto iterator = _serverList.begin();
+
+        while (iterator != _serverList.end()) {
+            if (!(*iterator)->isOpen() || !(*iterator)->handleNewData()) {
+                _serverList.erase(iterator);
+            }
+            else {
+                ++iterator;
+            }
+        }
     }
 }
 

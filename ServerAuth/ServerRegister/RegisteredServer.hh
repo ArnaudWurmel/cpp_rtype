@@ -6,18 +6,25 @@
 #define SERVERAUTH_REGISTEREDSERVER_HH
 
 # include "../NetworkAbstract/ISocket.h"
+# include "../NetworkAbstract/SocketReceiver.hh"
 
 namespace rtp {
-    class RegisteredServer {
+    class RegisteredServer : public NetworkAbstract::SocketReceiver {
     public:
         RegisteredServer(std::shared_ptr<NetworkAbstract::ISocket>);
-        ~RegisteredServer();
+        ~RegisteredServer() override;
 
     public:
         bool    handleNewData();
 
+    public:
+        unsigned int    getId() const;
+
     private:
-        std::shared_ptr<NetworkAbstract::ISocket>   _socketControl;
+        unsigned int    _id;
+
+    private:
+        static unsigned int _serverId;
     };
 }
 

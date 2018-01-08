@@ -21,13 +21,17 @@ namespace rtp {
         bool loop();
 
     private:
-        void    listClient();
-        void    exitServer();
+        void    listClient(std::vector<std::string> const&);
+        void    exitServer(std::vector<std::string> const&);
+        void    help(std::vector<std::string> const&);
+
+    private:
+        std::vector<std::string>    getTokenFrom(std::string const&);
 
     private:
         bool    _continue;
         std::shared_ptr<ServerRegister> _serverRegister;
-        std::unordered_map<std::string, std::function<void ()> >    _functionPtr;
+        std::unordered_map<std::string, std::function<void (std::vector<std::string> const&)> >    _functionPtr;
     };
 }
 

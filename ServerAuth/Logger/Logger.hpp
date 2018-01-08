@@ -28,14 +28,19 @@ namespace rtp {
 
     protected:
         template<typename U = T>
-        void    say(std::string const& message, typename std::enable_if<std::is_same<U, RTypeManager>::value>::type* = 0) {
+        void    say(std::string const& message, bool withName = true, typename std::enable_if<std::is_same<U, RTypeManager>::value>::type* = 0) {
             LoggerHelper::lockOutput();
-            std::cout << "[" << name() << "] <" << message << ">" << std::endl;
+            if (withName) {
+                std::cout << "[" << name() << "] <" << message << ">" << std::endl;
+            }
+            else {
+                std::cout << message << std::endl;
+            }
             LoggerHelper::unlockOutput();
         }
 
         template<typename U = T>
-        void    say(std::string const& message, typename std::enable_if<!std::is_same<U, RTypeManager>::value>::type* = 0) {
+        void    say(std::string const& message, bool withName = true, typename std::enable_if<!std::is_same<U, RTypeManager>::value>::type* = 0) {
             if (LoggerHelper::isDebugEnabled()) {
                 LoggerHelper::lockOutput();
                 std::cerr << "[" << name() << "] <" << message << ">" << std::endl;

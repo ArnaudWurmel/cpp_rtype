@@ -312,6 +312,33 @@ NetworkAbstract/Message/Message.cpp.s:
 	$(MAKE) -f CMakeFiles/ServerAuth.dir/build.make CMakeFiles/ServerAuth.dir/NetworkAbstract/Message/Message.cpp.s
 .PHONY : NetworkAbstract/Message/Message.cpp.s
 
+NetworkAbstract/SocketReceiver.o: NetworkAbstract/SocketReceiver.cpp.o
+
+.PHONY : NetworkAbstract/SocketReceiver.o
+
+# target to build an object file
+NetworkAbstract/SocketReceiver.cpp.o:
+	$(MAKE) -f CMakeFiles/ServerAuth.dir/build.make CMakeFiles/ServerAuth.dir/NetworkAbstract/SocketReceiver.cpp.o
+.PHONY : NetworkAbstract/SocketReceiver.cpp.o
+
+NetworkAbstract/SocketReceiver.i: NetworkAbstract/SocketReceiver.cpp.i
+
+.PHONY : NetworkAbstract/SocketReceiver.i
+
+# target to preprocess a source file
+NetworkAbstract/SocketReceiver.cpp.i:
+	$(MAKE) -f CMakeFiles/ServerAuth.dir/build.make CMakeFiles/ServerAuth.dir/NetworkAbstract/SocketReceiver.cpp.i
+.PHONY : NetworkAbstract/SocketReceiver.cpp.i
+
+NetworkAbstract/SocketReceiver.s: NetworkAbstract/SocketReceiver.cpp.s
+
+.PHONY : NetworkAbstract/SocketReceiver.s
+
+# target to generate assembly for a file
+NetworkAbstract/SocketReceiver.cpp.s:
+	$(MAKE) -f CMakeFiles/ServerAuth.dir/build.make CMakeFiles/ServerAuth.dir/NetworkAbstract/SocketReceiver.cpp.s
+.PHONY : NetworkAbstract/SocketReceiver.cpp.s
+
 RTypeManager/RTypeManager.o: RTypeManager/RTypeManager.cpp.o
 
 .PHONY : RTypeManager/RTypeManager.o
@@ -450,6 +477,9 @@ help:
 	@echo "... NetworkAbstract/Message/Message.o"
 	@echo "... NetworkAbstract/Message/Message.i"
 	@echo "... NetworkAbstract/Message/Message.s"
+	@echo "... NetworkAbstract/SocketReceiver.o"
+	@echo "... NetworkAbstract/SocketReceiver.i"
+	@echo "... NetworkAbstract/SocketReceiver.s"
 	@echo "... RTypeManager/RTypeManager.o"
 	@echo "... RTypeManager/RTypeManager.i"
 	@echo "... RTypeManager/RTypeManager.s"

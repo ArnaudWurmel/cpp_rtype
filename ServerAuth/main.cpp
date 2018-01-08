@@ -5,15 +5,12 @@
 #include "RTypeManager/RTypeManager.hh"
 
 static bool runServerRegister(rtp::ArgumentLoader const& argumentLoader, std::shared_ptr<rtp::ServerRegister>& serverRegiter) {
-    unsigned short port = 8080;
+    unsigned short serverPort = 8080;
 
-    if (argumentLoader.haveArg("-p")) {
-        port = std::stoi(argumentLoader.getArg("-p").value);
+    if (argumentLoader.haveArg("--server-port")) {
+        serverPort = std::stoi(argumentLoader.getArg("--port").value);
     }
-    else if (argumentLoader.haveArg("--port")) {
-        port = std::stoi(argumentLoader.getArg("--port").value);
-    }
-    serverRegiter = std::make_shared<rtp::ServerRegister>(port);
+    serverRegiter = std::make_shared<rtp::ServerRegister>(serverPort);
     return true;
 }
 
@@ -40,7 +37,7 @@ int main(int ac, char **av) {
         }
     }
     catch (std::exception& e) {
-        std::cerr << "Exception in runServer()" << std::endl;
+        std::cerr << "Exception in runServer() " << e.what() << std::endl;
         return 1;
     }
     return 0;
