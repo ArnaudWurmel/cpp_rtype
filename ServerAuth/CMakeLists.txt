@@ -3,7 +3,7 @@ project(ServerAuth)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(ServerAuth main.cpp)
+add_executable(ServerAuth main.cpp ServerRegister/ServerRegister.cpp ServerRegister/ServerRegister.hh Logger/Logger.hpp Logger/LoggerHelper.cpp Logger/LoggerHelper.hh ArgumentLoader/ArgumentLoader.cpp ArgumentLoader/ArgumentLoader.hh ArgumentLoader/Configure.cpp ArgumentLoader/Configure.hh)
 
 #BOOST
 set(Boost_USE_STATIC_LIBS        ON)
