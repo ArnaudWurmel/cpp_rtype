@@ -13,6 +13,7 @@
 namespace rtp {
 
     class ServerRegister;
+    class RTypeManager;
 
     template<typename T>
     class Logger {
@@ -21,14 +22,24 @@ namespace rtp {
             say("Instanced");
         }
 
-        ~Logger() {
+        virtual ~Logger() {
             say("Destructed");
         }
 
     protected:
-        void    say(std::string const& message) {
+        template<typename U = T>
+        void    say(std::string const& message, typename std::enable_if<std::is_same<U, RTypeManager>::value>::type* = 0) {
+            LoggerHelper::lockOutput();
+            std::cout << "[" << name() << "] <" << message << ">" << std::endl;
+            LoggerHelper::unlockOutput();
+        }
+
+        template<typename U = T>
+        void    say(std::string const& message, typename std::enable_if<!std::is_same<U, RTypeManager>::value>::type* = 0) {
             if (LoggerHelper::isDebugEnabled()) {
-                std::cout << "[" << name() << "] <" << message << ">" << std::endl;
+                LoggerHelper::lockOutput();
+                std::cerr << "[" << name() << "] <" << message << ">" << std::endl;
+                LoggerHelper::unlockOutput();
             }
         }
 
@@ -36,6 +47,11 @@ namespace rtp {
         template<typename U = T>
         const char *name(typename std::enable_if<std::is_same<U, ServerRegister>::value>::type* = 0) {
             return "ServerRegister";
+        }
+
+        template<typename U = T>
+        const char  *name(typename std::enable_if<std::is_same<U, RTypeManager>::value>::type* = 0) {
+            return "RTypeManager";
         }
     };
 }

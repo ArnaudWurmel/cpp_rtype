@@ -6,15 +6,47 @@
 #define SERVERAUTH_SERVERREGISTER_HH
 
 # include <string>
+# include <thread>
+# include <memory>
 # include "../Logger/Logger.hpp"
 # include "../ArgumentLoader/ArgumentLoader.hh"
+# include "../NetworkAbstract/BoostAcceptor.hh"
+# include "RegisteredServer.hh"
 
 namespace rtp {
     class ServerRegister : private Logger<ServerRegister> {
 
     public:
-        explicit ServerRegister(std::string const& host = "0.0.0.0", unsigned short port = 8080);
-        ~ServerRegister();
+        explicit ServerRegister(unsigned short port = 8080);
+        ~ServerRegister() override;
+
+    public:
+        bool    isRunning() const;
+        void    stop();
+
+    public:
+        std::vector<std::shared_ptr<RegisteredServer> > const& getServer() const;
+
+    private:
+        void    serverLooping();
+
+        ///////////////
+        // Server's Management
+        //
+    private:
+        std::vector<std::shared_ptr<RegisteredServer> > _serverList;
+
+        ///////////////
+        //  NetworkManagement
+        //
+    private:
+        std::unique_ptr<NetworkAbstract::IAcceptor> _acceptor;
+        std::unique_ptr<std::thread>    _thread;
+
+    private:
+        bool    _threadRunning;
+        std::mutex  _mClient;
+        std::condition_variable _clientNotifier;
     };
 }
 

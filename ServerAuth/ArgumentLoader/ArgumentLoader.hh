@@ -27,6 +27,10 @@ namespace rtp {
         bool    loadArguments(int, char **);
         std::vector<Argument> const&    get() const;
 
+    public:
+        bool    haveArg(std::string const& argName) const;
+        Argument const& getArg(std::string const&) const;
+
     private:
         std::vector<Argument>   _argumentList;
         std::vector<Argument>   _argumentFoundedList;

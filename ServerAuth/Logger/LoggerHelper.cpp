@@ -4,6 +4,8 @@
 
 #include "LoggerHelper.hh"
 
+std::mutex rtp::LoggerHelper::_outputLocker;
+
 bool rtp::LoggerHelper::_debugEnabled = false;
 
 void rtp::LoggerHelper::setDebug(bool value) {
@@ -12,4 +14,12 @@ void rtp::LoggerHelper::setDebug(bool value) {
 
 bool rtp::LoggerHelper::isDebugEnabled() {
     return _debugEnabled;
+}
+
+void rtp::LoggerHelper::lockOutput() {
+    _outputLocker.lock();
+}
+
+void rtp::LoggerHelper::unlockOutput() {
+    _outputLocker.unlock();
 }

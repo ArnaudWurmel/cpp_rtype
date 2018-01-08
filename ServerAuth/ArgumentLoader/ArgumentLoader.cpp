@@ -14,6 +14,8 @@ rtp::ArgumentLoader::Argument::~Argument() = default;
 
 rtp::ArgumentLoader::ArgumentLoader() {
     _argumentList.push_back(Argument("-d", false));
+    _argumentList.push_back(Argument("-p", true));
+    _argumentList.push_back(Argument("--port", true));
 }
 
 bool    rtp::ArgumentLoader::loadArguments(int ac, char **av) {
@@ -45,6 +47,22 @@ bool    rtp::ArgumentLoader::loadArguments(int ac, char **av) {
 
 std::vector<rtp::ArgumentLoader::Argument> const&   rtp::ArgumentLoader::get() const {
     return _argumentFoundedList;
+}
+
+bool    rtp::ArgumentLoader::haveArg(std::string const &argName) const {
+    auto itemFounded = std::find_if(_argumentFoundedList.begin(), _argumentFoundedList.end(),
+                                    [&](Argument const& argument) {
+                                        return argument.argument == "-" + argName;
+                                    });
+    return itemFounded != _argumentFoundedList.end();
+}
+
+rtp::ArgumentLoader::Argument const&  rtp::ArgumentLoader::getArg(std::string const& argKey) const {
+    auto itemFounded = std::find_if(_argumentFoundedList.begin(), _argumentFoundedList.end(),
+                                    [&](Argument const& argument) {
+                                        return argument.argument == "-" + argKey;
+                                    });
+    return *itemFounded;
 }
 
 rtp::ArgumentLoader::~ArgumentLoader() {}
