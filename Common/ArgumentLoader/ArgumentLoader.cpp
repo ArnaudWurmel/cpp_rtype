@@ -12,9 +12,10 @@ rtp::ArgumentLoader::Argument::Argument(std::string const& argument, bool haveSu
 
 rtp::ArgumentLoader::Argument::~Argument() = default;
 
-rtp::ArgumentLoader::ArgumentLoader() {
-    _argumentList.push_back(Argument("-d", false));
-    _argumentList.push_back(Argument("--server-port", true));
+rtp::ArgumentLoader::ArgumentLoader() {}
+
+void    rtp::ArgumentLoader::enableArgument(std::string const& argument, bool haveSupplementValue) {
+    _argumentList.push_back(Argument(argument, haveSupplementValue));
 }
 
 bool    rtp::ArgumentLoader::loadArguments(int ac, char **av) {

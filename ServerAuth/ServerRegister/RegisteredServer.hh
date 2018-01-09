@@ -32,15 +32,19 @@ namespace rtp {
         bool    isRegistered() const;
 
     private:
-        bool    registerServer(std::vector<std::string> const&);
+        bool    registerServer(NetworkAbstract::Message const&);
 
     private:
+        std::string generateRandomString(ssize_t) const;
+
+    private:
+        std::string     _registrationToken;
         unsigned int    _id;
         int _port;
 
     private:
         static unsigned int _serverId;
-        std::unordered_map<Command, std::function<bool (std::vector<std::string> const&)> >   _funcPtrList;
+        std::unordered_map<Command, std::function<bool (NetworkAbstract::Message const&)> >   _funcPtrList;
     };
 }
 

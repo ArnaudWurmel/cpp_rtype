@@ -20,29 +20,21 @@ namespace NetworkAbstract {
         ISocket(std::condition_variable&);
         virtual ~ISocket();
 
-        virtual bool    bind(unsigned short) = 0;
-        virtual void    write(NetworkAbstract::Message message);
-        virtual void    read() = 0;
+        virtual void    write(NetworkAbstract::Message message) = 0;
         virtual void    close() = 0;
         virtual bool    isOpen() const = 0;
         virtual bool    connectSocket(std::string const&, unsigned short port) = 0;
         virtual void    startSession() = 0;
         virtual std::string     getIpAddr() const = 0;
-        virtual SOCKET& getSocket() = 0;
-        virtual SOCKET const&   getSocket() const = 0;
         virtual bool    haveAvailableData();
-        virtual bool    haveSomethingToWrite();
-        virtual void    flushWrite() = 0;
         NetworkAbstract::Message  getAvailableMessage();
 
-    protected:
+    public:
         void    addMessage(NetworkAbstract::Message);
 
     protected:
-        std::queue<NetworkAbstract::Message>    _writingList;
         std::queue<NetworkAbstract::Message>  _messageList;
         std::mutex  _queueLocker;
-        std::mutex  _writingLocker;
 
     protected:
         std::condition_variable&    _cv;

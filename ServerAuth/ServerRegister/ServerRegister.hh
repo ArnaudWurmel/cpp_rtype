@@ -11,7 +11,6 @@
 # include "../Logger/Logger.hpp"
 # include "../ArgumentLoader/ArgumentLoader.hh"
 # include "RegisteredServer.hh"
-# include "../NetworkAbstract/LinuxSocket.hh"
 #include "../NetworkAbstract/IAcceptor.hh"
 
 namespace rtp {
@@ -34,8 +33,6 @@ namespace rtp {
         ///////////////
         // Server's Management
         //
-    private:
-        bool    handleServerIO();
     private:
         std::vector<std::shared_ptr<RegisteredServer> > _serverList;
 

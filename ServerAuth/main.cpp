@@ -18,6 +18,9 @@ int main(int ac, char **av) {
     rtp::ArgumentLoader argumentLoader;
     std::shared_ptr<rtp::ServerRegister>    serverRegister;
 
+    std::srand(time(NULL));
+    argumentLoader.enableArgument("-d", false);
+    argumentLoader.enableArgument("--server-port", true);
     if (!argumentLoader.loadArguments(ac, av)) {
         return 1;
     }

@@ -5,6 +5,7 @@
 #include <exception>
 #include <iostream>
 #include "ISocket.h"
+#include "BoostSocket.h"
 
 NetworkAbstract::ISocket::ISocket(std::condition_variable& cv) : _cv(cv) {}
 
@@ -31,19 +32,6 @@ NetworkAbstract::Message  NetworkAbstract::ISocket::getAvailableMessage() {
         return message;
     }
     throw std::exception();
-}
-
-bool    NetworkAbstract::ISocket::haveSomethingToWrite() {
-    _writingLocker.lock();
-    bool state = _writingList.size() > 0;
-    _writingLocker.unlock();
-    return state;
-}
-
-void    NetworkAbstract::ISocket::write(NetworkAbstract::Message message) {
-    _writingLocker.lock();
-    _writingList.push(message);
-    _writingLocker.unlock();
 }
 
 NetworkAbstract::ISocket::~ISocket() {}

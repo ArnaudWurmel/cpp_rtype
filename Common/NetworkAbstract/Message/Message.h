@@ -8,6 +8,7 @@
 #include <vector>
 
 namespace NetworkAbstract {
+
     class Message {
 
 #if !_WIN32
@@ -57,6 +58,12 @@ namespace NetworkAbstract {
         AMessage    _message;
         std::vector<char>   _data;
     };
+
+	template<typename T>
+	T	getTypeOf(Message const& message) {
+		return static_cast<T>(message.getType());
+	}
+
 }
 
 #endif //NETWORK_MESSAGE_H

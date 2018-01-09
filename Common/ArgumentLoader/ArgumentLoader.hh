@@ -24,6 +24,7 @@ namespace rtp {
         ~ArgumentLoader();
 
     public:
+        void    enableArgument(std::string const&, bool);
         bool    loadArguments(int, char **);
         std::vector<Argument> const&    get() const;
 
