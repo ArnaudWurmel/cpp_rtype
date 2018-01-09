@@ -4,7 +4,7 @@
 
 int main() {
 
-  sf::Vector2u screenDimensions(800, 600);
+  sf::Vector2u screenDimensions(1920, 1080);
   sf::RenderWindow window(
       sf::VideoMode(screenDimensions.x, screenDimensions.y, 32),
       "Game main window");
@@ -25,7 +25,7 @@ int main() {
   starsSprite.setTexture(starsTexture);
   starsSprite.setPosition(0, 0);
 
-  Starfield Stars(screenDimensions.x, screenDimensions.y, 50);
+  Starfield Stars(screenDimensions.x, screenDimensions.y, 100);
 
   // Game loop
   while (window.isOpen()) {
