@@ -8,7 +8,7 @@ static bool runServerRegister(rtp::ArgumentLoader const& argumentLoader, std::sh
     unsigned short serverPort = 8080;
 
     if (argumentLoader.haveArg("--server-port")) {
-        serverPort = std::stoi(argumentLoader.getArg("--port").value);
+        serverPort = std::stoi(argumentLoader.getArg("--server-port").value);
     }
     serverRegiter = std::make_shared<rtp::ServerRegister>(serverPort);
     return true;
