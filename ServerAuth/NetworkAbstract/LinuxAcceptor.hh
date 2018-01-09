@@ -23,6 +23,7 @@ namespace NetworkAbstract {
         std::shared_ptr<NetworkAbstract::ISocket>   acceptClient() override;
         void    run() override;
         void    stop() override;
+        bool    isRunning() override;
 
     private:
         void    acceptLoop();

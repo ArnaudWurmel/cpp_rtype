@@ -68,7 +68,6 @@ void    NetworkAbstract::LinuxSocket::read() {
             if (_readM.decodeHeader()) {
                 _readHeader = false;
             }
-            read();
         }
         else {
             if (errno != EAGAIN) {
@@ -81,7 +80,6 @@ void    NetworkAbstract::LinuxSocket::read() {
         if (state > 0) {
             addMessage(_readM);
             _readHeader = true;
-            read();
         }
         else {
             if (errno != EAGAIN) {
@@ -119,7 +117,7 @@ std::string NetworkAbstract::LinuxSocket::getIpAddr() const {
     char str[INET_ADDRSTRLEN];
 
     inet_ntop(AF_INET, &ipAddr, str, INET_ADDRSTRLEN);
-    return std::string(str, INET_ADDRSTRLEN);
+    return std::string(str);
 }
 
 SOCKET& NetworkAbstract::LinuxSocket::getSocket() {

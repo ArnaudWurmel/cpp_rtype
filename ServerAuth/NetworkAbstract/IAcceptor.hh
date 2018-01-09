@@ -18,6 +18,7 @@ namespace NetworkAbstract {
         virtual std::shared_ptr<NetworkAbstract::ISocket>   acceptClient() = 0;
         virtual void    run() = 0;
         virtual void    stop() = 0;
+        virtual bool    isRunning() = 0;
 
     public:
         static void    newFd(int fd);

@@ -35,6 +35,10 @@ void    NetworkAbstract::LinuxAcceptor::run() {
     if (startAccept()) {
         _threadAccept = std::unique_ptr<std::thread>(new std::thread(&NetworkAbstract::LinuxAcceptor::acceptLoop, this));
     }
+    else {
+        _continueRunning = false;
+        std::cerr << "socket not initialized" << std::endl;
+    }
 }
 
 void    NetworkAbstract::LinuxAcceptor::acceptLoop() {
@@ -42,11 +46,11 @@ void    NetworkAbstract::LinuxAcceptor::acceptLoop() {
     timeval timeval;
     int selectRet;
 
-    FD_ZERO(&rdsk);
-    FD_SET(_serverSocket->getSocket(), &rdsk);
     while (_continueRunning) {
         timeval.tv_sec = 5;
         timeval.tv_usec = 0;
+        FD_ZERO(&rdsk);
+        FD_SET(_serverSocket->getSocket(), &rdsk);
         selectRet = select(IAcceptor::getMaxFd() + 1, &rdsk, NULL, NULL, &timeval);
         if (!_continueRunning) {
             return ;
@@ -64,10 +68,14 @@ void    NetworkAbstract::LinuxAcceptor::acceptLoop() {
             clientFd = accept(_serverSocket->getSocket(), (struct sockaddr *)&in, &len);
             _clientListLocker.lock();
             _clientList.push(std::shared_ptr<LinuxSocket>(new LinuxSocket(_clientAwake, in, clientFd)));
-            _clientAwake.notify_one();
             _clientListLocker.unlock();
+            _clientAwake.notify_one();
         }
     }
+}
+
+bool NetworkAbstract::LinuxAcceptor::isRunning() {
+    return _continueRunning;
 }
 
 void    NetworkAbstract::LinuxAcceptor::stop() {
@@ -75,7 +83,7 @@ void    NetworkAbstract::LinuxAcceptor::stop() {
         _continueRunning = false;
     }
     _continueRunning = false;
-    if (_serverSocket->isOpen()) {
+    if (_serverSocket && _serverSocket->isOpen()) {
         _serverSocket->close();
     }
     if (_threadAccept->joinable())

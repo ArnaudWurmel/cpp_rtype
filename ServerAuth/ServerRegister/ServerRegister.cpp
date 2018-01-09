@@ -2,6 +2,7 @@
 // Created by wurmel_a on 1/8/18.
 //
 
+#include <sys/select.h>
 #include "ServerRegister.hh"
 #include "../NetworkAbstract/IAcceptor.hh"
 #include "../NetworkAbstract/LinuxAcceptor.hh"
@@ -22,14 +23,15 @@ void    rtp::ServerRegister::serverLooping() {
     }
     while (_threadRunning) {
         std::unique_lock<std::mutex>    lck(_mClient);
-
-        _clientNotifier.wait_for(lck, std::chrono::milliseconds(200));
         while (_acceptor->haveAwaitingClient()) {
             std::shared_ptr<RegisteredServer>   server(new RegisteredServer(_acceptor->acceptClient()));
 
             _serverList.push_back(server);
         }
-
+        if (!handleServerIO()) {
+            _threadRunning = false;
+            return ;
+        }
         auto iterator = _serverList.begin();
 
         while (iterator != _serverList.end()) {
@@ -43,8 +45,50 @@ void    rtp::ServerRegister::serverLooping() {
     }
 }
 
+bool    rtp::ServerRegister::handleServerIO() {
+    fd_set  rdsk;
+    fd_set  wrsk;
+    timeval timeval;
+
+    timeval.tv_usec = 200;
+    timeval.tv_sec = 0;
+    FD_ZERO(&rdsk);
+    FD_ZERO(&wrsk);
+
+    auto iterator = _serverList.begin();
+
+    while (iterator != _serverList.end()) {
+        FD_SET((*iterator)->getSocket()->getSocket(), &rdsk);
+        if ((*iterator)->getSocket()->haveSomethingToWrite()) {
+            FD_SET((*iterator)->getSocket()->getSocket(), &wrsk);
+        }
+        ++iterator;
+    }
+    int selectRet;
+
+    selectRet = select(NetworkAbstract::IAcceptor::getMaxFd() + 1, &rdsk, &wrsk, NULL, &timeval);
+    if (selectRet < 0) {
+        std::cerr << "Error in select()" << std::endl;
+        return false;
+    }
+    else if (selectRet) {
+        iterator = _serverList.begin();
+
+        while (iterator != _serverList.end()) {
+            if (FD_ISSET((*iterator)->getSocket()->getSocket(), &rdsk)) {
+                (*iterator)->getSocket()->read();
+            }
+            if (FD_ISSET((*iterator)->getSocket()->getSocket(), &wrsk)) {
+                (*iterator)->getSocket()->flushWrite();
+            }
+            ++iterator;
+        }
+    }
+    return true;
+}
+
 bool    rtp::ServerRegister::isRunning() const {
-    return _threadRunning;
+    return _threadRunning && _acceptor->isRunning();
 }
 
 void    rtp::ServerRegister::stop() {

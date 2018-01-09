@@ -35,6 +35,8 @@ namespace rtp {
         // Server's Management
         //
     private:
+        bool    handleServerIO();
+    private:
         std::vector<std::shared_ptr<RegisteredServer> > _serverList;
 
         ///////////////
