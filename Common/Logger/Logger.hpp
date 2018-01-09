@@ -14,6 +14,7 @@ namespace rtp {
 
     class ServerRegister;
     class RTypeManager;
+    class RegisteredServer;
 
     template<typename T>
     class Logger {
@@ -57,6 +58,11 @@ namespace rtp {
         template<typename U = T>
         const char  *name(typename std::enable_if<std::is_same<U, RTypeManager>::value>::type* = 0) {
             return "RTypeManager";
+        }
+
+        template<typename U = T>
+        const char   *name(typename std::enable_if<std::is_same<U, RegisteredServer>::value>::type* = 0) {
+            return "RegisteredServer";
         }
     };
 }

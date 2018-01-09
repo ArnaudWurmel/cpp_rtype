@@ -7,7 +7,7 @@ int main() {
   sf::Vector2u screenDimensions(800, 600);
   sf::RenderWindow window(
       sf::VideoMode(screenDimensions.x, screenDimensions.y, 32),
-      "Game main window", sf::Style::Titlebar | sf::Style::Close);
+      "Game main window");
 
   window.setSize(screenDimensions);
   window.setFramerateLimit(60);
