@@ -10,30 +10,41 @@
 # include <condition_variable>
 # include "Message/Message.h"
 
+#if !_WIN32
+    typedef int SOCKET;
+#endif
+
 namespace NetworkAbstract {
     class   ISocket {
     public:
-        ISocket(std::mutex&, std::condition_variable&);
+        ISocket(std::condition_variable&);
         virtual ~ISocket();
 
-        virtual void    write(NetworkAbstract::Message message) = 0;
+        virtual bool    bind(unsigned short) = 0;
+        virtual void    write(NetworkAbstract::Message message);
+        virtual void    read() = 0;
         virtual void    close() = 0;
         virtual bool    isOpen() const = 0;
         virtual bool    connectSocket(std::string const&, unsigned short port) = 0;
         virtual void    startSession() = 0;
         virtual std::string     getIpAddr() const = 0;
+        virtual SOCKET& getSocket() = 0;
+        virtual SOCKET const&   getSocket() const = 0;
         virtual bool    haveAvailableData();
+        virtual bool    haveSomethingToWrite();
+        virtual void    flushWrite() = 0;
         NetworkAbstract::Message  getAvailableMessage();
 
     protected:
         void    addMessage(NetworkAbstract::Message);
 
-    private:
+    protected:
+        std::queue<NetworkAbstract::Message>    _writingList;
         std::queue<NetworkAbstract::Message>  _messageList;
         std::mutex  _queueLocker;
+        std::mutex  _writingLocker;
 
     protected:
-        std::mutex& _haveData;
         std::condition_variable&    _cv;
     };
 }

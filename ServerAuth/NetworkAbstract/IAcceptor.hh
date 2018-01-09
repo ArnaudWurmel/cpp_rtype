@@ -13,11 +13,21 @@ namespace NetworkAbstract {
         virtual ~IAcceptor() = default;
 
     public:
-        virtual void startAccept() = 0;
+        virtual bool startAccept() = 0;
         virtual bool haveAwaitingClient() = 0;
         virtual std::shared_ptr<NetworkAbstract::ISocket>   acceptClient() = 0;
         virtual void    run() = 0;
         virtual void    stop() = 0;
+        virtual bool    isRunning() = 0;
+
+    public:
+        static void    newFd(int fd);
+        static unsigned int    getMaxFd();
+        static void    deleteFd(int fd);
+
+    private:
+        static std::vector<unsigned int>    _maxFd;
+        static std::mutex  _lock;
     };
 }
 

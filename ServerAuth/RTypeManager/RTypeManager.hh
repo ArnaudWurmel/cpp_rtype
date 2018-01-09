@@ -24,6 +24,7 @@ namespace rtp {
         void    listClient(std::vector<std::string> const&);
         void    exitServer(std::vector<std::string> const&);
         void    help(std::vector<std::string> const&);
+        void    debug(std::vector<std::string> const&);
 
     private:
         std::vector<std::string>    getTokenFrom(std::string const&);

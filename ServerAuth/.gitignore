@@ -5,3 +5,5 @@ CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
 ServerAuth.cbp
+ServerAuth
+Makefile

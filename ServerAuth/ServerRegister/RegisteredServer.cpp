@@ -11,6 +11,9 @@ rtp::RegisteredServer::RegisteredServer(std::shared_ptr<NetworkAbstract::ISocket
 }
 
 bool    rtp::RegisteredServer::handleNewData() {
+    if (_socket->haveAvailableData()) {
+
+    }
     return true;
 }
 

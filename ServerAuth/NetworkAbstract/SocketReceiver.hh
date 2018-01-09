@@ -18,6 +18,7 @@ namespace NetworkAbstract {
         virtual void    close();
         virtual bool    isOpen() const;
         virtual std::string     getIpAddr() const;
+        std::shared_ptr<ISocket> const& getSocket() const;
 
 
     protected:

@@ -25,4 +25,8 @@ std::string    NetworkAbstract::SocketReceiver::getIpAddr() const {
     return _socket->getIpAddr();
 }
 
+std::shared_ptr<NetworkAbstract::ISocket> const&    NetworkAbstract::SocketReceiver::getSocket() const {
+    return _socket;
+}
+
 NetworkAbstract::SocketReceiver::~SocketReceiver() = default;

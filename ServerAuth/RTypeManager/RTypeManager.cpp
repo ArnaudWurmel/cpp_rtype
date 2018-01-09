@@ -12,6 +12,7 @@ rtp::RTypeManager::RTypeManager(std::shared_ptr<ServerRegister>& serverRegister)
     _functionPtr.insert(std::make_pair("ls", std::bind(&rtp::RTypeManager::listClient, this, std::placeholders::_1)));
     _functionPtr.insert(std::make_pair("exit", std::bind(&rtp::RTypeManager::exitServer, this, std::placeholders::_1)));
     _functionPtr.insert(std::make_pair("help", std::bind(&rtp::RTypeManager::help, this, std::placeholders::_1)));
+    _functionPtr.insert(std::make_pair("debug", std::bind(&rtp::RTypeManager::debug, this, std::placeholders::_1)));
 }
 
 bool rtp::RTypeManager::loop() {
@@ -106,6 +107,16 @@ void    rtp::RTypeManager::help(std::vector<std::string> const&) {
         }
     }
     say(printLine, false);
+}
+
+void    rtp::RTypeManager::debug(std::vector<std::string> const&) {
+    rtp::LoggerHelper::setDebug(!rtp::LoggerHelper::isDebugEnabled());
+    if (rtp::LoggerHelper::isDebugEnabled()) {
+        say("Debug now enabled", false);
+    }
+    else {
+        say("Debug now disabled", false);
+    }
 }
 
 std::vector<std::string>    rtp::RTypeManager::getTokenFrom(std::string const& input) {

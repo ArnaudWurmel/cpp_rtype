@@ -23,7 +23,7 @@ bool    rtp::ArgumentLoader::loadArguments(int ac, char **av) {
     while (i < ac) {
         auto itemFounded = std::find_if(_argumentList.begin(), _argumentList.end(),
         [&](Argument const& argument) {
-            return _argumentList[i].argument.compare(av[i]);
+            return !argument.argument.compare(av[i]);
         });
         if (itemFounded == _argumentList.end()) {
             std::cerr << "Unknown argument : `" << av[i] << "`" << std::endl;
@@ -51,7 +51,7 @@ std::vector<rtp::ArgumentLoader::Argument> const&   rtp::ArgumentLoader::get() c
 bool    rtp::ArgumentLoader::haveArg(std::string const &argName) const {
     auto itemFounded = std::find_if(_argumentFoundedList.begin(), _argumentFoundedList.end(),
                                     [&](Argument const& argument) {
-                                        return argument.argument == "-" + argName;
+                                        return argument.argument == argName;
                                     });
     return itemFounded != _argumentFoundedList.end();
 }
@@ -59,7 +59,7 @@ bool    rtp::ArgumentLoader::haveArg(std::string const &argName) const {
 rtp::ArgumentLoader::Argument const&  rtp::ArgumentLoader::getArg(std::string const& argKey) const {
     auto itemFounded = std::find_if(_argumentFoundedList.begin(), _argumentFoundedList.end(),
                                     [&](Argument const& argument) {
-                                        return argument.argument == "-" + argKey;
+                                        return argument.argument == argKey;
                                     });
     return *itemFounded;
 }
