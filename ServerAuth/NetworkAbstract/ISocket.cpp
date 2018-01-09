@@ -6,7 +6,7 @@
 #include <iostream>
 #include "ISocket.h"
 
-NetworkAbstract::ISocket::ISocket(std::mutex& haveData, std::condition_variable& cv) : _haveData(haveData), _cv(cv) {}
+NetworkAbstract::ISocket::ISocket(std::condition_variable& cv) : _cv(cv) {}
 
 bool NetworkAbstract::ISocket::haveAvailableData() {
     _queueLocker.lock();
@@ -31,6 +31,19 @@ NetworkAbstract::Message  NetworkAbstract::ISocket::getAvailableMessage() {
         return message;
     }
     throw std::exception();
+}
+
+bool    NetworkAbstract::ISocket::haveSomethingToWrite() {
+    _writingLocker.lock();
+    bool state = _writingList.size() > 0;
+    _writingLocker.unlock();
+    return state;
+}
+
+void    NetworkAbstract::ISocket::write(NetworkAbstract::Message message) {
+    _writingLocker.lock();
+    _writingList.push(message);
+    _writingLocker.unlock();
 }
 
 NetworkAbstract::ISocket::~ISocket() {}

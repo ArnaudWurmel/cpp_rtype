@@ -7,12 +7,12 @@
 #include <iostream>
 #include "Message.h"
 
-NetworkAbstract::Message::Message(MessageType const& type) : _data(headerSize + maxBodySize + 1, 0) {
+NetworkAbstract::Message::Message() : _data(headerSize + maxBodySize + 1, 0) {
     std::memset(&_message, 0, sizeof(_message));
     _message.magicNumber = magic_number;
     _message.body = nullptr;
     _message.bodySize = 0;
-    _message.type = type;
+    _message.type = -1;
 }
 
 NetworkAbstract::Message::Message(Message const&other) : _data(headerSize + maxBodySize + 1) {

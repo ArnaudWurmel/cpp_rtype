@@ -9,21 +9,8 @@
 
 namespace NetworkAbstract {
     class Message {
-    public:
-        enum    MessageType {
-            Unknown = 0,
-            Connect = 1,
-            Error = 2,
-            Userlist = 3,
-            ChannelList = 4,
-            Join = 5,
-            Event = 6,
-            Leave = 7,
-            CreateChannel = 8
-        };
 
-
-#ifdef __linux__	
+#if !_WIN32
 	struct __attribute__((packed)) AMessage {
             unsigned short magicNumber;
             int type;
@@ -41,13 +28,14 @@ namespace NetworkAbstract {
         } PACKED;
 	#include "endpacked.h"
 #endif
+	public:
 
-        enum { headerSize = sizeof(unsigned short) + sizeof(MessageType) + sizeof(unsigned int) };
+        enum { headerSize = sizeof(unsigned short) + sizeof(int) + sizeof(unsigned int) };
         enum { maxBodySize = 512 };
         enum { magic_number = 0x424D };
 
     public:
-        Message(MessageType const&);
+        Message();
         Message(Message const&);
         ~Message();
 

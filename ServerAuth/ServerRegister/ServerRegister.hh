@@ -10,8 +10,9 @@
 # include <memory>
 # include "../Logger/Logger.hpp"
 # include "../ArgumentLoader/ArgumentLoader.hh"
-# include "../NetworkAbstract/BoostAcceptor.hh"
 # include "RegisteredServer.hh"
+# include "../NetworkAbstract/LinuxSocket.hh"
+#include "../NetworkAbstract/IAcceptor.hh"
 
 namespace rtp {
     class ServerRegister : private Logger<ServerRegister> {

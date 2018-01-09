@@ -3,10 +3,12 @@
 //
 
 #include "ServerRegister.hh"
+#include "../NetworkAbstract/IAcceptor.hh"
+#include "../NetworkAbstract/LinuxAcceptor.hh"
 
 rtp::ServerRegister::ServerRegister(unsigned short port) {
     _threadRunning = true;
-    _acceptor = std::unique_ptr<NetworkAbstract::IAcceptor>(new NetworkAbstract::BoostAcceptor(port, _clientNotifier));
+    _acceptor = std::unique_ptr<NetworkAbstract::IAcceptor>(new NetworkAbstract::LinuxAcceptor(_clientNotifier, port));
     _thread = std::unique_ptr<std::thread>(new std::thread(&rtp::ServerRegister::serverLooping, this));
 }
 
