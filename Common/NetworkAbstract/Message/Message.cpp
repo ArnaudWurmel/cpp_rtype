@@ -50,7 +50,6 @@ unsigned int    NetworkAbstract::Message::getBodySize() const {
 
 bool    NetworkAbstract::Message::decodeHeader() {
   std::memcpy(&_message, _data.data(), headerSize);
-    std::cout << "Decode type: <" << _message.type << ">" << std::endl;
     if (_message.bodySize > maxBodySize) {
         return false;
     }
