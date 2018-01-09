@@ -36,8 +36,6 @@ void Starfield::UpdateStar() {
 void Starfield::DrawStar(sf::Texture &t) {
   for (std::vector<Star>::iterator it = this->Stars.begin();
        it != this->Stars.end(); it++) {
-    std::cout << it->GetX() << " " << it->GetY() << " " << it->GetSize()
-              << '\n';
     if (it->GetY() + it->GetSize() < this->yRes &&
         it->GetX() + it->GetSize() < this->xRes)
       t.update(it->GetImg(), it->GetX(), it->GetY());
