@@ -46,6 +46,7 @@ int main(int ac, char **av) {
         if (!runGameServer(argumentLoader, gameServer)) {
             return 1;
         }
+        gameServer->serverLoop();
     }
     catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
