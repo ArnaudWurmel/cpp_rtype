@@ -22,8 +22,11 @@ void    rtp::ServerRegister::serverLooping() {
         while (_acceptor->haveAwaitingClient()) {
             std::shared_ptr<RegisteredServer>   server(new RegisteredServer(_acceptor->acceptClient()));
 
+            lockData();
             _serverList.push_back(server);
+            unlockData();
         }
+        lockData();
         auto iterator = _serverList.begin();
 
         while (iterator != _serverList.end()) {
@@ -35,7 +38,16 @@ void    rtp::ServerRegister::serverLooping() {
                 ++iterator;
             }
         }
+        unlockData();
     }
+}
+
+void    rtp::ServerRegister::lockData() {
+    _dataSafer.lock();
+}
+
+void    rtp::ServerRegister::unlockData() {
+    _dataSafer.unlock();
 }
 
 std::vector<std::shared_ptr<rtp::RegisteredServer> > const& rtp::ServerRegister::getServer() const {

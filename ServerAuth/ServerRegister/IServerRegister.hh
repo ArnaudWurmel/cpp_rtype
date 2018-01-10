@@ -14,6 +14,8 @@ namespace   rtp {
 
     public:
         virtual std::vector<std::shared_ptr<RegisteredServer> > const& getServer() const = 0;
+        virtual void    lockData() = 0;
+        virtual void    unlockData() = 0;
     };
 }
 

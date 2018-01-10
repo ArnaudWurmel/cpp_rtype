@@ -43,6 +43,14 @@ unsigned int    rtp::RegisteredServer::getId() const {
     return _id;
 }
 
+int  rtp::RegisteredServer::getPort() const {
+    return _port;
+}
+
+std::string const&  rtp::RegisteredServer::getRegistrationToken() const {
+    return _registrationToken;
+}
+
 bool    rtp::RegisteredServer::isRegistered() const {
     return _port != -1 && _registrationToken.length() > 0;
 }

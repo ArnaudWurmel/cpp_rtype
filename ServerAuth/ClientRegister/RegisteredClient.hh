@@ -22,7 +22,11 @@ namespace rtp {
             CreateRoom = 0,
             LeaveRoom = 1,
             RoomList = 2,
-            JoinRoom = 3
+            JoinRoom = 3,
+            StartMatchmaking = 4,
+            StopMatchmaking = 5,
+            ServerFound = 6,
+            NewOwner = 7
         };
 
     public:
@@ -37,6 +41,8 @@ namespace rtp {
         bool    leaveRoom(NetworkAbstract::Message const&);
         bool    roomList(NetworkAbstract::Message const&);
         bool    joinRoom(NetworkAbstract::Message const&);
+        bool    startMatchmacking(NetworkAbstract::Message const&);
+        bool    stopMatchmacking(NetworkAbstract::Message const&);
 
     public:
         unsigned int    getId() const;

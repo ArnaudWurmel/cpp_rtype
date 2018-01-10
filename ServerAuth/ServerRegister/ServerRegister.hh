@@ -24,6 +24,8 @@ namespace rtp {
 
     public:
         std::vector<std::shared_ptr<RegisteredServer> > const& getServer() const override;
+        void    lockData() override;
+        void    unlockData() override;
 
     private:
         void    serverLooping() override;
@@ -32,6 +34,7 @@ namespace rtp {
         // Server's Management
         //
     private:
+        std::mutex  _dataSafer;
         std::vector<std::shared_ptr<RegisteredServer> > _serverList;
     };
 }

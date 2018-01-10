@@ -13,6 +13,8 @@ rtp::RegisteredClient::RegisteredClient(std::shared_ptr<NetworkAbstract::ISocket
     _commandCallback.insert(std::make_pair(Command::LeaveRoom, std::bind(&rtp::RegisteredClient::leaveRoom, this, std::placeholders::_1)));
     _commandCallback.insert(std::make_pair(Command::RoomList, std::bind(&rtp::RegisteredClient::roomList, this, std::placeholders::_1)));
     _commandCallback.insert(std::make_pair(Command::JoinRoom, std::bind(&rtp::RegisteredClient::joinRoom, this, std::placeholders::_1)));
+    _commandCallback.insert(std::make_pair(Command::StartMatchmaking, std::bind(&rtp::RegisteredClient::startMatchmacking, this, std::placeholders::_1)));
+    _commandCallback.insert(std::make_pair(Command::StopMatchmaking, std::bind(&rtp::RegisteredClient::stopMatchmacking, this, std::placeholders::_1)));
 }
 
 bool    rtp::RegisteredClient::handleNewData() {
@@ -86,6 +88,14 @@ bool    rtp::RegisteredClient::joinRoom(NetworkAbstract::Message const& message)
     }
     _socket->write(response);
     return true;
+}
+
+bool    rtp::RegisteredClient::startMatchmacking(NetworkAbstract::Message const &) {
+    return _delegate.playerStartMatchmaking(shared_from_this());
+}
+
+bool    rtp::RegisteredClient::stopMatchmacking(NetworkAbstract::Message const &) {
+    return _delegate.playerStopMatchmaking(shared_from_this());
 }
 
 rtp::RegisteredClient::~RegisteredClient() {

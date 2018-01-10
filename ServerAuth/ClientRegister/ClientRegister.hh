@@ -23,6 +23,8 @@ namespace rtp {
         bool    playerCreateRoom(std::shared_ptr<RegisteredClient>);
         bool    playerLeaveRoom(std::shared_ptr<RegisteredClient>);
         bool    playerJoinRoom(std::shared_ptr<RegisteredClient>, int);
+        bool    playerStartMatchmaking(std::shared_ptr<RegisteredClient>);
+        bool    playerStopMatchmaking(std::shared_ptr<RegisteredClient>);
         std::vector<std::unique_ptr<Room> > const&  playerAskRoomList() const;
 
     private:

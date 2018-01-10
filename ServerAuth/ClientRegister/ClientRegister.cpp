@@ -42,7 +42,7 @@ bool    rtp::ClientRegister::playerCreateRoom(std::shared_ptr<RegisteredClient> 
     if (getPlayerRoomId(player) != -1) {
         return false;
     }
-    _roomList.push_back(std::unique_ptr<Room>(new Room(player->getId())));
+    _roomList.push_back(std::unique_ptr<Room>(new Room(player->getId(), _iServerRegister)));
     _roomList.back()->addPlayer(player);
     return true;
 }
@@ -54,7 +54,11 @@ bool    rtp::ClientRegister::playerLeaveRoom(std::shared_ptr<RegisteredClient> p
     auto iterator = std::find_if(_roomList.begin(), _roomList.end(), [&](std::unique_ptr<Room> const& room) {
         return room->getId() == getPlayerRoomId(player);
     });
-    return (*iterator)->removePlayer(player);
+    bool success = (*iterator)->removePlayer(player);
+    if ((*iterator)->nbPlayerIn() == 0) {
+        _roomList.erase(iterator);
+    }
+    return success;
 }
 
 bool    rtp::ClientRegister::playerJoinRoom(std::shared_ptr<RegisteredClient> player, int roomId) {
@@ -64,7 +68,36 @@ bool    rtp::ClientRegister::playerJoinRoom(std::shared_ptr<RegisteredClient> pl
     auto iterator = std::find_if(_roomList.begin(), _roomList.end(), [&](std::unique_ptr<Room> const& room) {
         return room->getId() == roomId;
     });
+    if (iterator == _roomList.end()) {
+        return false;
+    }
     return (*iterator)->addPlayer(player);
+}
+
+bool    rtp::ClientRegister::playerStartMatchmaking(std::shared_ptr<RegisteredClient> player) {
+    if (getPlayerRoomId(player) == -1) {
+        return false;
+    }
+    auto iterator = std::find_if(_roomList.begin(), _roomList.end(), [&](std::unique_ptr<Room> const& room) {
+        return room->isPlayerIn(player);
+    });
+    if (iterator == _roomList.end()) {
+        return false;
+    }
+    return (*iterator)->findAServer(player);
+}
+
+bool    rtp::ClientRegister::playerStopMatchmaking(std::shared_ptr<RegisteredClient> player) {
+    if (getPlayerRoomId(player) == -1) {
+        return false;
+    }
+    auto iterator = std::find_if(_roomList.begin(), _roomList.end(), [&](std::unique_ptr<Room> const& room) {
+        return room->isPlayerIn(player);
+    });
+    if (iterator == _roomList.end()) {
+        return false;
+    }
+    return (*iterator)->stopMatchmaking(player);
 }
 
 std::vector<std::unique_ptr<rtp::Room> > const&  rtp::ClientRegister::playerAskRoomList() const {
