@@ -20,6 +20,24 @@ if(SFML_FOUND)
 	target_link_libraries(ClientGame ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
 endif(SFML_FOUND)
 
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ClientGame)
+
+if(WIN32)
+	set(SFML_AUDIO_DEBUG		$ENV{SFML_ROOT}/bin/sfml-audio-d-2.dll)
+	set(SFML_GRAPHICS_DEBUG		$ENV{SFML_ROOT}/bin/sfml-graphics-d-2.dll)
+	set(SFML_SYSTEM_DEBUG		$ENV{SFML_ROOT}/bin/sfml-system-d-2.dll)
+	set(SFML_WINDOW_DEBUG		$ENV{SFML_ROOT}/bin/sfml-window-d-2.dll)
+	set(SFML_AUDIO_RELEASE		$ENV{SFML_ROOT}/bin/sfml-audio-d-2.dll)
+	set(SFML_GRAPHICS_RELEASE	$ENV{SFML_ROOT}/bin/sfml-graphics-2.dll)
+	set(SFML_SYSTEM_RELEASE		$ENV{SFML_ROOT}/bin/sfml-system-2.dll)
+	set(SFML_WINDOW_RELEASE		$ENV{SFML_ROOT}/bin/sfml-window-2.dll)
+	add_custom_command(
+		TARGET ClientGame POST_BUILD
+		COMMAND ${CMAKE_COMMAND} ARGS -E copy_if_different
+			"$<$<CONFIG:Debug>:${SFML_AUDIO_DEBUG}>$<$<CONFIG:Release>:${SFML_AUDIO_RELEASE}>"
+			"$<$<CONFIG:Debug>:${SFML_GRAPHICS_DEBUG}>$<$<CONFIG:Release>:${SFML_GRAPHICS_RELEASE}>"
+			"$<$<CONFIG:Debug>:${SFML_WINDOW_DEBUG}>$<$<CONFIG:Release>:${SFML_WINDOW_RELEASE}>"
+			"$<$<CONFIG:Debug>:${SFML_SYSTEM_DEBUG}>$<$<CONFIG:Release>:${SFML_SYSTEM_RELEASE}>"
+			$<TARGET_FILE_DIR:ClientGame>
+	)
+endif(WIN32)
