@@ -32,3 +32,17 @@
 *.app
 
 ./ServerAuth/.idea/
+/Client/CMakeFiles
+/Client/Debug
+/Client/CMakeCache.txt
+/Client/Win32
+/Client/ALL_BUILD.vcxproj
+/Client/ALL_BUILD.vcxproj.filters
+/Client/ClientGame.sln
+/Client/ClientGame.vcxproj
+/Client/ClientGame.vcxproj.filters
+/Client/cmake_install.cmake
+/Client/ZERO_CHECK.vcxproj
+/Client/ZERO_CHECK.vcxproj.filters
+/Client/.vs
+/Client/ClientGame.dir
