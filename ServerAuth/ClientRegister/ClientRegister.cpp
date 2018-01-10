@@ -27,6 +27,7 @@ void    rtp::ClientRegister::serverLooping() {
 
         while (iterator != _clientList.end()) {
             if (!(*iterator)->isOpen() || !(*iterator)->handleNewData()) {
+                playerLeaveRoom(*iterator);
                 say("Loose connection with client{" + std::to_string((*iterator)->getId()) + "}");
                 _clientList.erase(iterator);
             }
@@ -35,6 +36,49 @@ void    rtp::ClientRegister::serverLooping() {
             }
         }
     }
+}
+
+bool    rtp::ClientRegister::playerCreateRoom(std::shared_ptr<RegisteredClient> player) {
+    if (getPlayerRoomId(player) != -1) {
+        return false;
+    }
+    _roomList.push_back(std::unique_ptr<Room>(new Room(player->getId())));
+    _roomList.back()->addPlayer(player);
+    return true;
+}
+
+bool    rtp::ClientRegister::playerLeaveRoom(std::shared_ptr<RegisteredClient> player) {
+    if (getPlayerRoomId(player) == -1) {
+        return false;
+    }
+    auto iterator = std::find_if(_roomList.begin(), _roomList.end(), [&](std::unique_ptr<Room> const& room) {
+        return room->getId() == getPlayerRoomId(player);
+    });
+    return (*iterator)->removePlayer(player);
+}
+
+bool    rtp::ClientRegister::playerJoinRoom(std::shared_ptr<RegisteredClient> player, int roomId) {
+    if (getPlayerRoomId(player) != -1) {
+        return false;
+    }
+    auto iterator = std::find_if(_roomList.begin(), _roomList.end(), [&](std::unique_ptr<Room> const& room) {
+        return room->getId() == roomId;
+    });
+    return (*iterator)->addPlayer(player);
+}
+
+std::vector<std::unique_ptr<rtp::Room> > const&  rtp::ClientRegister::playerAskRoomList() const {
+    return _roomList;
+}
+
+int rtp::ClientRegister::getPlayerRoomId(std::shared_ptr<RegisteredClient> player) const {
+    auto iterator = std::find_if(_roomList.begin(), _roomList.end(), [&](std::unique_ptr<Room> const& room) {
+        return room->isPlayerIn(player);
+    });
+    if (iterator == _roomList.end()) {
+        return -1;
+    }
+    return (*iterator)->getId();
 }
 
 rtp::ClientRegister::~ClientRegister() = default;
