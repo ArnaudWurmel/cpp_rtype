@@ -7,6 +7,8 @@
 #include "../NetworkAbstract/BoostAcceptor.hh"
 
 rtp::GameServer::GameServer(unsigned short port) : _port(port) {
+    _callbackPtrs.insert(std::make_pair(Command::REGISTER, &rtp::GameServer::handleRegistering));
+    _callbackPtrs.insert(std::make_pair(Command::PING, &rtp::GameServer::handlePing));
 }
 
 bool    rtp::GameServer::connectToAuthServer(std::string const& authHost, unsigned short authPort) {
@@ -46,11 +48,43 @@ bool    rtp::GameServer::waitCommand(Callback callback, rtp::GameServer::Command
     return false;
 }
 
+bool    rtp::GameServer::handleMessage(NetworkAbstract::Message const& message) {
+    if (_callbackPtrs.find(NetworkAbstract::getTypeOf<Command>(message)) != _callbackPtrs.end()) {
+        return (this->*(_callbackPtrs[NetworkAbstract::getTypeOf<Command>(message)]))(message);
+    }
+    return false;
+}
+
+void    rtp::GameServer::serverLoop() {
+    while (_controlSocket->isOpen()) {
+        std::unique_lock<std::mutex>    lck(_inputLocker);
+
+        while (_controlSocket->haveAvailableData()) {
+            NetworkAbstract::Message    message = _controlSocket->getAvailableMessage();
+
+            if (!handleMessage(message)) {
+                say("Can't handle type : <" + std::to_string(message.getType()) + ">");
+                return ;
+            }
+        }
+        _inputAvailable.wait_for(lck, std::chrono::milliseconds(200));
+    }
+}
+
 bool    rtp::GameServer::handleRegistering(NetworkAbstract::Message const& message) {
     if (message.getBodySize() != TOKEN_SIZE) {
         return false;
     }
     _authToken = std::string(message.getBody(), message.getBodySize());
+    return true;
+}
+
+bool    rtp::GameServer::handlePing(NetworkAbstract::Message const& message) {
+    NetworkAbstract::Message    response;
+
+    response.setType(Command::PING);
+    response.setBody(std::string("Available").c_str(), std::string("Available").length());
+    _controlSocket->write(response);
     return true;
 }
 

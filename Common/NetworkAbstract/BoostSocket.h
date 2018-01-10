@@ -20,13 +20,13 @@ namespace NetworkAbstract {
         ~BoostSocket();
 
     public:
-        void    close();
-        bool    isOpen() const;
+        void    close() override;
+        bool    isOpen() const override;
         boost::asio::ip::tcp::socket&   getSocket();
-        bool    connectSocket(std::string const&, unsigned short);
-        void    startSession();
-        std::string getIpAddr() const;
-        void    write(NetworkAbstract::Message);
+        bool    connectSocket(std::string const&, unsigned short) override;
+        void    startSession() override;
+        std::string getIpAddr() const override;
+        void    write(NetworkAbstract::Message) override;
 
     private:
         void    handleReadHeader(const boost::system::error_code& error);

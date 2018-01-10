@@ -41,6 +41,7 @@ void    rtp::RTypeManager::listClient(std::vector<std::string> const&) {
     auto iterator = _serverRegister->getServer().begin();
     int maxId = 2;
     int maxIp = 2;
+    int maxState = 5;
     std::string tabLine;
 
     while (iterator != _serverRegister->getServer().end()) {
@@ -50,11 +51,12 @@ void    rtp::RTypeManager::listClient(std::vector<std::string> const&) {
         if ((*iterator)->getIpAddr().length() > maxIp) {
             maxIp = (*iterator)->getIpAddr().length();
         }
+        if ((*iterator)->getStateTranslated().length() > maxState) {
+            maxState = (*iterator)->getStateTranslated().length();
+        }
         ++iterator;
     }
-    std::cout << "MaxID <" << maxId << "> MaxIP <" << maxIp << ">" << std::endl;
-    std::cout << "LeftID : " << (maxId - 2) / 2 << " RightID : " << (maxId - 2) - ((maxId - 2) / 2) << std::endl;
-    tabLine = std::string(7 + maxId + maxIp, '#');
+    tabLine = std::string(10 + maxId + maxIp + maxState, '#');
     say(tabLine, false);
     tabLine = "# ";
     tabLine += std::string((maxId - 2) / 2, ' ');
@@ -64,11 +66,14 @@ void    rtp::RTypeManager::listClient(std::vector<std::string> const&) {
     tabLine += std::string((maxIp - 2) / 2, ' ');
     tabLine += "IP";
     tabLine += std::string((maxIp - 2) - ((maxIp - 2) / 2), ' ');
+    tabLine += " # ";
+    tabLine += std::string((maxState - 5) / 2, ' ');
+    tabLine += "State";
+    tabLine += std::string((maxState - 5) - ((maxState - 5) / 2), ' ');
     tabLine += " #";
     say(tabLine, false);
-    tabLine = std::string(7 + maxId + maxIp, '#');
+    tabLine = std::string(10 + maxId + maxIp + maxState, '#');
     say(tabLine, false);
-
     iterator = _serverRegister->getServer().begin();
     while (iterator != _serverRegister->getServer().end()) {
         tabLine = "# ";
@@ -79,9 +84,13 @@ void    rtp::RTypeManager::listClient(std::vector<std::string> const&) {
         tabLine += std::string((maxIp - (*iterator)->getIpAddr().length()) / 2, ' ');
         tabLine += (*iterator)->getIpAddr();
         tabLine += std::string((maxIp - (*iterator)->getIpAddr().length()) - ((maxIp - (*iterator)->getIpAddr().length()) / 2), ' ');
+        tabLine += " # ";
+        tabLine += std::string((maxState - (*iterator)->getStateTranslated().length()) / 2, ' ');
+        tabLine += (*iterator)->getStateTranslated();
+        tabLine += std::string((maxState - (*iterator)->getStateTranslated().length()) - ((maxState - (*iterator)->getStateTranslated().length()) / 2), ' ');
         tabLine += " #";
         say(tabLine, false);
-        say(std::string(7 + maxId + maxIp, '#'), false);
+        say(std::string(10 + maxId + maxIp + maxState, '#'), false);
         ++iterator;
     }
 }

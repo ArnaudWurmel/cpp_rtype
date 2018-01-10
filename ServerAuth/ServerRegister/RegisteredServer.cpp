@@ -11,7 +11,13 @@ rtp::RegisteredServer::RegisteredServer(std::shared_ptr<NetworkAbstract::ISocket
     _id = rtp::RegisteredServer::_serverId++;
     _port = -1;
     _registrationToken = "";
+    _serverState = ServerState::NotRegistered;
+    _stateServerTranslate.insert(std::make_pair(ServerState::Available, "Available"));
+    _stateServerTranslate.insert(std::make_pair(ServerState::Busy, "Busy"));
+    _stateServerTranslate.insert(std::make_pair(ServerState::Unknown, "Unknown"));
+    _stateServerTranslate.insert(std::make_pair(ServerState::NotRegistered, "Server not registered"));
     _funcPtrList.insert(std::make_pair(Command::REGISTER, std::bind(&rtp::RegisteredServer::registerServer, this, std::placeholders::_1)));
+    _funcPtrList.insert(std::make_pair(Command::PING, std::bind(&rtp::RegisteredServer::pingResult, this, std::placeholders::_1)));
 }
 
 bool    rtp::RegisteredServer::handleNewData() {
@@ -24,6 +30,12 @@ bool    rtp::RegisteredServer::handleNewData() {
             }
         }
     }
+    if (isRegistered()) {
+        NetworkAbstract::Message    pingMessage;
+
+        pingMessage.setType(Command::PING);
+        _socket->write(pingMessage);
+    }
     return true;
 }
 
@@ -33,6 +45,16 @@ unsigned int    rtp::RegisteredServer::getId() const {
 
 bool    rtp::RegisteredServer::isRegistered() const {
     return _port != -1 && _registrationToken.length() > 0;
+}
+
+bool    rtp::RegisteredServer::pingResult(NetworkAbstract::Message const& message) {
+    if (message.getBodySize() == 0) {
+        return false;
+    }
+    std::string body(message.getBody(), message.getBodySize());
+
+    _serverState = getStateFromString(body);
+    return true;
 }
 
 bool    rtp::RegisteredServer::registerServer(NetworkAbstract::Message const& message) {
@@ -70,6 +92,28 @@ std::string rtp::RegisteredServer::generateRandomString(ssize_t len) const {
     return line;
 }
 
+rtp::RegisteredServer::ServerState rtp::RegisteredServer::getState() const {
+    return _serverState;
+}
+
+std::string rtp::RegisteredServer::getStateTranslated() {
+    if (_stateServerTranslate.find(_serverState) != _stateServerTranslate.end()) {
+        return _stateServerTranslate[_serverState];
+    }
+    return "";
+}
+
+rtp::RegisteredServer::ServerState rtp::RegisteredServer::getStateFromString(std::string const& state) const {
+    auto iterator = _stateServerTranslate.begin();
+
+    while (iterator != _stateServerTranslate.end()) {
+        if (!(*iterator).second.compare(state)) {
+            return (*iterator).first;
+        }
+        ++iterator;
+    }
+    return ServerState::Unknown;
+}
 
 rtp::RegisteredServer::~RegisteredServer() {
     _socket->close();
