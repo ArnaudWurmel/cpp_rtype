@@ -25,11 +25,11 @@ int main() {
   starsSprite.setTexture(starsTexture);
   starsSprite.setPosition(0, 0);
 
-  Starfield Stars(screenDimensions.x, screenDimensions.y, 100);
+  Starfield Stars(screenDimensions.x, screenDimensions.y, 300);
   sf::Font font;
-  font.loadFromFile("utils/zorque.ttf");
+  font.loadFromFile("./utils/zorque.ttf");
   sf::Text text;
-  Starfield stars(screenDimensions.x, screenDimensions.y, 100);
+  Starfield stars(screenDimensions.x, screenDimensions.y, 300);
 
   text.setFont(font);
   text.setString("R-TYPE");
@@ -45,7 +45,7 @@ int main() {
 
   sf::Texture button;
   sf::Sprite SButton;
-  button.loadFromFile("utils/Button.png");
+  button.loadFromFile("./utils/Button.png");
   SButton.setTexture(button);
   SButton.setPosition(screenDimensions.x / 2, screenDimensions.y / 2);
   // Game loop

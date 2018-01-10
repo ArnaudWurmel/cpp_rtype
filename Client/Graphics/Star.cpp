@@ -2,7 +2,7 @@
 
 Star::Star() {}
 
-Star::Star(sf::Uint16 const& x, sf::Uint16 const& y, sf::Uint16 const& size) : _x(x), _y(x), _size(size) {
+Star::Star(sf::Uint16 const& x, sf::Uint16 const& y, sf::Uint16 const& size) : _x(x), _y(y), _size(size) {
   _starImg.create(_size, _size, sf::Color::White);
 }
 

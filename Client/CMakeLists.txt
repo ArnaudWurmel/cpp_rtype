@@ -40,4 +40,16 @@ if(WIN32)
 			"$<$<CONFIG:Debug>:${SFML_SYSTEM_DEBUG}>$<$<CONFIG:Release>:${SFML_SYSTEM_RELEASE}>"
 			$<TARGET_FILE_DIR:ClientGame>
 	)
+
+	set (RESOURCES
+		Button.png
+		zorque.ttf
+	)
+	foreach (file_i ${RESOURCES})
+	add_custom_command(
+		TARGET ClientGame POST_BUILD
+	        COMMAND ${CMAKE_COMMAND} -E copy
+        	        Graphics/utils/${file_i}
+               		$<TARGET_FILE_DIR:ClientGame>/utils/${file_i})
+	endforeach()
 endif(WIN32)
