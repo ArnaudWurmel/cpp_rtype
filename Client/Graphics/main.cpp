@@ -29,6 +29,7 @@ int main() {
   sf::Font font;
   font.loadFromFile("utils/zorque.ttf");
   sf::Text text;
+  Starfield stars(screenDimensions.x, screenDimensions.y, 100);
 
   text.setFont(font);
   text.setString("R-TYPE");
@@ -75,8 +76,8 @@ int main() {
     }
 
     starsTexture.loadFromImage(starsImage);
-    Stars.UpdateStar();
-    Stars.DrawStar(starsTexture);
+    stars.updateStar();
+    stars.drawStar(starsTexture);
     window.clear(sf::Color(0, 0, 0));
     window.draw(starsSprite);
     window.draw(text);
