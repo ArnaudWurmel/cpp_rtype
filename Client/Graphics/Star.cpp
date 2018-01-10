@@ -1,31 +1,41 @@
 #include "Star.hpp"
 
-Star::Star(sf::Uint16 x, sf::Uint16 y, sf::Uint16 size) {
-  this->x = x;
-  this->y = y;
-  this->size = size;
-  this->StarImg.create(this->size, this->size, sf::Color::White);
+Star::Star() {}
+
+Star::Star(sf::Uint16 const& x, sf::Uint16 const& y, sf::Uint16 const& size) : _x(x), _y(x), _size(size) {
+  _starImg.create(_size, _size, sf::Color::White);
 }
 
-sf::Uint16 Star::GetX() { return this->x; }
-
-sf::Uint16 Star::GetY() { return this->y; }
-
-sf::Image Star::GetImg() { return this->StarImg; }
-
-sf::Uint16 Star::GetSize() { return this->size; }
-
-void Star::SetX(sf::Uint16 x) {
-  this->x = x;
-  return;
+sf::Uint16 const& Star::getX() const {
+  return _x;
 }
 
-void Star::SetY(sf::Uint16 y) {
-  this->y = y;
-  return;
+sf::Uint16 const& Star::getY() const {
+  return _y;
 }
 
-void Star::MoveY(sf::Uint16 add) {
-  this->y += add;
-  return;
+sf::Image const& Star::getImage() const {
+  return _starImg;
 }
+
+sf::Image&  Star::getImage() {
+  return _starImg;
+}
+
+sf::Uint16 const& Star::getSize() const {
+  return _size;
+}
+
+void Star::setX(sf::Uint16 const& x) {
+  _x = x;
+}
+
+void Star::setY(sf::Uint16 const& y) {
+  _y = y;
+}
+
+void Star::moveY(sf::Uint16 const& add) {
+  _y += add;
+}
+
+Star::~Star() {}

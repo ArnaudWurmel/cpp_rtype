@@ -8,20 +8,22 @@
 
 class Starfield {
 public:
-  Starfield(int xRes, int yRes, int nbStars);
+  Starfield(int xRes, int yRes, unsigned int nbStars);
   ~Starfield(){};
-  void UpdateStar();
-  void DrawStar(sf::Texture &);
+
+public:
+  void updateStar();
+  void drawStar(sf::Texture &) const;
 
 private:
-  std::vector<Star> Stars;
-  int xRes;
-  int yRes;
-  unsigned int nbStars;
-  std::mt19937 rng;
-  std::uniform_int_distribution<int> rsize;
-  std::uniform_int_distribution<int> rx;
-  std::uniform_int_distribution<int> ry;
+  std::vector<Star> _stars;
+  int _xRes;
+  int _yRes;
+  unsigned int _nbStars;
+  std::mt19937 _rng;
+  std::uniform_int_distribution<int> _rsize;
+  std::uniform_int_distribution<int> _rx;
+  std::uniform_int_distribution<int> _ry;
 };
 
 #endif

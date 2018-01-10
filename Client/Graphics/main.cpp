@@ -25,7 +25,7 @@ int main() {
   starsSprite.setTexture(starsTexture);
   starsSprite.setPosition(0, 0);
 
-  Starfield Stars(screenDimensions.x, screenDimensions.y, 100);
+  Starfield stars(screenDimensions.x, screenDimensions.y, 100);
 
   // Game loop
   while (window.isOpen()) {
@@ -52,8 +52,8 @@ int main() {
     }
 
     starsTexture.loadFromImage(starsImage);
-    Stars.UpdateStar();
-    Stars.DrawStar(starsTexture);
+    stars.updateStar();
+    stars.drawStar(starsTexture);
     window.clear(sf::Color(0, 0, 0));
     window.draw(starsSprite);
     window.display();
