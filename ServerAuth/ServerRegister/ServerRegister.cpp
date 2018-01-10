@@ -7,11 +7,7 @@
 #include "../NetworkAbstract/IAcceptor.hh"
 #include "../NetworkAbstract/BoostAcceptor.hh"
 
-rtp::ServerRegister::ServerRegister(unsigned short port) {
-    _threadRunning = true;
-    _acceptor = std::unique_ptr<NetworkAbstract::IAcceptor>(new NetworkAbstract::BoostAcceptor( port, _clientNotifier));
-    _thread = std::unique_ptr<std::thread>(new std::thread(&rtp::ServerRegister::serverLooping, this));
-}
+rtp::ServerRegister::ServerRegister(unsigned short port) : BaseServer(port) {}
 
 void    rtp::ServerRegister::serverLooping() {
     try {
@@ -42,23 +38,8 @@ void    rtp::ServerRegister::serverLooping() {
     }
 }
 
-bool    rtp::ServerRegister::isRunning() const {
-    return _threadRunning && _acceptor->isRunning();
-}
-
-void    rtp::ServerRegister::stop() {
-    if (_threadRunning) {
-        _threadRunning = false;
-        _clientNotifier.notify_one();
-        _thread->join();
-        _thread.reset();
-    }
-}
-
 std::vector<std::shared_ptr<rtp::RegisteredServer> > const& rtp::ServerRegister::getServer() const {
     return _serverList;
 }
 
-rtp::ServerRegister::~ServerRegister() {
-    stop();
-}
+rtp::ServerRegister::~ServerRegister() = default;

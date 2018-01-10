@@ -33,7 +33,6 @@ namespace NetworkAbstract {
         void    handleReadBody(const boost::system::error_code& error);
         void    handleWrite(boost::system::error_code const&);
 
-
     private:
         boost::asio::ip::tcp::socket    _socket;
         Message _readM;

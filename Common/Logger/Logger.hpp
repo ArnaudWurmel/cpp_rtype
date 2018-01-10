@@ -16,6 +16,8 @@ namespace rtp {
     class RTypeManager;
     class RegisteredServer;
     class GameServer;
+    class ClientRegister;
+    class RegisteredClient;
 
     template<typename T>
     class Logger {
@@ -69,6 +71,16 @@ namespace rtp {
         template<typename U = T>
         const char   *name(typename std::enable_if<std::is_same<U, GameServer>::value>::type* = 0) {
             return "GameServer";
+        }
+
+        template<typename U = T>
+        const char   *name(typename std::enable_if<std::is_same<U, ClientRegister>::value>::type* = 0) {
+            return "ClientRegister";
+        }
+
+        template<typename U = T>
+        const char   *name(typename std::enable_if<std::is_same<U, RegisteredClient>::value>::type* = 0) {
+            return "RegisteredClient";
         }
     };
 }
