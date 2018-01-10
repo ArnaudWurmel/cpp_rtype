@@ -39,54 +39,49 @@ bool rtp::RTypeManager::loop() {
 
 void    rtp::RTypeManager::listClient(std::vector<std::string> const&) {
     auto iterator = _serverRegister->getServer().begin();
-    int maxId = 4;
-    int maxIp = 4;
+    int maxId = 2;
+    int maxIp = 2;
     std::string tabLine;
 
     while (iterator != _serverRegister->getServer().end()) {
-        if (std::to_string((*iterator)->getId()).length() + std::to_string((*iterator)->getId()).length() % 2 > maxId) {
-            maxId = std::to_string((*iterator)->getId()).length() + std::to_string((*iterator)->getId()).length() % 2;
+        if (std::to_string((*iterator)->getId()).length() > maxId) {
+            maxId = std::to_string((*iterator)->getId()).length();
         }
-        if ((*iterator)->getIpAddr().length() + (*iterator)->getIpAddr().length() % 2 > maxIp) {
-            maxIp = (*iterator)->getIpAddr().length() + (*iterator)->getIpAddr().length() % 2;
+        if ((*iterator)->getIpAddr().length() > maxIp) {
+            maxIp = (*iterator)->getIpAddr().length();
         }
         ++iterator;
     }
-    for (int i = 0; i < maxId + maxIp + 3; i++) {
-        tabLine += "#";
-    }
+    std::cout << "MaxID <" << maxId << "> MaxIP <" << maxIp << ">" << std::endl;
+    std::cout << "LeftID : " << (maxId - 2) / 2 << " RightID : " << (maxId - 2) - ((maxId - 2) / 2) << std::endl;
+    tabLine = std::string(7 + maxId + maxIp, '#');
     say(tabLine, false);
     tabLine = "# ";
-    for (int i = 0; i < (maxId - 4) / 2; i++) {
-        tabLine += " ";
-    }
+    tabLine += std::string((maxId - 2) / 2, ' ');
     tabLine += "ID";
-    for (int i = 0; i < (maxId - 4) / 2; i++) {
-        tabLine += " ";
-    }
+    tabLine += std::string((maxId - 2) - ((maxId - 2) / 2), ' ');
     tabLine += " # ";
-    for (int i = 0; i < (maxIp - 4) / 2; i++) {
-        tabLine += " ";
-    }
+    tabLine += std::string((maxIp - 2) / 2, ' ');
     tabLine += "IP";
-    for (int i = 0; i < (maxIp - 4) / 2; i++) {
-        tabLine += " ";
-    }
-    say(tabLine + " #", false);
-    tabLine = "";
-    for (int i = 0; i < maxId + maxIp + 3; i++) {
-        tabLine += "#";
-    }
+    tabLine += std::string((maxIp - 2) - ((maxIp - 2) / 2), ' ');
+    tabLine += " #";
     say(tabLine, false);
+    tabLine = std::string(7 + maxId + maxIp, '#');
+    say(tabLine, false);
+
     iterator = _serverRegister->getServer().begin();
     while (iterator != _serverRegister->getServer().end()) {
-        tabLine = "# " + std::to_string((*iterator)->getId()) + " # " + (*iterator)->getIpAddr() + " #";
+        tabLine = "# ";
+        tabLine += std::string((maxId - std::to_string((*iterator)->getId()).length()) / 2, ' ');
+        tabLine += std::to_string((*iterator)->getId());
+        tabLine += std::string((maxId - std::to_string((*iterator)->getId()).length()) - ((maxId - std::to_string((*iterator)->getId()).length()) / 2), ' ');
+        tabLine += " # ";
+        tabLine += std::string((maxIp - (*iterator)->getIpAddr().length()) / 2, ' ');
+        tabLine += (*iterator)->getIpAddr();
+        tabLine += std::string((maxIp - (*iterator)->getIpAddr().length()) - ((maxIp - (*iterator)->getIpAddr().length()) / 2), ' ');
+        tabLine += " #";
         say(tabLine, false);
-        tabLine = "";
-        for (int i = 0; i < maxId + maxIp + 3; i++) {
-            tabLine += "#";
-        }
-        say(tabLine, false);
+        say(std::string(7 + maxId + maxIp, '#'), false);
         ++iterator;
     }
 }
