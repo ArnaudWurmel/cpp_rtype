@@ -11,6 +11,14 @@ add_executable(
 
 	Graphics/Star.hpp
 	Graphics/StarField.hpp
+	dependencies/imgui/imgui-SFML.cpp
+        dependencies/imgui/imgui.cpp
+        dependencies/imgui/imgui_draw.cpp
+        dependencies/imgui/imgui_demo.cpp
+)
+
+include_directories(
+        ./dependencies/imgui/
 )
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
@@ -19,6 +27,12 @@ if(SFML_FOUND)
 	include_directories(${SFML_INCLUDE_DIR})
 	target_link_libraries(ClientGame ${SFML_LIBRARIES} ${SFML_DEPENDENCIES})
 endif(SFML_FOUND)
+
+find_package(OpenGL REQUIRED)
+find_package(GLUT REQUIRED)
+include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} )
+
+target_link_libraries(ClientGame ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ClientGame)
 

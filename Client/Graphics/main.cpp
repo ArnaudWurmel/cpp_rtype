@@ -1,13 +1,17 @@
 
-#include "StarField.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "StarField.hpp"
+#include "imgui.h"
+#include "imgui-SFML.h"
 
 int main() {
 
   sf::Vector2u screenDimensions(1024, 720);
   sf::RenderWindow window(
       sf::VideoMode(screenDimensions.x, screenDimensions.y, 32), "R-TYPE");
+  ImGui::SFML::Init(window);
+  sf::Clock deltaClock;
 
   window.setSize(screenDimensions);
   window.setFramerateLimit(60);
@@ -53,6 +57,7 @@ int main() {
     sf::Event event;
 
     while (window.pollEvent(event)) {
+      ImGui::SFML::ProcessEvent(event);
       switch (event.type) {
       case sf::Event::MouseButtonPressed:
         if (event.mouseButton.button == sf::Mouse::Left)
@@ -74,7 +79,19 @@ int main() {
         break;
       }
     }
+    ImGui::SFML::Update(window, deltaClock.restart());
+    ImGui::Begin("Sample window"); // begin window
+    ImGui::InputText("Window title", "R-TYPE", 6);
 
+    if (ImGui::Button("Update window title")) {
+      // this code gets if user clicks on the button
+      // yes, you could have written if(ImGui::InputText(...))
+      // but I do this to show how buttons work :)
+      window.setTitle("Ahahah");
+    }
+    // Window title text edit
+    ImGui::InputText("Window title", "R-TYPE", 6);
+    ImGui::End();
     starsTexture.loadFromImage(starsImage);
     stars.updateStar();
     stars.drawStar(starsTexture);
@@ -82,8 +99,9 @@ int main() {
     window.draw(starsSprite);
     window.draw(text);
     window.draw(SButton);
+    ImGui::Render();
     window.display();
   }
-
+  ImGui::SFML::Shutdown();
   return 0;
 }
