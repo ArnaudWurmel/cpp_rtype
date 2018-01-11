@@ -57,6 +57,7 @@ bool    rtp::DataGetter::connectToHost(std::string const &host) {
         }
         port = std::stoi(portStr);
         ip = ip.substr(0, ip.find(":"));
+        std::cout << ip << ":" << port << std::endl;
     }
     return _controlSocket->connectSocket(ip, port);
 }
