@@ -25,11 +25,10 @@ int main() {
   starsSprite.setTexture(starsTexture);
   starsSprite.setPosition(0, 0);
 
-  Starfield Stars(screenDimensions.x, screenDimensions.y, 300);
   sf::Font font;
   font.loadFromFile("./utils/zorque.ttf");
   sf::Text text;
-  Starfield stars(screenDimensions.x, screenDimensions.y, 300);
+  Starfield stars(screenDimensions.x, screenDimensions.y, 100);
 
   text.setFont(font);
   text.setString("R-TYPE");
