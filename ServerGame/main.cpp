@@ -4,7 +4,7 @@
 #include "GameServer/GameServer.hh"
 
 static bool runGameServer(rtp::ArgumentLoader const& argumentLoader, std::shared_ptr<rtp::GameServer>& gameServer) {
-    unsigned short  serverPort = 8888;
+    unsigned short  serverPort = 9999;
     unsigned short  authPort = 8080;
     std::string authHost = "";
 

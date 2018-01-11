@@ -11,42 +11,31 @@
 # include "../Logger/Logger.hpp"
 # include "../ArgumentLoader/ArgumentLoader.hh"
 # include "RegisteredServer.hh"
-#include "../NetworkAbstract/IAcceptor.hh"
+# include "../NetworkAbstract/IAcceptor.hh"
+# include "../BaseServer/BaseServer.hh"
+# include "IServerRegister.hh"
 
 namespace rtp {
-    class ServerRegister : private Logger<ServerRegister> {
+    class ServerRegister : public BaseServer, private Logger<ServerRegister>, public IServerRegister {
 
     public:
         explicit ServerRegister(unsigned short port = 8080);
         ~ServerRegister() override;
 
     public:
-        bool    isRunning() const;
-        void    stop();
-
-    public:
-        std::vector<std::shared_ptr<RegisteredServer> > const& getServer() const;
+        std::vector<std::shared_ptr<RegisteredServer> > const& getServer() const override;
+        void    lockData() override;
+        void    unlockData() override;
 
     private:
-        void    serverLooping();
+        void    serverLooping() override;
 
         ///////////////
         // Server's Management
         //
     private:
+        std::mutex  _dataSafer;
         std::vector<std::shared_ptr<RegisteredServer> > _serverList;
-
-        ///////////////
-        //  NetworkManagement
-        //
-    private:
-        std::unique_ptr<NetworkAbstract::IAcceptor> _acceptor;
-        std::unique_ptr<std::thread>    _thread;
-
-    private:
-        bool    _threadRunning;
-        std::mutex  _mClient;
-        std::condition_variable _clientNotifier;
     };
 }
 

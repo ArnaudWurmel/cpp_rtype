@@ -7,11 +7,7 @@
 #include "../NetworkAbstract/IAcceptor.hh"
 #include "../NetworkAbstract/BoostAcceptor.hh"
 
-rtp::ServerRegister::ServerRegister(unsigned short port) {
-    _threadRunning = true;
-    _acceptor = std::unique_ptr<NetworkAbstract::IAcceptor>(new NetworkAbstract::BoostAcceptor( port, _clientNotifier));
-    _thread = std::unique_ptr<std::thread>(new std::thread(&rtp::ServerRegister::serverLooping, this));
-}
+rtp::ServerRegister::ServerRegister(unsigned short port) : BaseServer(port) {}
 
 void    rtp::ServerRegister::serverLooping() {
     try {
@@ -26,8 +22,11 @@ void    rtp::ServerRegister::serverLooping() {
         while (_acceptor->haveAwaitingClient()) {
             std::shared_ptr<RegisteredServer>   server(new RegisteredServer(_acceptor->acceptClient()));
 
+            lockData();
             _serverList.push_back(server);
+            unlockData();
         }
+        lockData();
         auto iterator = _serverList.begin();
 
         while (iterator != _serverList.end()) {
@@ -39,26 +38,20 @@ void    rtp::ServerRegister::serverLooping() {
                 ++iterator;
             }
         }
+        unlockData();
     }
 }
 
-bool    rtp::ServerRegister::isRunning() const {
-    return _threadRunning && _acceptor->isRunning();
+void    rtp::ServerRegister::lockData() {
+    _dataSafer.lock();
 }
 
-void    rtp::ServerRegister::stop() {
-    if (_threadRunning) {
-        _threadRunning = false;
-        _clientNotifier.notify_one();
-        _thread->join();
-        _thread.reset();
-    }
+void    rtp::ServerRegister::unlockData() {
+    _dataSafer.unlock();
 }
 
 std::vector<std::shared_ptr<rtp::RegisteredServer> > const& rtp::ServerRegister::getServer() const {
     return _serverList;
 }
 
-rtp::ServerRegister::~ServerRegister() {
-    stop();
-}
+rtp::ServerRegister::~ServerRegister() = default;

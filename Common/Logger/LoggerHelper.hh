@@ -19,8 +19,6 @@ namespace rtp {
     private:
         static bool _debugEnabled;
         static std::mutex   _outputLocker;
-
-    public:
     };
 }
 

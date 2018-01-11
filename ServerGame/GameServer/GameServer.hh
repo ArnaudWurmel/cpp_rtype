@@ -22,8 +22,17 @@ namespace rtp {
     public:
         enum Command {
             REGISTER = 0,
-            PING = 1
+            PING = 1,
+            RESERVED = 2
         };
+
+        enum    ServerState {
+            Available = 0,
+            Busy = 1,
+            Unknown = 2,
+            NotRegistered = 3
+        };
+
 
     public:
         GameServer(unsigned short);
@@ -49,6 +58,7 @@ namespace rtp {
         //
     private:
         bool    handlePing(NetworkAbstract::Message const&);
+        bool    handleReserved(NetworkAbstract::Message const&);
 
     private:
         std::condition_variable _inputAvailable;
@@ -60,6 +70,8 @@ namespace rtp {
         unsigned short  _port;
         std::string _authToken;
         std::map<Command, Callback> _callbackPtrs;
+        std::map<ServerState, std::string> _stateTranslator;
+        ServerState _serverState;
     };
 }
 

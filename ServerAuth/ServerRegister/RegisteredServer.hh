@@ -20,7 +20,8 @@ namespace rtp {
     public:
         enum Command {
             REGISTER = 0,
-            PING = 1
+            PING = 1,
+            RESERVED = 2
         };
 
         enum    ServerState {
@@ -39,9 +40,11 @@ namespace rtp {
 
     public:
         unsigned int    getId() const;
+        int  getPort() const;
         bool    isRegistered() const;
         ServerState getState() const;
         std::string getStateTranslated();
+        std::string const&  getRegistrationToken() const;
 
     private:
         bool    registerServer(NetworkAbstract::Message const&);

@@ -6,13 +6,15 @@
 #include <iostream>
 #include "RTypeManager.hh"
 
-rtp::RTypeManager::RTypeManager(std::shared_ptr<ServerRegister>& serverRegister) {
+rtp::RTypeManager::RTypeManager(std::shared_ptr<ServerRegister>& serverRegister, std::shared_ptr<ClientRegister>& clientRegister) {
     _serverRegister = serverRegister;
+    _clientRegister = clientRegister;
     _continue = true;
     _functionPtr.insert(std::make_pair("ls", std::bind(&rtp::RTypeManager::listClient, this, std::placeholders::_1)));
     _functionPtr.insert(std::make_pair("exit", std::bind(&rtp::RTypeManager::exitServer, this, std::placeholders::_1)));
     _functionPtr.insert(std::make_pair("help", std::bind(&rtp::RTypeManager::help, this, std::placeholders::_1)));
     _functionPtr.insert(std::make_pair("debug", std::bind(&rtp::RTypeManager::debug, this, std::placeholders::_1)));
+    _functionPtr.insert(std::make_pair("disconnectServer", std::bind(&rtp::RTypeManager::disconnectServer, this, std::placeholders::_1)));
 }
 
 bool rtp::RTypeManager::loop() {
@@ -20,7 +22,7 @@ bool rtp::RTypeManager::loop() {
 
     std::cout << "> ";
     while (_continue && std::getline(std::cin, line)) {
-        if (!_serverRegister->isRunning()) {
+        if (!_serverRegister->isRunning() || !_clientRegister->isRunning()) {
             return false;
         }
         std::vector<std::string>    tokenList = getTokenFrom(line);
@@ -34,6 +36,7 @@ bool rtp::RTypeManager::loop() {
             std::cout << "> ";
     }
     _serverRegister->stop();
+    _clientRegister->stop();
     return true;
 }
 
@@ -120,6 +123,29 @@ void    rtp::RTypeManager::debug(std::vector<std::string> const&) {
     }
     else {
         say("Debug now disabled", false);
+    }
+}
+
+void    rtp::RTypeManager::disconnectServer(std::vector<std::string> const& args) {
+    if (args.size() < 2) {
+        say("Missing serverId argument", false);
+        return ;
+    }
+    auto iterator   = args.begin() + 1;
+
+    while (iterator != args.end()) {
+        int serverId = std::stoi(*iterator);
+        auto    iteratorServer = _serverRegister->getServer().begin();
+
+        while (iteratorServer != _serverRegister->getServer().end()) {
+            if ((*iteratorServer)->getId() == serverId) {
+                (*iteratorServer)->close();
+            }
+            else {
+                ++iteratorServer;
+            }
+        }
+        ++iterator;
     }
 }
 

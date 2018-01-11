@@ -9,12 +9,13 @@
 # include <functional>
 # include <unordered_map>
 # include "../ServerRegister/ServerRegister.hh"
+# include "../ClientRegister/ClientRegister.hh"
 # include "../Logger/Logger.hpp"
 
 namespace rtp {
     class RTypeManager : private Logger<RTypeManager> {
     public:
-        RTypeManager(std::shared_ptr<ServerRegister>&);
+        RTypeManager(std::shared_ptr<ServerRegister>&, std::shared_ptr<ClientRegister>&);
         ~RTypeManager();
 
     public:
@@ -25,6 +26,7 @@ namespace rtp {
         void    exitServer(std::vector<std::string> const&);
         void    help(std::vector<std::string> const&);
         void    debug(std::vector<std::string> const&);
+        void    disconnectServer(std::vector<std::string> const&);
 
     private:
         std::vector<std::string>    getTokenFrom(std::string const&);
@@ -32,6 +34,7 @@ namespace rtp {
     private:
         bool    _continue;
         std::shared_ptr<ServerRegister> _serverRegister;
+        std::shared_ptr<ClientRegister> _clientRegister;
         std::unordered_map<std::string, std::function<void (std::vector<std::string> const&)> >    _functionPtr;
     };
 }

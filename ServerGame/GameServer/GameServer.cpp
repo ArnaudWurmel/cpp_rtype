@@ -7,8 +7,15 @@
 #include "../NetworkAbstract/BoostAcceptor.hh"
 
 rtp::GameServer::GameServer(unsigned short port) : _port(port) {
+    _serverState = NotRegistered;
     _callbackPtrs.insert(std::make_pair(Command::REGISTER, &rtp::GameServer::handleRegistering));
     _callbackPtrs.insert(std::make_pair(Command::PING, &rtp::GameServer::handlePing));
+    _callbackPtrs.insert(std::make_pair(Command::RESERVED, &rtp::GameServer::handleReserved));
+
+    _stateTranslator.insert(std::make_pair(ServerState::Available, "Available"));
+    _stateTranslator.insert(std::make_pair(ServerState::Busy, "Busy"));
+    _stateTranslator.insert(std::make_pair(ServerState::NotRegistered, "Not registered"));
+    _stateTranslator.insert(std::make_pair(ServerState::Unknown, "Unknown"));
 }
 
 bool    rtp::GameServer::connectToAuthServer(std::string const& authHost, unsigned short authPort) {
@@ -75,7 +82,24 @@ bool    rtp::GameServer::handleRegistering(NetworkAbstract::Message const& messa
     if (message.getBodySize() != TOKEN_SIZE) {
         return false;
     }
+    _serverState = Available;
     _authToken = std::string(message.getBody(), message.getBodySize());
+    return true;
+}
+
+bool    rtp::GameServer::handleReserved(NetworkAbstract::Message const& message) {
+    NetworkAbstract::Message    response;
+
+    response.setType(RESERVED);
+    if (_serverState == Available) {
+        _serverState = Busy;
+
+        response.setBody("success", 7);
+    }
+    else {
+        response.setBody("failure", 7);
+    }
+    _controlSocket->write(message);
     return true;
 }
 
@@ -83,7 +107,8 @@ bool    rtp::GameServer::handlePing(NetworkAbstract::Message const& message) {
     NetworkAbstract::Message    response;
 
     response.setType(Command::PING);
-    response.setBody(std::string("Available").c_str(), std::string("Available").length());
+
+    response.setBody(_stateTranslator[_serverState].c_str(), _stateTranslator[_serverState].length());
     _controlSocket->write(response);
     return true;
 }
