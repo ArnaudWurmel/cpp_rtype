@@ -8,9 +8,11 @@ add_executable(
 	Graphics/main.cpp
 	Graphics/Star.cpp
 	Graphics/StarField.cpp
-
+	Graphics/MainView.cpp
+	
 	Graphics/Star.hpp
 	Graphics/StarField.hpp
+	Graphics/MainView.hpp
 	dependency/imgui/imgui-SFML.cpp
         dependency/imgui/imgui.cpp
         dependency/imgui/imgui_draw.cpp

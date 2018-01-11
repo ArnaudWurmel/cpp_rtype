@@ -8,6 +8,7 @@
 
 class Starfield {
 public:
+  Starfield(){};
   Starfield(int xRes, int yRes, unsigned int nbStars);
   ~Starfield(){};
 
