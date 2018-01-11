@@ -43,7 +43,6 @@ namespace NetworkAbstract {
         std::unique_ptr<std::thread> _threadRunner;
 
     private:
-        std::mutex  _haveAction;
         std::condition_variable&    _notifier;
     };
 }

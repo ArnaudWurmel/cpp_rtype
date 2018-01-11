@@ -20,6 +20,7 @@ namespace rtp {
 
     public:
         unsigned int    getId() const;
+        bool    isOpen() const;
         bool    addPlayer(std::shared_ptr<RegisteredClient>&);
         bool    removePlayer(std::shared_ptr<RegisteredClient>&);
         bool    isPlayerIn(std::shared_ptr<RegisteredClient>&);
@@ -32,6 +33,7 @@ namespace rtp {
         unsigned int    _ownerId;
         unsigned int    _id;
         std::vector<std::shared_ptr<RegisteredClient> > _playerList;
+        bool    _isOpen;
 
     private:
         std::unique_ptr<std::thread>    _matchmakingFinder;

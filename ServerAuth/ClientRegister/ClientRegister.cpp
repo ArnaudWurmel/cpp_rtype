@@ -35,6 +35,16 @@ void    rtp::ClientRegister::serverLooping() {
                 ++iterator;
             }
         }
+        auto iteratorRoom = _roomList.begin();
+
+        while (iteratorRoom != _roomList.end()) {
+            if (!(*iteratorRoom)->isOpen()) {
+                _roomList.erase(iteratorRoom);
+            }
+            else {
+                ++iteratorRoom;
+            }
+        }
     }
 }
 

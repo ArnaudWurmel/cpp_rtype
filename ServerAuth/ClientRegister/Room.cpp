@@ -9,6 +9,7 @@ unsigned int    rtp::Room::_roomId = 0;
 rtp::Room::Room(unsigned int ownerId, std::shared_ptr<rtp::IServerRegister>& iServerRegister) : _iServerRegister(iServerRegister) {
     _id = rtp::Room::_roomId++;
     _ownerId = ownerId;
+    _isOpen = true;
 }
 
 unsigned int    rtp::Room::getId() const {
@@ -31,6 +32,10 @@ bool    rtp::Room::addPlayer(std::shared_ptr<RegisteredClient>& player) {
     return true;
 }
 
+bool    rtp::Room::isOpen() const {
+    return _isOpen;
+}
+
 bool    rtp::Room::removePlayer(std::shared_ptr<RegisteredClient>& player) {
     std::unique_lock<std::mutex>    lck(_locker);
 
@@ -48,6 +53,9 @@ bool    rtp::Room::removePlayer(std::shared_ptr<RegisteredClient>& player) {
 
         newOwnerMessage.setType(RegisteredClient::Command::NewOwner);
         (*newOwner)->write(newOwnerMessage);
+    }
+    else {
+        _isOpen = false;
     }
     return true;
 }
