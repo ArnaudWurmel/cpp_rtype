@@ -11,14 +11,14 @@ add_executable(
 
 	Graphics/Star.hpp
 	Graphics/StarField.hpp
-	dependencies/imgui/imgui-SFML.cpp
-        dependencies/imgui/imgui.cpp
-        dependencies/imgui/imgui_draw.cpp
-        dependencies/imgui/imgui_demo.cpp
+	dependency/imgui/imgui-SFML.cpp
+        dependency/imgui/imgui.cpp
+        dependency/imgui/imgui_draw.cpp
+        dependency/imgui/imgui_demo.cpp
 )
 
 include_directories(
-        ./dependencies/imgui/
+        ./dependency/imgui/
 )
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})

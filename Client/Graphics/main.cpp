@@ -1,9 +1,9 @@
 
+#include "StarField.hpp"
+#include "imgui-SFML.h"
+#include "imgui.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "StarField.hpp"
-#include "imgui.h"
-#include "imgui-SFML.h"
 
 int main() {
 
@@ -30,7 +30,7 @@ int main() {
   starsSprite.setPosition(0, 0);
 
   sf::Font font;
-  font.loadFromFile("./utils/zorque.ttf");
+  font.loadFromFile("./Graphics/utils/zorque.ttf");
   sf::Text text;
   Starfield stars(screenDimensions.x, screenDimensions.y, 100);
 
@@ -46,22 +46,13 @@ int main() {
   text.setPosition(
       sf::Vector2f(screenDimensions.x / 2.0f, screenDimensions.y / 2.0f - 200));
 
-  sf::Texture button;
-  sf::Sprite SButton;
-  button.loadFromFile("./utils/Button.png");
-  SButton.setTexture(button);
-  SButton.setPosition(screenDimensions.x / 2, screenDimensions.y / 2);
-  // Game loop
+  char Name[255] = "Player1";
   while (window.isOpen()) {
     sf::Event event;
 
     while (window.pollEvent(event)) {
       ImGui::SFML::ProcessEvent(event);
       switch (event.type) {
-      case sf::Event::MouseButtonPressed:
-        if (event.mouseButton.button == sf::Mouse::Left)
-          std::cout << "DROIT" << '\n';
-        break;
       case sf::Event::Closed:
         window.close();
         break;
@@ -79,17 +70,17 @@ int main() {
       }
     }
     ImGui::SFML::Update(window, deltaClock.restart());
-    ImGui::Begin("Sample window"); // begin window
-    ImGui::InputText("Window title", "R-TYPE", 6);
-
-    if (ImGui::Button("Update window title")) {
+    ImGui::Begin("Menu"); // begin window
+    ImGui::InputText("Name", Name, 255);
+    if (ImGui::Button("Enter your name")) {
       // this code gets if user clicks on the button
       // yes, you could have written if(ImGui::InputText(...))
       // but I do this to show how buttons work :)
-      window.setTitle("Ahahah");
+    }
+    if (ImGui::Button("Exit Game")) {
+      window.close();
     }
     // Window title text edit
-    ImGui::InputText("Window title", "R-TYPE", 6);
     ImGui::End();
     starsTexture.loadFromImage(starsImage);
     stars.updateStar();
@@ -97,8 +88,7 @@ int main() {
     window.clear(sf::Color(0, 0, 0));
     window.draw(starsSprite);
     window.draw(text);
-    window.draw(SButton);
-    ImGui::Render();
+    ImGui::SFML::Render(window);
     window.display();
   }
   ImGui::SFML::Shutdown();
