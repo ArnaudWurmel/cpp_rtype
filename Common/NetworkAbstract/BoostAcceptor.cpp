@@ -15,6 +15,8 @@ NetworkAbstract::BoostAcceptor::BoostAcceptor(unsigned short port,
     startAccept();
 }
 
+NetworkAbstract::BoostAcceptor::BoostAcceptor(std::condition_variable &notifier) : _acceptor(_ioService), _notifier(notifier) {}
+
 bool    NetworkAbstract::BoostAcceptor::startAccept() {
     std::shared_ptr<BoostSocket>    new_session(new BoostSocket(_ioService, _notifier));
 

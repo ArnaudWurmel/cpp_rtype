@@ -9,6 +9,7 @@ unsigned int rtp::RegisteredClient::_clientId = 0;
 
 rtp::RegisteredClient::RegisteredClient(std::shared_ptr<NetworkAbstract::ISocket> socket, rtp::ClientRegister& clientRegister) : SocketReceiver(socket), _delegate(clientRegister) {
     _id = rtp::RegisteredClient::_clientId++;
+    _pseudo = "Player #" + std::to_string(_id);
     _commandCallback.insert(std::make_pair(Command::CreateRoom, std::bind(&rtp::RegisteredClient::createRoom, this, std::placeholders::_1)));
     _commandCallback.insert(std::make_pair(Command::LeaveRoom, std::bind(&rtp::RegisteredClient::leaveRoom, this, std::placeholders::_1)));
     _commandCallback.insert(std::make_pair(Command::RoomList, std::bind(&rtp::RegisteredClient::roomList, this, std::placeholders::_1)));
@@ -98,6 +99,16 @@ bool    rtp::RegisteredClient::stopMatchmacking(NetworkAbstract::Message const &
     return _delegate.playerStopMatchmaking(shared_from_this());
 }
 
-rtp::RegisteredClient::~RegisteredClient() {
-
+bool    rtp::RegisteredClient::setPseudo(NetworkAbstract::Message const& message) {
+    if (message.getBodySize() == 0) {
+        return false;
+    }
+    _pseudo = std::string(message.getBody(), message.getBodySize());
+    return true;
 }
+
+std::string const&  rtp::RegisteredClient::getPseudo() const {
+    return _pseudo;
+}
+
+rtp::RegisteredClient::~RegisteredClient() {}

@@ -26,7 +26,8 @@ namespace rtp {
             StartMatchmaking = 4,
             StopMatchmaking = 5,
             ServerFound = 6,
-            NewOwner = 7
+            NewOwner = 7,
+            SetPseudo = 8
         };
 
     public:
@@ -43,9 +44,11 @@ namespace rtp {
         bool    joinRoom(NetworkAbstract::Message const&);
         bool    startMatchmacking(NetworkAbstract::Message const&);
         bool    stopMatchmacking(NetworkAbstract::Message const&);
+        bool    setPseudo(NetworkAbstract::Message const&);
 
     public:
         unsigned int    getId() const;
+        std::string const&  getPseudo() const;
 
     private:
         std::shared_ptr<NetworkAbstract::ISocket>   _controlSocket;
@@ -54,6 +57,7 @@ namespace rtp {
 
     private:
         unsigned int    _id;
+        std::string     _pseudo;
 
     private:
         static unsigned int _clientId;

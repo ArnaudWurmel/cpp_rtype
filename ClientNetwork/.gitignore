@@ -1,9 +1,0 @@
-.idea/
-build/
-cmake-build-debug/
-CMakeFiles/
-CMakeCache.txt
-cmake_install.cmake
-ClientNetwork.cbp
-ClientNetwork
-Makefile

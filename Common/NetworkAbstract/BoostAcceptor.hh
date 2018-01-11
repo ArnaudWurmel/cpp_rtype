@@ -18,6 +18,7 @@ namespace NetworkAbstract {
     class BoostAcceptor : public IAcceptor {
     public:
         BoostAcceptor(unsigned short port, std::condition_variable&);
+        BoostAcceptor(std::condition_variable&);
         ~BoostAcceptor() override;
 
     public:
