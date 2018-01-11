@@ -9,7 +9,23 @@
 rtp::RootViewController::RootViewController() : _window(sf::VideoMode(1920, 1080, 32), "R-TYPE") {
     _window.setFramerateLimit(60);
     ImGui::SFML::Init(_window);
-    _stackView.push(std::unique_ptr<AViewController>(new LoginViewController(*this)));
+    _stackView.push(std::shared_ptr<AViewController>(new LoginViewController(*this)));
+    _starsImage.create(_window.getSize().x, _window.getSize().y, sf::Color::Black);
+    _starsTexture.loadFromImage(_starsImage);
+    _starsTexture.setSmooth(false);
+    _starsSprite.setTexture(_starsTexture);
+    _starsSprite.setPosition(0, 0);
+    _font.loadFromFile("./ressources/zorque.ttf");
+    _text.setFont(_font);
+    _text.setString("R-TYPE");
+    _text.setCharacterSize(84);
+    _text.setColor(sf::Color::White);
+    _text.setStyle(sf::Text::Bold);
+    sf::FloatRect t = _text.getLocalBounds();
+    _text.setOrigin(t.left + t.width / 2.0f, t.top + t.height / 2.0f);
+    _text.setPosition(_window.getSize().x / 2.0f, _window.getSize().y / 2.0f - 200);
+    Starfield s(_window.getSize().x, _window.getSize().y, 100);
+    _stars = s;
 }
 
 
@@ -30,7 +46,12 @@ void    rtp::RootViewController::loop() {
         if (!_stackView.top()->render()) {
             _stackView.pop();
         }
+        _starsTexture.loadFromImage(_starsImage);
+        _stars.updateStar();
+        _stars.drawStar(_starsTexture);
         _window.clear(sf::Color::Black);
+        _window.draw(_starsSprite);
+        _window.draw(_text);
         ImGui::SFML::Render(_window);
         _window.display();
     }
@@ -38,6 +59,10 @@ void    rtp::RootViewController::loop() {
 
 rtp::DataGetter&    rtp::RootViewController::getDataGetter() {
     return _dataGetter;
+}
+
+void    rtp::RootViewController::instanciate(std::shared_ptr<AViewController>& viewController) {
+    _stackView.push(viewController);
 }
 
 rtp::RootViewController::~RootViewController() {

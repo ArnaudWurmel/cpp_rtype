@@ -8,7 +8,7 @@
 
 rtp::DataGetter::DataGetter() {
     _acceptor = std::make_unique<NetworkAbstract::BoostAcceptor>(_awaker);
-    _acceptor->run();
+    _controlSocket = _acceptor->getEmptySocket(_awaker);
 }
 
 bool    rtp::DataGetter::executeCommand(NetworkAbstract::Message const& command, Callback callback) {
@@ -20,7 +20,7 @@ bool    rtp::DataGetter::executeCommand(NetworkAbstract::Message const& command,
 
         _awaker.wait_for(lck, std::chrono::milliseconds(200));
         if (_controlSocket->haveAvailableData()) {
-            while (_controlSocket->haveAvailableData()) {
+            while (_controlSocket->isOpen() && _controlSocket->haveAvailableData()) {
                 NetworkAbstract::Message    message = _controlSocket->getAvailableMessage();
 
                 if (message.getType() == command.getType()) {
@@ -47,7 +47,6 @@ bool    rtp::DataGetter::setPseudo(std::string const& pseudo) {
 bool    rtp::DataGetter::connectToHost(std::string const &host) {
     unsigned short port = 8888;
     std::string ip = host;
-    _controlSocket = _acceptor->getEmptySocket(_awaker);
 
     if (ip.find(":") != std::string::npos) {
         std::string portStr = ip.substr(ip.find(":") + 1, ip.length());
@@ -59,15 +58,26 @@ bool    rtp::DataGetter::connectToHost(std::string const &host) {
         ip = ip.substr(0, ip.find(":"));
         std::cout << ip << ":" << port << std::endl;
     }
-    return _controlSocket->connectSocket(ip, port);
+    if (_controlSocket->connectSocket(ip, port)) {
+        _acceptor->run();
+        return true;
+    }
+    return false;
 }
 
 bool    rtp::DataGetter::isRunning() const {
     return _controlSocket->isOpen();
 }
 
-bool    rtp::DataGetter::handlePseudoSet(NetworkAbstract::Message const &) {
-    return true;
+bool    rtp::DataGetter::handlePseudoSet(NetworkAbstract::Message const &response) {
+    if (response.getBodySize() > 0) {
+        _pseudo = std::string(response.getBody(), response.getBodySize());
+    }
+    return response.getBodySize() > 0;
 }
 
-rtp::DataGetter::~DataGetter() {}
+std::string const&  rtp::DataGetter::getPseudo() const {
+    return _pseudo;
+}
+
+rtp::DataGetter::~DataGetter() = default;

@@ -7,10 +7,10 @@ include_directories(
     ./dependency/imgui/
 )
 
-add_executable(ClientNetwork main.cpp ArgumentLoader/ArgumentLoader.hh ArgumentLoader/ArgumentLoader.cpp ArgumentLoader/Configure.hh ArgumentLoader/Configure.cpp Logger/LoggerHelper.cpp Logger/Logger.hpp Logger/LoggerHelper.cpp NetworkAbstract/Message/Message.cpp NetworkAbstract/Message/Message.h NetworkAbstract/BoostSocket.cpp NetworkAbstract/BoostAcceptor.cpp NetworkAbstract/BoostAcceptor.hh NetworkAbstract/IAcceptor.hh NetworkAbstract/IAcceptor.cpp NetworkAbstract/ISocket.cpp NetworkAbstract/ISocket.h NetworkAbstract/SocketReceiver.hh NetworkAbstract/SocketReceiver.cpp DataGetter/DataGetter.cpp DataGetter/DataGetter.hh Exceptions/Exception.cpp Exceptions/Exception.hh Graphics/RootViewController.cpp Graphics/RootViewController.hh 	dependency/imgui/imgui-SFML.cpp dependency/imgui/imgui.cpp dependency/imgui/imgui_draw.cpp dependency/imgui/imgui_demo.cpp Graphics/LoginViewController.cpp Graphics/LoginViewController.hh Graphics/AViewController.hh)
+add_executable(ClientNetwork main.cpp ArgumentLoader/ArgumentLoader.hh ArgumentLoader/ArgumentLoader.cpp ArgumentLoader/Configure.hh ArgumentLoader/Configure.cpp Logger/LoggerHelper.cpp Logger/Logger.hpp Logger/LoggerHelper.cpp NetworkAbstract/Message/Message.cpp NetworkAbstract/Message/Message.h NetworkAbstract/BoostSocket.cpp NetworkAbstract/BoostAcceptor.cpp NetworkAbstract/BoostAcceptor.hh NetworkAbstract/IAcceptor.hh NetworkAbstract/IAcceptor.cpp NetworkAbstract/ISocket.cpp NetworkAbstract/ISocket.h NetworkAbstract/SocketReceiver.hh NetworkAbstract/SocketReceiver.cpp DataGetter/DataGetter.cpp DataGetter/DataGetter.hh Exceptions/Exception.cpp Exceptions/Exception.hh Graphics/RootViewController.cpp Graphics/RootViewController.hh 	dependency/imgui/imgui-SFML.cpp dependency/imgui/imgui.cpp dependency/imgui/imgui_draw.cpp dependency/imgui/imgui_demo.cpp Graphics/LoginViewController.cpp Graphics/LoginViewController.hh Graphics/AViewController.hh Graphics/RoomListViewController.cpp Graphics/RoomListViewController.hh Graphics/Star.cpp Graphics/Star.hpp Graphics/StarField.cpp Graphics/StarField.hpp)
 set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      ON)
-set(Boost_USE_STATIC_RUNTIME    OFF)
+set(Boost_USE_STATIC_RUNTIME     OFF)
 find_package(Boost 1.65.0 REQUIRED COMPONENTS thread system)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})

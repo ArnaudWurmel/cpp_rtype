@@ -5,6 +5,7 @@
 #include "LoginViewController.hh"
 #include "imgui.h"
 #include "imgui-SFML.h"
+#include "RoomListViewController.hh"
 
 rtp::LoginViewController::LoginViewController(rtp::RootViewController& delegate) : _rootViewController(delegate) {
     _continue = true;
@@ -18,17 +19,19 @@ bool    rtp::LoginViewController::render() {
     ImGui::InputText("Ip / port", _host, 255);
     if (ImGui::Button("Connect")) {
         try {
-            std::cout << _rootViewController.getDataGetter().connectToHost(_host) << std::endl;
-            std::cout << _rootViewController.getDataGetter().setPseudo(_name) << std::endl;
-/*            if (_rootViewController.getDataGetter().connectToHost(_host) && _rootViewController.getDataGetter().setPseudo(_name)) {
-                std::cout << "Connected" << std::endl;
-            }*/
+            if (_rootViewController.getDataGetter().connectToHost(_host) && _rootViewController.getDataGetter().setPseudo(_name)) {
+                std::shared_ptr<AViewController>    viewController(new RoomListViewController(_rootViewController));
+                
+                _rootViewController.instanciate(viewController);
+            }
+            else {
+                std::memset(_name, 0, 255);
+                std::memset(_host, 0, 255);
+            }
         }
         catch (std::exception& e) {
             std::cerr << e.what() << std::endl;
         }
-        std::memset(_name, 0, 255);
-        std::memset(_host, 0, 255);
     }
     if (ImGui::Button("Exit Game")) {
         _continue = false;

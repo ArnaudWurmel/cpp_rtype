@@ -13,15 +13,12 @@ int main(int ac, char **av) {
         return 1;
     }
     rtp::Configure::configure(argumentLoader.get());
-    rootViewController.loop();
-    /*try {
-        if (!connectClient(argumentLoader, dataGetter)) {
-            return 1;
-        }
+    try {
+        rootViewController.loop();
     }
     catch (std::exception& exception) {
         std::cerr << "Exception : " << exception.what() << std::endl;
         return 1;
-    }*/
+    }
     return 0;
 }

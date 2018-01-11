@@ -38,6 +38,9 @@ namespace rtp {
         bool    setPseudo(std::string const&);
         bool    isRunning() const;
 
+    public:
+        std::string const&  getPseudo() const;
+
     private:
         bool    executeCommand(NetworkAbstract::Message const&, Callback);
 
@@ -50,6 +53,9 @@ namespace rtp {
     private:
         std::condition_variable _awaker;
         std::mutex _awakerLock;
+
+    private:
+        std::string _pseudo;
     };
 }
 

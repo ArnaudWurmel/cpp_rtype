@@ -16,12 +16,14 @@ rtp::RegisteredClient::RegisteredClient(std::shared_ptr<NetworkAbstract::ISocket
     _commandCallback.insert(std::make_pair(Command::JoinRoom, std::bind(&rtp::RegisteredClient::joinRoom, this, std::placeholders::_1)));
     _commandCallback.insert(std::make_pair(Command::StartMatchmaking, std::bind(&rtp::RegisteredClient::startMatchmacking, this, std::placeholders::_1)));
     _commandCallback.insert(std::make_pair(Command::StopMatchmaking, std::bind(&rtp::RegisteredClient::stopMatchmacking, this, std::placeholders::_1)));
+    _commandCallback.insert(std::make_pair(Command::SetPseudo, std::bind(&rtp::RegisteredClient::setPseudo, this, std::placeholders::_1)));
 }
 
 bool    rtp::RegisteredClient::handleNewData() {
     while (_socket->haveAvailableData()) {
         NetworkAbstract::Message    message = _socket->getAvailableMessage();
 
+        std::cout << message.getType() << std::endl;
         if (_commandCallback.find(NetworkAbstract::getTypeOf<Command>(message)) != _commandCallback.end()) {
             if (!_commandCallback[NetworkAbstract::getTypeOf<Command>(message)](message)) {
                 return false;
@@ -104,6 +106,8 @@ bool    rtp::RegisteredClient::setPseudo(NetworkAbstract::Message const& message
         return false;
     }
     _pseudo = std::string(message.getBody(), message.getBodySize());
+    std::cout << _pseudo << std::endl;
+    _socket->write(message);
     return true;
 }
 

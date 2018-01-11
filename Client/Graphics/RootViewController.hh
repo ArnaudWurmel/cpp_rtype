@@ -11,6 +11,7 @@
 # include "../DataGetter/DataGetter.hh"
 # include "../ArgumentLoader/ArgumentLoader.hh"
 # include "AViewController.hh"
+# include "StarField.hpp"
 
 namespace rtp {
     class RootViewController {
@@ -21,11 +22,20 @@ namespace rtp {
     public:
         void    loop();
         rtp::DataGetter&    getDataGetter();
+        void    instanciate(std::shared_ptr<AViewController>&);
 
     private:
         rtp::DataGetter _dataGetter;
         sf::RenderWindow    _window;
-        std::stack<std::unique_ptr<rtp::AViewController> >    _stackView;
+        std::stack<std::shared_ptr<rtp::AViewController> >    _stackView;
+
+    private:
+        sf::Image _starsImage;
+        sf::Texture _starsTexture;
+        sf::Sprite _starsSprite;
+        sf::Font _font;
+        sf::Text _text;
+        Starfield _stars;
     };
 }
 
