@@ -19,6 +19,7 @@ namespace rtp {
     class ClientRegister;
     class RegisteredClient;
     class Room;
+    class DataGetter;
 
     template<typename T>
     class Logger {
@@ -87,6 +88,10 @@ namespace rtp {
         template<typename U = T>
         const char   *name(typename std::enable_if<std::is_same<U, Room>::value>::type* = 0) {
             return "Room";
+        }
+        template<typename U = T>
+        const char   *name(typename std::enable_if<std::is_same<U, DataGetter>::value>::type* = 0) {
+            return "DataGetter";
         }
     };
 }

@@ -24,6 +24,12 @@ void    rtp::BaseServer::stop() {
     }
 }
 
+void    rtp::BaseServer::serverLooping() {
+    while (_threadRunning) {
+        std::cout << "here" << std::endl;
+    }
+}
+
 rtp::BaseServer::~BaseServer() {
     stop();
 }

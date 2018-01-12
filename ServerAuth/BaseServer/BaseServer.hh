@@ -20,7 +20,7 @@ namespace rtp {
         void    stop();
 
     public:
-        virtual void    serverLooping() = 0;
+        virtual void    serverLooping();
 
         ///////////////
         //  NetworkManagement

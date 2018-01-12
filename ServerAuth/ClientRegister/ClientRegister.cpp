@@ -21,6 +21,9 @@ void    rtp::ClientRegister::serverLooping() {
         while (_acceptor->haveAwaitingClient()) {
             std::shared_ptr<RegisteredClient>   client(new RegisteredClient(_acceptor->acceptClient(), *this));
 
+            say("New client");
+            NetworkAbstract::Message    message;
+            client->write(message);
             _clientList.push_back(client);
         }
         auto iterator = _clientList.begin();
