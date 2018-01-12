@@ -14,7 +14,7 @@ set(Boost_USE_STATIC_RUNTIME     OFF)
 find_package(Boost 1.65.0 REQUIRED COMPONENTS thread system)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
-    target_link_libraries(ClientNetwork ${Boost_LIBRARIES})
+    target_link_libraries(ClientNetwork ${Boost_LIBRARIES} pthread)
 endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
