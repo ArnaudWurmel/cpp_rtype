@@ -16,6 +16,8 @@ namespace rtp {
 
     public:
         bool    render() override;
+        void    viewDidReappear() override;
+        std::vector<DataGetter::Command>    getCommandObserver() const override;
 
     private:
         RootViewController& _rootViewController;

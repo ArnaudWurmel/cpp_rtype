@@ -8,6 +8,9 @@
 rtp::BaseServer::BaseServer(unsigned short port) {
     _threadRunning = true;
     _acceptor = std::unique_ptr<NetworkAbstract::IAcceptor>(new NetworkAbstract::BoostAcceptor( port, _clientNotifier));
+}
+
+void    rtp::BaseServer::run() {
     _thread = std::unique_ptr<std::thread>(new std::thread(&rtp::BaseServer::serverLooping, this));
 }
 
@@ -21,12 +24,6 @@ void    rtp::BaseServer::stop() {
         _clientNotifier.notify_one();
         _thread->join();
         _thread.reset();
-    }
-}
-
-void    rtp::BaseServer::serverLooping() {
-    while (_threadRunning) {
-        std::cout << "here" << std::endl;
     }
 }
 

@@ -6,6 +6,7 @@
 
 rtp::ClientRegister::ClientRegister(unsigned short port, std::shared_ptr<IServerRegister> iServerRegister) : BaseServer(port) {
     _iServerRegister = iServerRegister;
+    run();
 }
 
 void    rtp::ClientRegister::serverLooping() {
@@ -22,8 +23,6 @@ void    rtp::ClientRegister::serverLooping() {
             std::shared_ptr<RegisteredClient>   client(new RegisteredClient(_acceptor->acceptClient(), *this));
 
             say("New client");
-            NetworkAbstract::Message    message;
-            client->write(message);
             _clientList.push_back(client);
         }
         auto iterator = _clientList.begin();
@@ -53,10 +52,12 @@ void    rtp::ClientRegister::serverLooping() {
 
 bool    rtp::ClientRegister::playerCreateRoom(std::shared_ptr<RegisteredClient> player) {
     if (getPlayerRoomId(player) != -1) {
+        say("Player already have a room");
         return false;
     }
     _roomList.push_back(std::unique_ptr<Room>(new Room(player->getId(), _iServerRegister)));
     _roomList.back()->addPlayer(player);
+    say("Room " + std::to_string(_roomList.back()->getId()) + " created");
     return true;
 }
 

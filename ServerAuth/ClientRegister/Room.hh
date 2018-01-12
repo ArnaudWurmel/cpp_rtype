@@ -25,6 +25,7 @@ namespace rtp {
         bool    removePlayer(std::shared_ptr<RegisteredClient>&);
         bool    isPlayerIn(std::shared_ptr<RegisteredClient>&);
         unsigned long    nbPlayerIn() const;
+        std::vector<std::shared_ptr<RegisteredClient> > const&  getPlayerList() const;
         bool    findAServer(std::shared_ptr<RegisteredClient>&);
         bool    stopMatchmaking(std::shared_ptr<RegisteredClient>&);
 

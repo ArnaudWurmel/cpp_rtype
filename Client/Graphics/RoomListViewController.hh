@@ -16,9 +16,17 @@ namespace rtp {
 
     public:
         bool    render() override;
+        void    viewDidReappear() override;
+        std::vector<DataGetter::Command>    getCommandObserver() const override;
+
+    private:
+        void    createRoomList();
 
     private:
         RootViewController& _delegate;
+
+    private:
+        int _selectedItem;
     };
 }
 

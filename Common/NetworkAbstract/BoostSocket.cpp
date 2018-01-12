@@ -73,6 +73,7 @@ std::string NetworkAbstract::BoostSocket::getIpAddr() const {
 void    NetworkAbstract::BoostSocket::write(NetworkAbstract::Message message) {
     _mutex.lock();
     bool    onWriting = !_writeList.empty();
+
     _writeList.push(message);
     _writeList.back().encodeHeader();
     _writeList.back().encodeData();

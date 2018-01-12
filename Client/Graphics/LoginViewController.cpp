@@ -6,6 +6,7 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 #include "RoomListViewController.hh"
+#include "../DataGetter/DataGetter.hh"
 
 rtp::LoginViewController::LoginViewController(rtp::RootViewController& delegate) : _rootViewController(delegate) {
     _continue = true;
@@ -38,6 +39,14 @@ bool    rtp::LoginViewController::render() {
     }
     ImGui::End();
     return _continue;
+}
+
+void    rtp::LoginViewController::viewDidReappear() {
+    _rootViewController.getDataGetter().reset();
+}
+
+std::vector<rtp::DataGetter::Command>   rtp::LoginViewController::getCommandObserver() const {
+    return std::vector<rtp::DataGetter::Command>();
 }
 
 rtp::LoginViewController::~LoginViewController() = default;

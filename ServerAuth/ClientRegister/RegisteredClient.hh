@@ -51,7 +51,6 @@ namespace rtp {
         std::string const&  getPseudo() const;
 
     private:
-        std::shared_ptr<NetworkAbstract::ISocket>   _controlSocket;
         ClientRegister& _delegate;
         std::unordered_map<Command, std::function<bool  (NetworkAbstract::Message const&)> >    _commandCallback;
 

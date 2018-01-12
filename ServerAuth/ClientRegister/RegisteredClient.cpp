@@ -23,7 +23,6 @@ bool    rtp::RegisteredClient::handleNewData() {
     while (_socket->haveAvailableData()) {
         NetworkAbstract::Message    message = _socket->getAvailableMessage();
 
-        std::cout << message.getType() << std::endl;
         if (_commandCallback.find(NetworkAbstract::getTypeOf<Command>(message)) != _commandCallback.end()) {
             if (!_commandCallback[NetworkAbstract::getTypeOf<Command>(message)](message)) {
                 return false;
@@ -66,7 +65,14 @@ bool    rtp::RegisteredClient::roomList(NetworkAbstract::Message const&) {
     auto iterator = _delegate.playerAskRoomList().begin();
 
     while (iterator != _delegate.playerAskRoomList().end()) {
-        content = content + std::to_string((*iterator)->getId()) + " " + std::to_string((*iterator)->nbPlayerIn()) + ";";
+        content = content + std::to_string((*iterator)->getId());
+        auto iteratorPlayer = (*iterator)->getPlayerList().begin();
+
+        while (iteratorPlayer != (*iterator)->getPlayerList().end()) {
+            content = content + " " + (*iteratorPlayer)->getPseudo();
+            ++iteratorPlayer;
+        }
+        content = content + ";";
         ++iterator;
     }
     message.setBody(content.c_str(), content.length());
@@ -106,7 +112,6 @@ bool    rtp::RegisteredClient::setPseudo(NetworkAbstract::Message const& message
         return false;
     }
     _pseudo = std::string(message.getBody(), message.getBodySize());
-    std::cout << _pseudo << std::endl;
     _socket->write(message);
     return true;
 }

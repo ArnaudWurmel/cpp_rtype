@@ -10,6 +10,7 @@ rtp::Room::Room(unsigned int ownerId, std::shared_ptr<rtp::IServerRegister>& iSe
     _id = rtp::Room::_roomId++;
     _ownerId = ownerId;
     _isOpen = true;
+    _onMatchmaking = false;
 }
 
 unsigned int    rtp::Room::getId() const {
@@ -19,7 +20,7 @@ unsigned int    rtp::Room::getId() const {
 bool    rtp::Room::addPlayer(std::shared_ptr<RegisteredClient>& player) {
     std::unique_lock<std::mutex>    lck(_locker);
 
-    if (_playerList.size() >= 4 || !_onMatchmaking) {
+    if (_playerList.size() >= 4 || _onMatchmaking) {
         return false;
     }
     auto iterator = std::find_if(_playerList.begin(), _playerList.end(), [&] (std::shared_ptr<RegisteredClient> const& playerCmp) {
@@ -124,6 +125,10 @@ bool    rtp::Room::stopMatchmaking(std::shared_ptr<RegisteredClient>& player) {
 
 unsigned long    rtp::Room::nbPlayerIn() const {
     return _playerList.size();
+}
+
+std::vector<std::shared_ptr<rtp::RegisteredClient> > const& rtp::Room::getPlayerList() const {
+    return _playerList;
 }
 
 rtp::Room::~Room() {

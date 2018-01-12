@@ -45,6 +45,7 @@ void    rtp::RootViewController::loop() {
         ImGui::SFML::Update(_window, deltaClock.restart());
         if (!_stackView.top()->render()) {
             _stackView.pop();
+            _stackView.top()->viewDidReappear();
         }
         _starsTexture.loadFromImage(_starsImage);
         _stars.updateStar();

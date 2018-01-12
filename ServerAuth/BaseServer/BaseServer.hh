@@ -16,11 +16,12 @@ namespace rtp {
         virtual ~BaseServer();
 
     public:
+        void    run();
         bool    isRunning() const;
         void    stop();
 
     public:
-        virtual void    serverLooping();
+        virtual void    serverLooping() = 0;
 
         ///////////////
         //  NetworkManagement

@@ -7,9 +7,11 @@
 
 # include <string>
 # include <memory>
-#include <thread>
+# include <thread>
+# include <functional>
 # include "../NetworkAbstract/IAcceptor.hh"
 # include "../Logger/Logger.hpp"
+# include "Room.hh"
 
 namespace rtp {
     class DataGetter : private Logger<DataGetter> {
@@ -36,15 +38,24 @@ namespace rtp {
     public:
         bool    connectToHost(std::string const& host);
         bool    setPseudo(std::string const&);
+        bool    updateRoomList();
+        int    createRoom();
         bool    isRunning() const;
+        void    reset();
 
     public:
         std::string const&  getPseudo() const;
+        std::vector<std::unique_ptr<Room> > const&  getRoomList() const;
 
     private:
         bool    executeCommand(NetworkAbstract::Message const&, Callback);
 
         bool    handlePseudoSet(NetworkAbstract::Message const&);
+        bool    handleRoomList(NetworkAbstract::Message const&);
+        bool    handleCreateRoom(NetworkAbstract::Message const&);
+
+    public:
+        static std::vector<std::string> getTokenFrom(std::string const&, char sep = ' ');
 
     private:
         std::unique_ptr<NetworkAbstract::IAcceptor> _acceptor;
@@ -56,6 +67,8 @@ namespace rtp {
 
     private:
         std::string _pseudo;
+        std::vector<std::unique_ptr<Room> > _roomList;
+        int _roomId;
     };
 }
 

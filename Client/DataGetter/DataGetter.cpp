@@ -7,6 +7,10 @@
 #include "../Exceptions/Exception.hh"
 
 rtp::DataGetter::DataGetter() {
+    reset();
+}
+
+void    rtp::DataGetter::reset() {
     _acceptor = std::make_unique<NetworkAbstract::BoostAcceptor>(_awaker);
     _controlSocket = _acceptor->getEmptySocket(_awaker);
 }
@@ -20,18 +24,14 @@ bool    rtp::DataGetter::executeCommand(NetworkAbstract::Message const& command,
 
         _awaker.wait_for(lck, std::chrono::milliseconds(200));
         if (_controlSocket->haveAvailableData()) {
-            while (_controlSocket->isOpen() && _controlSocket->haveAvailableData()) {
-                NetworkAbstract::Message    message = _controlSocket->getAvailableMessage();
+            NetworkAbstract::Message    message = _controlSocket->getAvailableMessage();
 
-                if (message.getType() == command.getType()) {
-                    return (this->*callback)(message);
-                }
-                _controlSocket->addMessage(message);
+            if (message.getType() == command.getType()) {
+                return (this->*callback)(message);
             }
+            _controlSocket->addMessage(message);
         }
-        else {
-            --maxWaiting;
-        }
+        --maxWaiting;
     }
     throw rtp::NetworkException();
 }
@@ -65,6 +65,23 @@ bool    rtp::DataGetter::connectToHost(std::string const &host) {
     return false;
 }
 
+bool    rtp::DataGetter::updateRoomList() {
+    NetworkAbstract::Message    message;
+
+    message.setType(Command::RoomList);
+    return executeCommand(message, &rtp::DataGetter::handleRoomList);
+}
+
+int    rtp::DataGetter::createRoom() {
+    NetworkAbstract::Message    message;
+
+    message.setType(Command::CreateRoom);
+    if (executeCommand(message, &rtp::DataGetter::handleCreateRoom)) {
+        return _roomId;
+    }
+    return -1;
+}
+
 bool    rtp::DataGetter::isRunning() const {
     return _controlSocket->isOpen();
 }
@@ -76,8 +93,58 @@ bool    rtp::DataGetter::handlePseudoSet(NetworkAbstract::Message const &respons
     return response.getBodySize() > 0;
 }
 
+bool    rtp::DataGetter::handleRoomList(NetworkAbstract::Message const& response) {
+    _roomList.clear();
+    if (response.getBodySize() == 0) {
+        return true;
+    }
+    std::string content = std::string(response.getBody(), response.getBodySize());
+    std::vector<std::string>    roomList = getTokenFrom(content, ';');
+    auto    iterator = roomList.begin();
+
+    while (iterator != roomList.end()) {
+        _roomList.push_back(std::unique_ptr<Room>(new Room()));
+        if (!_roomList.back()->init(*iterator)) {
+            _roomList.pop_back();
+        }
+        ++iterator;
+    }
+    return true;
+}
+
+bool    rtp::DataGetter::handleCreateRoom(NetworkAbstract::Message const& response) {
+    if (response.getBodySize() == 0) {
+        return false;
+    }
+    _roomId = std::stoi(std::string(response.getBody(), response.getBodySize()));
+    return _roomId != -1;
+}
+
 std::string const&  rtp::DataGetter::getPseudo() const {
     return _pseudo;
+}
+
+std::vector<std::string>    rtp::DataGetter::getTokenFrom(std::string const& input, char sep) {
+    std::vector<std::string>    tokenList;
+    std::string::const_iterator   it;
+
+    it = input.begin();
+    while (it != input.end()) {
+        std::string token;
+        while (it != input.end() && *it != sep) {
+            token += *it;
+            ++it;
+        }
+        if (token.size())
+            tokenList.push_back(token);
+        while (it != input.end() && *it == sep)
+            ++it;
+    }
+    return tokenList;
+}
+
+std::vector<std::unique_ptr<rtp::Room> > const&  rtp::DataGetter::getRoomList() const {
+    return _roomList;
 }
 
 rtp::DataGetter::~DataGetter() = default;
