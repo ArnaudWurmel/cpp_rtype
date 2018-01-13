@@ -18,6 +18,7 @@ namespace rtp {
         bool    render() override;
         void    viewDidReappear() override;
         std::vector<DataGetter::Command>    getCommandObserver() const override;
+        void    handleInput(NetworkAbstract::Message const&) override;
 
     private:
         void    createRoomList();

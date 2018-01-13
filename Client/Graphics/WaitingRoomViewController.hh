@@ -17,13 +17,26 @@ namespace   rtp {
     public:
         bool    render() override;
         void    viewDidReappear() override;
+        std::vector<rtp::DataGetter::Command>   getCommandObserver() const override;
+        void    handleInput(NetworkAbstract::Message const&) override;
+
+    private:
+        void    handleNewOwner(NetworkAbstract::Message const&);
+        void    handleStartMatchmaking(NetworkAbstract::Message const&);
+        void    handleStopMatchmaking(NetworkAbstract::Message const&);
+        void    handleServerFound(NetworkAbstract::Message const&);
+
+    private:
+        void    createListPlayer();
 
     private:
         int _roomId;
         bool _isOwner;
+        bool _onMatchmaking;
 
     private:
         RootViewController& _delegate;
+        std::map<rtp::DataGetter::Command, std::function<void (NetworkAbstract::Message const&)> >  _functionPtrs;
     };
 }
 

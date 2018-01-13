@@ -17,6 +17,7 @@ namespace rtp {
     class DataGetter : private Logger<DataGetter> {
     public:
         using    Callback = bool (DataGetter::*)(NetworkAbstract::Message const&);
+        using    Emptier = std::function<void   (NetworkAbstract::Message const&)>;
 
     public:
         enum Command {
@@ -39,9 +40,13 @@ namespace rtp {
         bool    connectToHost(std::string const& host);
         bool    setPseudo(std::string const&);
         bool    updateRoomList();
-        int    createRoom();
+        int     createRoom();
+        bool    leaveRoom();
         bool    isRunning() const;
+        bool    startMatchmaking();
+        bool    stopMatchmaking();
         void    reset();
+        void    emptyMessage(Emptier);
 
     public:
         std::string const&  getPseudo() const;
@@ -53,6 +58,9 @@ namespace rtp {
         bool    handlePseudoSet(NetworkAbstract::Message const&);
         bool    handleRoomList(NetworkAbstract::Message const&);
         bool    handleCreateRoom(NetworkAbstract::Message const&);
+        bool    handleLeaveRoom(NetworkAbstract::Message const&);
+        bool    handleStartMatchmaking(NetworkAbstract::Message const&);
+        bool    handleStopMatchmaking(NetworkAbstract::Message const&);
 
     public:
         static std::vector<std::string> getTokenFrom(std::string const&, char sep = ' ');

@@ -35,6 +35,7 @@ namespace rtp {
         unsigned int    _id;
         std::vector<std::shared_ptr<RegisteredClient> > _playerList;
         bool    _isOpen;
+        bool    _haveAServer;
 
     private:
         std::unique_ptr<std::thread>    _matchmakingFinder;

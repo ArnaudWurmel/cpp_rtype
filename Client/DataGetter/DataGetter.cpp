@@ -15,6 +15,14 @@ void    rtp::DataGetter::reset() {
     _controlSocket = _acceptor->getEmptySocket(_awaker);
 }
 
+void    rtp::DataGetter::emptyMessage(Emptier emptier) {
+    while (_controlSocket->haveAvailableData()) {
+        NetworkAbstract::Message    message = _controlSocket->getAvailableMessage();
+
+        emptier(message);
+    }
+}
+
 bool    rtp::DataGetter::executeCommand(NetworkAbstract::Message const& command, Callback callback) {
     int maxWaiting = 50;
 
@@ -34,6 +42,27 @@ bool    rtp::DataGetter::executeCommand(NetworkAbstract::Message const& command,
         --maxWaiting;
     }
     throw rtp::NetworkException();
+}
+
+bool    rtp::DataGetter::leaveRoom() {
+    NetworkAbstract::Message    message;
+
+    message.setType(Command::LeaveRoom);
+    return executeCommand(message, &rtp::DataGetter::handleLeaveRoom);
+}
+
+bool    rtp::DataGetter::startMatchmaking() {
+    NetworkAbstract::Message    message;
+
+    message.setType(Command::StartMatchmaking);
+    return executeCommand(message, &rtp::DataGetter::handleStartMatchmaking);
+}
+
+bool    rtp::DataGetter::stopMatchmaking() {
+    NetworkAbstract::Message    message;
+
+    message.setType(Command::StopMatchmaking);
+    return executeCommand(message, &rtp::DataGetter::handleStopMatchmaking);
 }
 
 bool    rtp::DataGetter::setPseudo(std::string const& pseudo) {
@@ -56,7 +85,6 @@ bool    rtp::DataGetter::connectToHost(std::string const &host) {
         }
         port = std::stoi(portStr);
         ip = ip.substr(0, ip.find(":"));
-        std::cout << ip << ":" << port << std::endl;
     }
     if (_controlSocket->connectSocket(ip, port)) {
         _acceptor->run();
@@ -70,6 +98,14 @@ bool    rtp::DataGetter::updateRoomList() {
 
     message.setType(Command::RoomList);
     return executeCommand(message, &rtp::DataGetter::handleRoomList);
+}
+
+bool    rtp::DataGetter::handleStartMatchmaking(NetworkAbstract::Message const &) {
+    return true;
+}
+
+bool    rtp::DataGetter::handleStopMatchmaking(NetworkAbstract::Message const &) {
+    return true;
 }
 
 int    rtp::DataGetter::createRoom() {
@@ -109,6 +145,10 @@ bool    rtp::DataGetter::handleRoomList(NetworkAbstract::Message const& response
         }
         ++iterator;
     }
+    return true;
+}
+
+bool    rtp::DataGetter::handleLeaveRoom(NetworkAbstract::Message const &) {
     return true;
 }
 

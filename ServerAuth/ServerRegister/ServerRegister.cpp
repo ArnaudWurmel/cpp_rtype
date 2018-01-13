@@ -7,7 +7,9 @@
 #include "../NetworkAbstract/IAcceptor.hh"
 #include "../NetworkAbstract/BoostAcceptor.hh"
 
-rtp::ServerRegister::ServerRegister(unsigned short port) : BaseServer(port) {}
+rtp::ServerRegister::ServerRegister(unsigned short port) : BaseServer(port) {
+    run();
+}
 
 void    rtp::ServerRegister::serverLooping() {
     try {

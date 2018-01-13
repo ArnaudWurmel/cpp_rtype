@@ -49,4 +49,6 @@ std::vector<rtp::DataGetter::Command>   rtp::LoginViewController::getCommandObse
     return std::vector<rtp::DataGetter::Command>();
 }
 
+void    rtp::LoginViewController::handleInput(NetworkAbstract::Message const &) {}
+
 rtp::LoginViewController::~LoginViewController() = default;

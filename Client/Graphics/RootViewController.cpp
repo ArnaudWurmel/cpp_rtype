@@ -33,6 +33,7 @@ void    rtp::RootViewController::loop() {
     sf::Clock   deltaClock;
 
     while (!_stackView.empty() && _window.isOpen()) {
+        _dataGetter.emptyMessage(std::bind(&rtp::RootViewController::emptierFunction, this, std::placeholders::_1));
         sf::Event   event;
 
         while (_window.pollEvent(event)) {
@@ -45,7 +46,9 @@ void    rtp::RootViewController::loop() {
         ImGui::SFML::Update(_window, deltaClock.restart());
         if (!_stackView.top()->render()) {
             _stackView.pop();
-            _stackView.top()->viewDidReappear();
+            if (!_stackView.empty()) {
+                _stackView.top()->viewDidReappear();
+            }
         }
         _starsTexture.loadFromImage(_starsImage);
         _stars.updateStar();
@@ -55,6 +58,14 @@ void    rtp::RootViewController::loop() {
         _window.draw(_text);
         ImGui::SFML::Render(_window);
         _window.display();
+    }
+}
+
+void    rtp::RootViewController::emptierFunction(NetworkAbstract::Message const& message) {
+    if (!_stackView.empty()) {
+        if (std::find(_stackView.top()->getCommandObserver().begin(), _stackView.top()->getCommandObserver().end(), message.getType()) != _stackView.top()->getCommandObserver().end()) {
+            _stackView.top()->handleInput(message);
+        }
     }
 }
 

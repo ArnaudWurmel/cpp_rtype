@@ -5,13 +5,13 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 #include "RoomListViewController.hh"
+#include "WaitingRoomViewController.hh"
 
 rtp::RoomListViewController::RoomListViewController(RootViewController& delegate) : _delegate(delegate) {}
 
 bool    rtp::RoomListViewController::render() {
 
     if (!_delegate.getDataGetter().updateRoomList()) {
-        std::cout << "False" << std::endl;
         return false;
     }
     ImGui::Begin("Home");
@@ -23,6 +23,12 @@ bool    rtp::RoomListViewController::render() {
             ImGui::End();
             return false;
         }
+        std::shared_ptr<AViewController>    waitingRoomViewController(new WaitingRoomViewController(_delegate, roomId, true));
+        _delegate.instanciate(waitingRoomViewController);
+    }
+    if (ImGui::Button("Disconnect")) {
+        ImGui::End();
+        return false;
     }
     ImGui::End();
     return true;
@@ -37,7 +43,7 @@ void    rtp::RoomListViewController::createRoomList() {
         std::string roomName = "Room #" + std::to_string(_delegate.getDataGetter().getRoomList()[i]->getId()) + " " + std::to_string(_delegate.getDataGetter().getRoomList()[i]->getPlayerList().size()) + "/4";
         ImGui::PushID(i);
         if (ImGui::Selectable(roomName.c_str(), false)) {
-            std::cout << "Selected" << std::endl;
+            std::cout << "Selected " << i << std::endl;
         }
         ImGui::PopID();
     }
@@ -45,5 +51,11 @@ void    rtp::RoomListViewController::createRoomList() {
 }
 
 void    rtp::RoomListViewController::viewDidReappear() {}
+
+std::vector<rtp::DataGetter::Command>    rtp::RoomListViewController::getCommandObserver() const {
+    return std::vector<rtp::DataGetter::Command>();
+}
+
+void    rtp::RoomListViewController::handleInput(NetworkAbstract::Message const &) {}
 
 rtp::RoomListViewController::~RoomListViewController() {}

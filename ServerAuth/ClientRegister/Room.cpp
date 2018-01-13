@@ -11,6 +11,7 @@ rtp::Room::Room(unsigned int ownerId, std::shared_ptr<rtp::IServerRegister>& iSe
     _ownerId = ownerId;
     _isOpen = true;
     _onMatchmaking = false;
+    _haveAServer = false;
 }
 
 unsigned int    rtp::Room::getId() const {
@@ -70,10 +71,18 @@ bool    rtp::Room::isPlayerIn(std::shared_ptr<RegisteredClient>& player) {
 }
 
 bool    rtp::Room::findAServer(std::shared_ptr<RegisteredClient>& player) {
-    std::cout << "Finding a server" << std::endl;
-    if (player->getId() != _ownerId || _onMatchmaking) {
+    if (player->getId() != _ownerId || _onMatchmaking || _haveAServer) {
         return false;
     }
+    auto    it = _playerList.begin();
+    NetworkAbstract::Message    message;
+
+    message.setType(RegisteredClient::StartMatchmaking);
+    while (it != _playerList.end()) {
+        (*it)->write(message);
+        ++it;
+    }
+
     _onMatchmaking = true;
     _matchmakingFinder = std::unique_ptr<std::thread>(new std::thread([&] {
         while (_onMatchmaking) {
@@ -82,9 +91,7 @@ bool    rtp::Room::findAServer(std::shared_ptr<RegisteredClient>& player) {
             auto iterator = _iServerRegister->getServer().begin();
 
             while (iterator != _iServerRegister->getServer().end()) {
-                std::cout << "Wait for a server" << std::endl;
                 if ((*iterator)->getState() == RegisteredServer::ServerState::Available) {
-                    std::cout << "Server founded" << std::endl;
                     NetworkAbstract::Message    message;
                     std::string bodyContent;
 
@@ -100,6 +107,7 @@ bool    rtp::Room::findAServer(std::shared_ptr<RegisteredClient>& player) {
                         (*iteratorPlayer)->write(message);
                         ++iteratorPlayer;
                     }
+                    _haveAServer = true;
                     _onMatchmaking = false;
                     _iServerRegister->unlockData();
                     return ;
@@ -118,8 +126,19 @@ bool    rtp::Room::stopMatchmaking(std::shared_ptr<RegisteredClient>& player) {
         return false;
     }
     _iServerRegister->lockData();
+    auto    it = _playerList.begin();
+    NetworkAbstract::Message    message;
+
+    message.setType(RegisteredClient::StopMatchmaking);
+    while (it != _playerList.end()) {
+        (*it)->write(message);
+        ++it;
+    }
     _onMatchmaking = false;
+    _haveAServer = false;
     _iServerRegister->unlockData();
+    _matchmakingFinder->join();
+    _matchmakingFinder.reset();
     return true;
 }
 

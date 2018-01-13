@@ -25,6 +25,9 @@ namespace rtp {
         void    instanciate(std::shared_ptr<AViewController>&);
 
     private:
+        void    emptierFunction(NetworkAbstract::Message const&);
+
+    private:
         rtp::DataGetter _dataGetter;
         sf::RenderWindow    _window;
         std::stack<std::shared_ptr<rtp::AViewController> >    _stackView;
