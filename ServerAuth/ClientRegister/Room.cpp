@@ -82,7 +82,7 @@ bool    rtp::Room::findAServer(std::shared_ptr<RegisteredClient>& player) {
         (*it)->write(message);
         ++it;
     }
-
+    std::cout << "There" << std::endl;
     _onMatchmaking = true;
     _matchmakingFinder = std::unique_ptr<std::thread>(new std::thread([&] {
         while (_onMatchmaking) {
@@ -101,6 +101,7 @@ bool    rtp::Room::findAServer(std::shared_ptr<RegisteredClient>& player) {
 
                     bodyContent = (*iterator)->getIpAddr() + ":" + std::to_string((*iterator)->getPort()) + ";" + (*iterator)->getRegistrationToken();
                     message.setBody(bodyContent.c_str(), bodyContent.length());
+                    _serverLocked = (*iterator);
                     auto iteratorPlayer = _playerList.begin();
 
                     while (iteratorPlayer != _playerList.end()) {
@@ -121,11 +122,13 @@ bool    rtp::Room::findAServer(std::shared_ptr<RegisteredClient>& player) {
 }
 
 bool    rtp::Room::stopMatchmaking(std::shared_ptr<RegisteredClient>& player) {
-    std::unique_lock<std::mutex>    lck(_locker);
     if (player->getId() != _ownerId) {
         return false;
     }
+    _locker.lock();
+    std::cout << "On stop" << std::endl;
     _iServerRegister->lockData();
+    std::cout << "Locked" << std::endl;
     auto    it = _playerList.begin();
     NetworkAbstract::Message    message;
 
@@ -137,8 +140,11 @@ bool    rtp::Room::stopMatchmaking(std::shared_ptr<RegisteredClient>& player) {
     _onMatchmaking = false;
     _haveAServer = false;
     _iServerRegister->unlockData();
+    std::cout << "Here" << std::endl;
+    _locker.unlock();
     _matchmakingFinder->join();
     _matchmakingFinder.reset();
+    std::cout << "ended" << std::endl;
     return true;
 }
 
