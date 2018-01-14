@@ -47,6 +47,7 @@ namespace rtp {
         bool    stopMatchmaking();
         void    reset();
         void    emptyMessage(Emptier);
+        bool    joinRoom(int roomId);
 
     public:
         std::string const&  getPseudo() const;
@@ -61,6 +62,7 @@ namespace rtp {
         bool    handleLeaveRoom(NetworkAbstract::Message const&);
         bool    handleStartMatchmaking(NetworkAbstract::Message const&);
         bool    handleStopMatchmaking(NetworkAbstract::Message const&);
+        bool    handleJoinRoom(NetworkAbstract::Message const&);
 
     public:
         static std::vector<std::string> getTokenFrom(std::string const&, char sep = ' ');

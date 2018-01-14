@@ -23,6 +23,14 @@ void    rtp::DataGetter::emptyMessage(Emptier emptier) {
     }
 }
 
+bool    rtp::DataGetter::joinRoom(int roomId) {
+    NetworkAbstract::Message    message;
+
+    message.setType(Command::JoinRoom);
+    message.setBody(std::to_string(roomId).c_str(), std::to_string(roomId).length());
+    return executeCommand(message, &rtp::DataGetter::handleJoinRoom);
+}
+
 bool    rtp::DataGetter::executeCommand(NetworkAbstract::Message const& command, Callback callback) {
     int maxWaiting = 50;
 
@@ -158,6 +166,10 @@ bool    rtp::DataGetter::handleCreateRoom(NetworkAbstract::Message const& respon
     }
     _roomId = std::stoi(std::string(response.getBody(), response.getBodySize()));
     return _roomId != -1;
+}
+
+bool    rtp::DataGetter::handleJoinRoom(NetworkAbstract::Message const& response) {
+    return std::string(response.getBody(), response.getBodySize()).compare("success") == 0;
 }
 
 std::string const&  rtp::DataGetter::getPseudo() const {

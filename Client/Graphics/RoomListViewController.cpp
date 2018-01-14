@@ -43,7 +43,10 @@ void    rtp::RoomListViewController::createRoomList() {
         std::string roomName = "Room #" + std::to_string(_delegate.getDataGetter().getRoomList()[i]->getId()) + " " + std::to_string(_delegate.getDataGetter().getRoomList()[i]->getPlayerList().size()) + "/4";
         ImGui::PushID(i);
         if (ImGui::Selectable(roomName.c_str(), false)) {
-            std::cout << "Selected " << i << std::endl;
+            if (_delegate.getDataGetter().joinRoom(_delegate.getDataGetter().getRoomList()[i]->getId())) {
+                std::shared_ptr<AViewController>    waitingRoomViewController(new WaitingRoomViewController(_delegate, _delegate.getDataGetter().getRoomList()[i]->getId(), false));
+                _delegate.instanciate(waitingRoomViewController);
+            }
         }
         ImGui::PopID();
     }
