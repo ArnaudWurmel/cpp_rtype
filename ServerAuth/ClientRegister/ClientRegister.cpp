@@ -2,6 +2,7 @@
 // Created by Arnaud WURMEL on 10/01/2018.
 //
 
+#include <algorithm>
 #include "ClientRegister.hh"
 
 rtp::ClientRegister::ClientRegister(unsigned short port, std::shared_ptr<IServerRegister> iServerRegister) : BaseServer(port) {

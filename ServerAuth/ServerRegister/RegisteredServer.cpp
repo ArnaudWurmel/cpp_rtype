@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <algorithm>
 #include "RegisteredServer.hh"
 
 unsigned int    rtp::RegisteredServer::_serverId = 0;
@@ -30,9 +31,11 @@ bool    rtp::RegisteredServer::handleNewData() {
             }
         }
     }
-    if (isRegistered()) {
+    if (isRegistered() && _lastPing.time_since_epoch().count() + 3000000 < std::chrono::system_clock::now().time_since_epoch().count()) {
+        _lastPing = std::chrono::system_clock::now();
         NetworkAbstract::Message    pingMessage;
 
+        say("Ping server");
         pingMessage.setType(Command::PING);
         _socket->write(pingMessage);
     }
@@ -66,7 +69,9 @@ bool    rtp::RegisteredServer::pingResult(NetworkAbstract::Message const& messag
 }
 
 bool    rtp::RegisteredServer::registerServer(NetworkAbstract::Message const& message) {
+    say("Registering a server...");
     if (message.getBodySize() == 0) {
+        say("Fail...");
         return false;
     }
 
@@ -75,6 +80,7 @@ bool    rtp::RegisteredServer::registerServer(NetworkAbstract::Message const& me
     bool    validatePort = !messageBody.empty() && std::find_if(messageBody.begin(),
                                                       messageBody.end(), [](char c) { return !std::isdigit(c); }) == messageBody.end();
     if (!validatePort) {
+        say("Invalid port");
         return false;
     }
     NetworkAbstract::Message    response;
@@ -84,6 +90,7 @@ bool    rtp::RegisteredServer::registerServer(NetworkAbstract::Message const& me
     response.setType(Command::REGISTER);
     response.setBody(_registrationToken.c_str(), _registrationToken.length());
     _socket->write(response);
+    say("Success");
     return true;
 }
 

@@ -11,6 +11,7 @@
 # include <set>
 # include <list>
 # include <unordered_map>
+# include <chrono>
 # include "../NetworkAbstract/ISocket.h"
 # include "../NetworkAbstract/SocketReceiver.hh"
 # include "../Logger/Logger.hpp"
@@ -59,6 +60,7 @@ namespace rtp {
         ServerState     _serverState;
         unsigned int    _id;
         int _port;
+        std::chrono::time_point<std::chrono::system_clock>  _lastPing;
 
     private:
         static unsigned int _serverId;

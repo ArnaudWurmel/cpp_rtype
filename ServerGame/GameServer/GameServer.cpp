@@ -64,7 +64,15 @@ bool    rtp::GameServer::handleMessage(NetworkAbstract::Message const& message) 
 
 void    rtp::GameServer::serverLoop() {
     while (_controlSocket->isOpen()) {
+        if (_serverState == ServerState::Busy && _lockedAt.time_since_epoch().count() + 5000000 < std::chrono::system_clock::now().time_since_epoch().count()) {
+            if (!registerServer()) {
+                _controlSocket->close();
+            }
+        }
+
         std::unique_lock<std::mutex>    lck(_inputLocker);
+
+        _inputAvailable.wait_for(lck, std::chrono::milliseconds(200));
 
         while (_controlSocket->haveAvailableData()) {
             NetworkAbstract::Message    message = _controlSocket->getAvailableMessage();
@@ -74,7 +82,6 @@ void    rtp::GameServer::serverLoop() {
                 return ;
             }
         }
-        _inputAvailable.wait_for(lck, std::chrono::milliseconds(200));
     }
 }
 
@@ -84,6 +91,7 @@ bool    rtp::GameServer::handleRegistering(NetworkAbstract::Message const& messa
     }
     _serverState = Available;
     _authToken = std::string(message.getBody(), message.getBodySize());
+    std::cout << "Token : " << _authToken << std::endl;
     return true;
 }
 
@@ -93,7 +101,8 @@ bool    rtp::GameServer::handleReserved(NetworkAbstract::Message const& message)
     response.setType(RESERVED);
     if (_serverState == Available) {
         _serverState = Busy;
-
+        _lockedAt = std::chrono::system_clock::now();
+        std::cout << "Reserved" << std::endl;
         response.setBody("success", 7);
     }
     else {

@@ -9,6 +9,7 @@
 rtp::WaitingRoomViewController::WaitingRoomViewController(RootViewController& delegate, int roomId, bool isOwner) : _delegate(delegate) {
     _roomId = roomId;
     _isOwner = isOwner;
+    _continue = true;
     _onMatchmaking = false;
     _functionPtrs.insert(std::make_pair(DataGetter::Command::StartMatchmaking, std::bind(&rtp::WaitingRoomViewController::handleStartMatchmaking, this, std::placeholders::_1)));
     _functionPtrs.insert(std::make_pair(DataGetter::Command::StopMatchmaking, std::bind(&rtp::WaitingRoomViewController::handleStopMatchmaking, this, std::placeholders::_1)));
@@ -78,7 +79,9 @@ void    rtp::WaitingRoomViewController::createListPlayer() {
     ImGui::ListBoxFooter();
 }
 
-void    rtp::WaitingRoomViewController::viewDidReappear() {}
+void    rtp::WaitingRoomViewController::viewDidReappear() {
+    _continue = false;
+}
 
 std::vector<rtp::DataGetter::Command>   rtp::WaitingRoomViewController::getCommandObserver() const {
     std::vector<rtp::DataGetter::Command>   observer;

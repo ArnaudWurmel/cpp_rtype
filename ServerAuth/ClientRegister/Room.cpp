@@ -2,6 +2,7 @@
 // Created by Arnaud WURMEL on 10/01/2018.
 //
 
+#include <algorithm>
 #include "Room.hh"
 
 unsigned int    rtp::Room::_roomId = 0;
@@ -126,9 +127,7 @@ bool    rtp::Room::stopMatchmaking(std::shared_ptr<RegisteredClient>& player) {
         return false;
     }
     _locker.lock();
-    std::cout << "On stop" << std::endl;
     _iServerRegister->lockData();
-    std::cout << "Locked" << std::endl;
     auto    it = _playerList.begin();
     NetworkAbstract::Message    message;
 
@@ -140,11 +139,9 @@ bool    rtp::Room::stopMatchmaking(std::shared_ptr<RegisteredClient>& player) {
     _onMatchmaking = false;
     _haveAServer = false;
     _iServerRegister->unlockData();
-    std::cout << "Here" << std::endl;
     _locker.unlock();
     _matchmakingFinder->join();
     _matchmakingFinder.reset();
-    std::cout << "ended" << std::endl;
     return true;
 }
 
@@ -157,8 +154,10 @@ std::vector<std::shared_ptr<rtp::RegisteredClient> > const& rtp::Room::getPlayer
 }
 
 rtp::Room::~Room() {
-    if (_onMatchmaking && _matchmakingFinder) {
+    if (_matchmakingFinder) {
         _onMatchmaking = false;
-        _matchmakingFinder->join();
+        if (_matchmakingFinder->joinable()) {
+            _matchmakingFinder->join();
+        }
     }
 }

@@ -5,6 +5,7 @@
 #ifndef SERVERGAME_GAMESERVER_HH
 #define SERVERGAME_GAMESERVER_HH
 
+# include <chrono>
 # include <condition_variable>
 # include <string>
 #include <map>
@@ -72,6 +73,7 @@ namespace rtp {
         std::map<Command, Callback> _callbackPtrs;
         std::map<ServerState, std::string> _stateTranslator;
         ServerState _serverState;
+        std::chrono::time_point<std::chrono::system_clock> _lockedAt;
     };
 }
 

@@ -33,6 +33,7 @@ namespace   rtp {
         int _roomId;
         bool _isOwner;
         bool _onMatchmaking;
+        bool _continue;
 
     private:
         RootViewController& _delegate;

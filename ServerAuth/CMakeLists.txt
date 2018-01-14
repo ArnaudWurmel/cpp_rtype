@@ -8,7 +8,7 @@ add_executable(ServerAuth main.cpp ServerRegister/ServerRegister.cpp ServerRegis
 set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
-find_package(Boost 1.65.0 REQUIRED COMPONENTS thread system)
+find_package(Boost 1.58.0 REQUIRED COMPONENTS thread system)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     target_link_libraries(ServerAuth ${Boost_LIBRARIES})
