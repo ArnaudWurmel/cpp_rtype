@@ -5,6 +5,8 @@
 #include "GameServer.hh"
 #include "../NetworkAbstract/BoostSocket.h"
 #include "../NetworkAbstract/BoostAcceptor.hh"
+#include "../NetworkAbstract/BoostUdpServer.hpp"
+#include "APlayer.hh"
 
 rtp::GameServer::GameServer(unsigned short port) : _port(port) {
     _serverState = NotRegistered;
@@ -19,9 +21,9 @@ rtp::GameServer::GameServer(unsigned short port) : _port(port) {
 }
 
 bool    rtp::GameServer::connectToAuthServer(std::string const& authHost, unsigned short authPort) {
-    _acceptor = std::unique_ptr<NetworkAbstract::IAcceptor>(new NetworkAbstract::BoostAcceptor(_port, _inputAvailable));
-    _controlSocket = _acceptor->getEmptySocket(_inputAvailable);
-    _acceptor->run();
+    _gameServer = std::shared_ptr<NetworkAbstract::IServer<APlayer> >(new NetworkAbstract::BoostUdpServer<APlayer>(_port));
+    _controlSocket = _gameServer->getEmptyASocket(_inputAvailable);
+    _gameServer->run();
     return _controlSocket->connectSocket(authHost, authPort);
 }
 
@@ -64,7 +66,8 @@ bool    rtp::GameServer::handleMessage(NetworkAbstract::Message const& message) 
 
 void    rtp::GameServer::serverLoop() {
     while (_controlSocket->isOpen()) {
-        if (_serverState == ServerState::Busy && _lockedAt.time_since_epoch().count() + 5000000 < std::chrono::system_clock::now().time_since_epoch().count()) {
+        if (_serverState == ServerState::Busy && _lockedAt.time_since_epoch().count() + 5000000 < std::chrono::system_clock::now().time_since_epoch().count() &&
+                _gameServer->getClient().empty()) {
             if (!registerServer()) {
                 _controlSocket->close();
             }
@@ -92,6 +95,8 @@ bool    rtp::GameServer::handleRegistering(NetworkAbstract::Message const& messa
     _serverState = Available;
     _authToken = std::string(message.getBody(), message.getBodySize());
     std::cout << "Token : " << _authToken << std::endl;
+    _gameServer->init(_authToken);
+    _gameServer->acceptIncommingConnexion(true);
     return true;
 }
 

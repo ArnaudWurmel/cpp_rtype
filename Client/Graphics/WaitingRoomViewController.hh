@@ -38,6 +38,7 @@ namespace   rtp {
     private:
         RootViewController& _delegate;
         std::map<rtp::DataGetter::Command, std::function<void (NetworkAbstract::Message const&)> >  _functionPtrs;
+        std::condition_variable _gameCv;
     };
 }
 

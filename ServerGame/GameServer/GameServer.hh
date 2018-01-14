@@ -12,6 +12,8 @@
 # include "../Logger/Logger.hpp"
 # include "../NetworkAbstract/ISocket.h"
 # include "../NetworkAbstract/IAcceptor.hh"
+#include "../NetworkAbstract/IServer.hh"
+#include "APlayer.hh"
 
 # define TOKEN_SIZE 32
 
@@ -67,8 +69,10 @@ namespace rtp {
 
     private:
         std::shared_ptr<NetworkAbstract::ISocket>   _controlSocket;
-        std::unique_ptr<NetworkAbstract::IAcceptor> _acceptor;
+        std::shared_ptr<NetworkAbstract::IServer<APlayer> >   _gameServer;
         unsigned short  _port;
+
+    private:
         std::string _authToken;
         std::map<Command, Callback> _callbackPtrs;
         std::map<ServerState, std::string> _stateTranslator;
