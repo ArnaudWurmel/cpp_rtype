@@ -29,25 +29,19 @@ void    NetworkAbstract::BoostUdpSocket::close() {
 }
 
 void    NetworkAbstract::BoostUdpSocket::startSession() {
-    _socket.async_receive_from(boost::asio::buffer(_readM.data(), Message::headerSize), _readedEndpoint,
+    _socket.async_receive_from(boost::asio::buffer(_readM.data(), Message::headerSize + Message::maxBodySize), _readedEndpoint,
                             boost::bind(&NetworkAbstract::BoostUdpSocket::handleReadHeader, shared_from_this(),
                                         boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
 }
 
 void    NetworkAbstract::BoostUdpSocket::handleReadHeader(const boost::system::error_code &error, std::size_t bytes) {
-    if (!error && bytes == Message::headerSize) {
+    if (!error) {
         if (_readM.decodeHeader()) {
-            _socket.async_receive_from(boost::asio::buffer(_readM.data(), Message::headerSize), _readedEndpoint,
-                                       boost::bind(&NetworkAbstract::BoostUdpSocket::handleReadBody, shared_from_this(),
-                                                   boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
-        }
-        else {
-            close();
+            _readM.decodeData();
+            addMessage(_readM);
         }
     }
-    else {
-        close();
-    }
+    startSession();
 }
 
 void    NetworkAbstract::BoostUdpSocket::handleReadBody(const boost::system::error_code &error, std::size_t bytes) {

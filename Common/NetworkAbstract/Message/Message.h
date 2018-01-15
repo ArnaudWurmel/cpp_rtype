@@ -46,6 +46,7 @@ namespace NetworkAbstract {
         char const* getBody() const;
         void    *data();
         bool    decodeHeader();
+		void	decodeData();
         bool    encodeHeader();
         void    encodeData();
         unsigned int    getBodySize() const;

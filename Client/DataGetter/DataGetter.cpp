@@ -214,6 +214,7 @@ bool    rtp::DataGetter::waitCommandExecution(std::shared_ptr<NetworkAbstract::I
             NetworkAbstract::Message    message = socket->getAvailableMessage();
 
             if (message.getType() == command.getType()) {
+                std::cout << "Called" << std::endl;
                 emptier(message);
                 return true;
             }

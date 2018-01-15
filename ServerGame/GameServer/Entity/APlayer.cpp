@@ -21,6 +21,7 @@ bool    rtp::APlayer::isAuthorized() const {
 }
 
 bool    rtp::APlayer::injectInput(NetworkAbstract::Message const& message) {
+    std::cout << "There" << std::endl;
     if (_functionPtrs.find(NetworkAbstract::getTypeOf<Command>(message)) != _functionPtrs.end()) {
         return _functionPtrs[NetworkAbstract::getTypeOf<Command>(message)](message);
     }
@@ -73,6 +74,7 @@ std::string&    rtp::APlayer::operator>>(std::string& dest) const {
     std::string content;
 
     content = std::to_string(_id) + " " + _pseudo + " " + _spriteName + " " + std::to_string(_nbFrame) + " " + std::to_string(_currentFrame) + " " + std::to_string(getCollideRect().getX()) + " " + std::to_string(getCollideRect().getY()) + " " + std::to_string(getCollideRect().getWidth()) + " " + std::to_string(getCollideRect().getHeight());
+    dest += content;
     return dest;
 }
 

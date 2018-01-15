@@ -123,14 +123,16 @@ void    rtp::WaitingRoomViewController::handleServerFound(NetworkAbstract::Messa
 
             if (udpSocket->connectSocket(serverConnectInfos[0], std::stoi(serverConnectInfos[1]))) {
                 std::cout << "Connected" << std::endl;
-                DataGetter::authorizeClient(udpSocket, std::bind(&rtp::WaitingRoomViewController::authorizedToPlay, this, std::placeholders::_1), _delegate.getDataGetter().getPseudo(), authTokenList[1]);
+                std::cout << DataGetter::authorizeClient(udpSocket, std::bind(&rtp::WaitingRoomViewController::authorizedToPlay, this, std::placeholders::_1), _delegate.getDataGetter().getPseudo(), authTokenList[1]) << std::endl;
+                std::cout << "Player authorized" << std::endl;
             }
         }
     }
 }
 
 void    rtp::WaitingRoomViewController::authorizedToPlay(NetworkAbstract::Message const& response) {
-    std::cout << std::string(response.getBody(), response.getBodySize());
+    std::cout << "On authorizd" << std::endl;
+    std::cout << std::string(response.getBody(), response.getBodySize()) << std::endl;
 }
 
 rtp::WaitingRoomViewController::~WaitingRoomViewController() = default;

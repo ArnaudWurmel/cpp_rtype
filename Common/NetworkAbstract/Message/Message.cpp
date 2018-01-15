@@ -61,6 +61,10 @@ bool    NetworkAbstract::Message::decodeHeader() {
     return true;
 }
 
+void    NetworkAbstract::Message::decodeData() {
+    std::memcpy(_message.body, _data.data() + headerSize, getBodySize());
+}
+
 void    NetworkAbstract::Message::setType(int type) {
     _message.type = type;
 }

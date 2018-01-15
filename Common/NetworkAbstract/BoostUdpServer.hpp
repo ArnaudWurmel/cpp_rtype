@@ -76,6 +76,7 @@ namespace NetworkAbstract {
             if (iterator == _acceptedList.end() && _acceptIncommingConnexion && _acceptedList.size() < 4) {
                 if (!_authToken.empty()) {
                     _acceptedList.push_back(std::make_shared<T>(std::bind(&NetworkAbstract::BoostUdpServer<T>::clientAccessGame, this, std::placeholders::_1, std::placeholders::_2), endpoint, _authToken));
+                    iterator = _acceptedList.end() - 1;
                 }
             }
             else if (iterator == _acceptedList.end()) {
@@ -151,27 +152,25 @@ namespace NetworkAbstract {
         }
 
         void    handleReadHeader(const boost::system::error_code &error, std::size_t size) {
-            std::cout << error << " " << size << std::endl;
-            if (!error && size == NetworkAbstract::Message::headerSize) {
+            std::cout << error.message() << " " << size << " " << Message::headerSize << std::endl;
+            if (!error) {
                 if (_readM.decodeHeader()) {
-                    _socket.async_receive_from(boost::asio::buffer(_readM.getBody(), _readM.getBodySize()), _clientEndpoint,
-                                               boost::bind(&BoostUdpServer::handleReadBody, this->shared_from_this(), boost::asio::placeholders::error,
-                                                           boost::asio::placeholders::bytes_transferred));
+                    _readM.decodeData();
+                    newData(_clientEndpoint, _readM);
                 }
+                startReceive();
             }
         }
 
         void    handleReadBody(const boost::system::error_code& error, std::size_t size) {
-            std::cout << error << " " << size << std::endl;
-            if (!error && size == NetworkAbstract::Message::headerSize) {
-                newData(_clientEndpoint, _readM);
-                startReceive();
+            std::cout << "Readed size " << error.message() << " " << size << std::endl;
+            if (!error && size == _readM.getBodySize()) {
             }
         }
 
         void    startReceive() {
             _socket.async_receive_from(
-                    boost::asio::buffer(_readM.data(), NetworkAbstract::Message::headerSize), _clientEndpoint,
+                    boost::asio::buffer(_readM.data(), NetworkAbstract::Message::maxBodySize + NetworkAbstract::Message::headerSize), _clientEndpoint,
                     boost::bind(&BoostUdpServer::handleReadHeader, this->shared_from_this(),
                                 boost::asio::placeholders::error,
                                 boost::asio::placeholders::bytes_transferred));
