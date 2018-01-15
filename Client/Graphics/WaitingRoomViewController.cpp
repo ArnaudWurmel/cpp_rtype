@@ -112,7 +112,25 @@ void    rtp::WaitingRoomViewController::handleStartMatchmaking(NetworkAbstract::
 }
 
 void    rtp::WaitingRoomViewController::handleServerFound(NetworkAbstract::Message const& serverMessage) {
-    std::cout << "Server founded (" << std::string(serverMessage.getBody(), serverMessage.getBodySize()) << ")" << std::endl;
+    _onMatchmaking = false;
+    std::vector<std::string>    authTokenList = rtp::DataGetter::getTokenFrom(std::string(serverMessage.getBody(), serverMessage.getBodySize()), ';');
+    std::cout << authTokenList.size() << std::endl;
+    if (authTokenList.size() == 2) {
+        std::vector<std::string>    serverConnectInfos = rtp::DataGetter::getTokenFrom(authTokenList[0], ':');
+        if (serverConnectInfos.size() == 2) {
+            std::cout << "Server founded (" << std::string(serverMessage.getBody(), serverMessage.getBodySize()) << ")" << std::endl;
+            std::shared_ptr<NetworkAbstract::ISocket>   udpSocket = _delegate.getDataGetter().getEmptyUdpSocket(_gameCv);
+
+            if (udpSocket->connectSocket(serverConnectInfos[0], std::stoi(serverConnectInfos[1]))) {
+                std::cout << "Connected" << std::endl;
+                DataGetter::authorizeClient(udpSocket, std::bind(&rtp::WaitingRoomViewController::authorizedToPlay, this, std::placeholders::_1), _delegate.getDataGetter().getPseudo(), authTokenList[1]);
+            }
+        }
+    }
+}
+
+void    rtp::WaitingRoomViewController::authorizedToPlay(NetworkAbstract::Message const& response) {
+    std::cout << std::string(response.getBody(), response.getBodySize());
 }
 
 rtp::WaitingRoomViewController::~WaitingRoomViewController() = default;

@@ -27,7 +27,7 @@ namespace NetworkAbstract {
         bool    startAccept() override;
         bool    haveAwaitingClient() override;
         std::shared_ptr<ISocket> acceptClient() override;
-        std::shared_ptr<NetworkAbstract::ISocket>   getEmptySocket(std::condition_variable&) override;
+        std::shared_ptr<NetworkAbstract::ISocket>   getEmptySocket(std::condition_variable&, IAcceptor::SocketType) override;
         bool    isRunning() const override;
 
     private:

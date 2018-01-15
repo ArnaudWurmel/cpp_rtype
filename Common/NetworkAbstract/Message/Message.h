@@ -32,7 +32,7 @@ namespace NetworkAbstract {
 	public:
 
         enum { headerSize = sizeof(unsigned short) + sizeof(int) + sizeof(unsigned int) };
-        enum { maxBodySize = 512 };
+        enum { maxBodySize = 4096 };
         enum { magic_number = 0x424D };
 
     public:

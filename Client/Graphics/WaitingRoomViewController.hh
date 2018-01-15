@@ -26,6 +26,8 @@ namespace   rtp {
         void    handleStopMatchmaking(NetworkAbstract::Message const&);
         void    handleServerFound(NetworkAbstract::Message const&);
 
+        void    authorizedToPlay(NetworkAbstract::Message const&);
+
     private:
         void    createListPlayer();
 

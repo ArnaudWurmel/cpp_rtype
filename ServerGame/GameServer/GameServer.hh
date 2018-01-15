@@ -13,7 +13,7 @@
 # include "../NetworkAbstract/ISocket.h"
 # include "../NetworkAbstract/IAcceptor.hh"
 #include "../NetworkAbstract/IServer.hh"
-#include "APlayer.hh"
+#include "Entity/APlayer.hh"
 
 # define TOKEN_SIZE 32
 
@@ -69,7 +69,7 @@ namespace rtp {
 
     private:
         std::shared_ptr<NetworkAbstract::ISocket>   _controlSocket;
-        std::shared_ptr<NetworkAbstract::IServer<APlayer> >   _gameServer;
+        std::shared_ptr<NetworkAbstract::IServer<NetworkAbstract::BoostUdpClient<APlayer> > >   _gameServer;
         unsigned short  _port;
 
     private:

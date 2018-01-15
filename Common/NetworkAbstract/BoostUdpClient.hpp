@@ -11,8 +11,12 @@ namespace NetworkAbstract {
     template<typename T>
     class BoostUdpClient : public T {
     public:
-        explicit BoostUdpClient(boost::asio::ip::udp::endpoint const& endpoint, std::string const& authToken) : T(authToken) {
+        using   OnAuthorizationGranted = std::function<void (bool, boost::asio::ip::udp::endpoint)>;
+
+    public:
+        explicit BoostUdpClient(OnAuthorizationGranted const& onAuthorizationGranted, boost::asio::ip::udp::endpoint const& endpoint, std::string const& authToken) : T(std::bind(&NetworkAbstract::BoostUdpClient<T>::onAuthorization, this, std::placeholders::_1), authToken) {
             _endpoint = endpoint;
+            _onAuthorizationGranted = onAuthorizationGranted;
         }
 
         ~BoostUdpClient() = default;
@@ -23,7 +27,13 @@ namespace NetworkAbstract {
         }
 
     private:
+        void    onAuthorization(bool success) {
+            _onAuthorizationGranted(success, _endpoint);
+        }
+
+    private:
         boost::asio::ip::udp::endpoint  _endpoint;
+        OnAuthorizationGranted _onAuthorizationGranted;
     };
 }
 

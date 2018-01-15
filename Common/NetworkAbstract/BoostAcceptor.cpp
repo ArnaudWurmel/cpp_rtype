@@ -5,6 +5,7 @@
 #include <boost/bind.hpp>
 #include <thread>
 #include "BoostAcceptor.hh"
+#include "BoostUdpSocket.hh"
 
 NetworkAbstract::BoostAcceptor::BoostAcceptor(unsigned short port,
                                               std::condition_variable& notifier) : _endpoint(boost::asio::ip::tcp::v4(), port), _acceptor(_ioService), _notifier(notifier) {
@@ -50,8 +51,11 @@ std::shared_ptr<NetworkAbstract::ISocket> NetworkAbstract::BoostAcceptor::accept
     return newClient;
 }
 
-std::shared_ptr<NetworkAbstract::ISocket>   NetworkAbstract::BoostAcceptor::getEmptySocket(std::condition_variable& awaker) {
-    return std::shared_ptr<NetworkAbstract::ISocket>(new BoostSocket(_ioService, awaker));
+std::shared_ptr<NetworkAbstract::ISocket>   NetworkAbstract::BoostAcceptor::getEmptySocket(std::condition_variable& awaker, SocketType type) {
+    if (type == TCP) {
+        return std::shared_ptr<NetworkAbstract::ISocket>(new BoostSocket(_ioService, awaker));
+    }
+    return std::shared_ptr<NetworkAbstract::ISocket>(new BoostUdpSocket(_ioService, awaker));
 }
 
 void    NetworkAbstract::BoostAcceptor::stop() {

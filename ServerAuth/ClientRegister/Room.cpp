@@ -50,7 +50,6 @@ bool    rtp::Room::removePlayer(std::shared_ptr<RegisteredClient>& player) {
     }
     bool    isOwner = player->getId() == _ownerId;
     _playerList.erase(iterator);
-    std::cout << _playerList.size() << std::endl;
     if (isOwner && _playerList.size() > 0) {
         NetworkAbstract::Message    newOwnerMessage;
 

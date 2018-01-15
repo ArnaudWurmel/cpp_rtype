@@ -9,8 +9,7 @@
 #include "BoostUdpClient.hpp"
 
 namespace NetworkAbstract {
-    template<typename T>
-    class   IServer {
+    template<typename T> class   IServer {
     public:
         virtual ~IServer() = default;
 
@@ -19,7 +18,7 @@ namespace NetworkAbstract {
         virtual void stop() = 0;
         virtual void acceptIncommingConnexion(bool) = 0;
         virtual std::shared_ptr<ISocket>    getEmptyASocket(std::condition_variable&) = 0;
-        virtual std::vector<std::shared_ptr<BoostUdpClient<T> > > const& getClient() const = 0;
+        virtual std::vector<std::shared_ptr<T> > const& getClient() const = 0;
     };
 }
 

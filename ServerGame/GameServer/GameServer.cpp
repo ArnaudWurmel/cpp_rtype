@@ -6,7 +6,7 @@
 #include "../NetworkAbstract/BoostSocket.h"
 #include "../NetworkAbstract/BoostAcceptor.hh"
 #include "../NetworkAbstract/BoostUdpServer.hpp"
-#include "APlayer.hh"
+#include "Entity/APlayer.hh"
 
 rtp::GameServer::GameServer(unsigned short port) : _port(port) {
     _serverState = NotRegistered;
@@ -21,7 +21,7 @@ rtp::GameServer::GameServer(unsigned short port) : _port(port) {
 }
 
 bool    rtp::GameServer::connectToAuthServer(std::string const& authHost, unsigned short authPort) {
-    _gameServer = std::shared_ptr<NetworkAbstract::IServer<APlayer> >(new NetworkAbstract::BoostUdpServer<APlayer>(_port));
+    _gameServer = std::shared_ptr<NetworkAbstract::IServer<NetworkAbstract::BoostUdpClient<APlayer > > >(new NetworkAbstract::BoostUdpServer<NetworkAbstract::BoostUdpClient<APlayer> >(_port));
     _controlSocket = _gameServer->getEmptyASocket(_inputAvailable);
     _gameServer->run();
     return _controlSocket->connectSocket(authHost, authPort);
