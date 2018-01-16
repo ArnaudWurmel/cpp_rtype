@@ -24,20 +24,35 @@ namespace NetworkAbstract {
         };
 
     public:
-        explicit BoostUdpServer(unsigned short port) : _endpoint(boost::asio::ip::udp::v4(), port), _socket(_ioService, _endpoint) {
+        explicit BoostUdpServer(unsigned short port) : _endpoint(boost::asio::ip::udp::v4(), port), _socket(_ioService) {
             _acceptIncommingConnexion = false;
+            boost::system::error_code ec;
+            init("");
             std::cout << port << std::endl;
         }
 
         ~BoostUdpServer() {
             stop();
+            _ioService.stop();
+            if (_threadRunner) {
+                _threadRunner->join();
+            }
         }
 
     public:
         void    init(std::string const& authToken) {
+            if (!_socket.is_open()) {
+                _socket.open(boost::asio::ip::udp::v4());
+                boost::system::error_code ec;
+                _socket.set_option(boost::asio::socket_base::reuse_address(true), ec);
+                _socket.bind(_endpoint);
+            }
             _acceptIncommingConnexion = false;
             _acceptedList.clear();
             _authToken = authToken;
+            if (authToken.size() > 0) {
+                startReceive();
+            }
         }
 
         void    acceptIncommingConnexion(bool state) {
@@ -54,10 +69,14 @@ namespace NetworkAbstract {
         }
 
         void    stop() {
-            _ioService.stop();
-            if (_threadRunner) {
-                _threadRunner->join();
+            if (_socket.is_open()) {
+                close();
             }
+        }
+
+        void    close() {
+            _socket.cancel();
+            _socket.close();
         }
 
         std::shared_ptr<ISocket>    getEmptyASocket(std::condition_variable& awaker) {
@@ -68,32 +87,41 @@ namespace NetworkAbstract {
             return _acceptedList;
         }
 
+        std::vector<std::shared_ptr<T> >&    getClient() {
+            return _acceptedList;
+        }
+
     private:
         void    newData(boost::asio::ip::udp::endpoint const& endpoint, NetworkAbstract::Message const& message) {
+            std::cout << "New input" << std::endl;
             auto iterator = std::find_if(_acceptedList.begin(), _acceptedList.end(), [&](std::shared_ptr<T> const& client) {
                 return client->getEndpoint().address() == endpoint.address() && endpoint.port() == client->getEndpoint().port();
             });
+            std::cout << "Authorized to be accepted : " << _acceptIncommingConnexion << std::endl;
             if (iterator == _acceptedList.end() && _acceptIncommingConnexion && _acceptedList.size() < 4) {
                 if (!_authToken.empty()) {
                     _acceptedList.push_back(std::make_shared<T>(std::bind(&NetworkAbstract::BoostUdpServer<T>::clientAccessGame, this, std::placeholders::_1, std::placeholders::_2), endpoint, _authToken));
                     iterator = _acceptedList.end() - 1;
                 }
             }
-            else if (iterator == _acceptedList.end()) {
+            else if (iterator == _acceptedList.end() || !_acceptIncommingConnexion) {
                 return ;
             }
             (*iterator)->injectInput(message);
         }
 
         void    clientAccessGame(bool success, boost::asio::ip::udp::endpoint const& clientEndpoint) {
+            std::cout << "Player called" << std::endl;
             auto    newPlayerIterator = std::find_if(_acceptedList.begin(), _acceptedList.end(), [&] (std::shared_ptr<T> const& player) {
                 return player->getEndpoint() == clientEndpoint;
             });
 
             if (newPlayerIterator == _acceptedList.end()) {
+                std::cout << "Can't find a player" << std::endl;
                 return ;
             }
 
+            std::cout << "Before send" << std::endl;
             Message authorizedMessage;
 
             authorizedMessage.setType(AUTHORIZE);
@@ -106,8 +134,10 @@ namespace NetworkAbstract {
             else {
                 authorizedMessage.setBody(std::string("failure").c_str(), std::string("failure").length());
             }
-            writeToClient(clientEndpoint, authorizedMessage);
 
+            std::cout << "Before write" << std::endl;
+            writeToClient(clientEndpoint, authorizedMessage);
+            std::cout << "Send to client " << success << std::endl;
             std::string spawnBody;
             Message spawnMessage;
 
@@ -122,6 +152,10 @@ namespace NetworkAbstract {
                 }
                 ++iterator;
             }
+        }
+
+        void    writeToClient(std::shared_ptr<T> const& client, NetworkAbstract::Message const& message) {
+            this->writeToClient(client->getEndpoint(), message);
         }
 
         void    writeToClient(boost::asio::ip::udp::endpoint const& clientEndpoint, NetworkAbstract::Message const& message) {
@@ -141,6 +175,7 @@ namespace NetworkAbstract {
         }
 
         void    handleWrited(boost::system::error_code const& error, std::size_t writed) {
+            std::cout << error << std::endl;
             _writingLocker.lock();
             _writingList.pop();
             if (!_writingList.empty()) {
@@ -148,7 +183,7 @@ namespace NetworkAbstract {
                                       _writingList.front().first, boost::bind(&NetworkAbstract::BoostUdpServer<T>::handleWrited, this->shared_from_this(), boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
 
             }
-
+            _writingLocker.unlock();
         }
 
         void    handleReadHeader(const boost::system::error_code &error, std::size_t size) {
@@ -162,13 +197,8 @@ namespace NetworkAbstract {
             }
         }
 
-        void    handleReadBody(const boost::system::error_code& error, std::size_t size) {
-            std::cout << "Readed size " << error.message() << " " << size << std::endl;
-            if (!error && size == _readM.getBodySize()) {
-            }
-        }
-
         void    startReceive() {
+            std::cout << "startReceive()" << std::endl;
             _socket.async_receive_from(
                     boost::asio::buffer(_readM.data(), NetworkAbstract::Message::maxBodySize + NetworkAbstract::Message::headerSize), _clientEndpoint,
                     boost::bind(&BoostUdpServer::handleReadHeader, this->shared_from_this(),

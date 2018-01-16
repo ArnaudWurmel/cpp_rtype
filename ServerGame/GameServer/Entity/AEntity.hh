@@ -6,29 +6,34 @@
 #define SERVERGAME_AENTITY_HH
 
 # include <string>
+#include <vector>
 # include "CollideRect.hh"
 
 namespace rtp {
     class   AEntity {
     public:
-        AEntity(std::string const&, int nbFrame, CollideRect const&);
+        AEntity(std::string const&);
         virtual ~AEntity();
 
     protected:
         virtual void    translate(Vector2<int> const&);
         virtual bool    collide(AEntity const&);
-        virtual CollideRect const&  getCollideRect() const;
+        virtual CollideRect  getCollideRect() const;
+        void    addCollideRect(CollideRect const&);
+        virtual bool    isUpdated() const;
+        void    setUpdated(bool);
 
     public:
         virtual std::string&    operator>>(std::string&) const = 0;
 
-    private:
-        CollideRect _collideRect;
+    protected:
+        std::vector<CollideRect> _collideRectList;
 
     protected:
         std::string _spriteName;
-        int _nbFrame;
         int _currentFrame;
+        Vector2<int>    _position;
+        bool    _updated;
     };
 }
 

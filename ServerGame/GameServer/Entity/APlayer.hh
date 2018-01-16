@@ -17,6 +17,14 @@ namespace rtp {
         using OnAuthorization = std::function<void  (bool)>;
 
     public:
+        enum    AnimationName {
+            FullLeft = 0,
+            Left = 1,
+            Center = 2,
+            Right = 3,
+            FullRight = 4
+        };
+    public:
         enum    Command {
             AUTHORIZE = 0,
             SPAWN_PLAYER = 1,
@@ -29,7 +37,7 @@ namespace rtp {
 
     public:
         bool    isAuthorized() const;
-        bool    injectInput(NetworkAbstract::Message const&);
+        virtual bool    injectInput(NetworkAbstract::Message const&);
         std::string const&  getPseudo() const;
         unsigned int    getId() const;
 

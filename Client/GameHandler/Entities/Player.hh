@@ -10,8 +10,19 @@
 namespace rtp {
     class Player : public ADrawableEntity {
     public:
-        Player(std::string const& spriteName, int nbFrames, int currentFrame, int x, int y, int width, int height, std::string const& pseudo);
+        static std::shared_ptr<Player>  instanciateFromInfo(std::string const&);
+
+    private:
+        Player(int id, std::string const& pseudo, std::string const& spriteName, int x, int y, int currentFrame);
+
+    public:
         ~Player() override;
+
+    public:
+        int getId() const;
+
+    private:
+        int _id;
     };
 }
 

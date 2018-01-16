@@ -31,7 +31,6 @@ namespace NetworkAbstract {
 
     private:
         void handleReadHeader(const boost::system::error_code &error, std::size_t);
-        void handleReadBody(const boost::system::error_code &error, std::size_t);
         void handleWrite(boost::system::error_code const &, std::size_t);
 
     private:

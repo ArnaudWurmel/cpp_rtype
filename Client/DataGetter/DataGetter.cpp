@@ -204,7 +204,7 @@ std::vector<std::unique_ptr<rtp::Room> > const&  rtp::DataGetter::getRoomList() 
     return _roomList;
 }
 
-bool    rtp::DataGetter::waitCommandExecution(std::shared_ptr<NetworkAbstract::ISocket> socket, NetworkAbstract::Message const& command, Emptier emptier) {
+bool    rtp::DataGetter::waitCommandExecution(std::shared_ptr<NetworkAbstract::ISocket> socket, NetworkAbstract::Message const& command, EmptierFrom emptier) {
     int maxWaiting = 50;
 
     socket->write(command);
@@ -215,7 +215,7 @@ bool    rtp::DataGetter::waitCommandExecution(std::shared_ptr<NetworkAbstract::I
 
             if (message.getType() == command.getType()) {
                 std::cout << "Called" << std::endl;
-                emptier(message);
+                emptier(socket, message);
                 return true;
             }
             socket->addMessage(message);
@@ -225,7 +225,7 @@ bool    rtp::DataGetter::waitCommandExecution(std::shared_ptr<NetworkAbstract::I
     throw rtp::NetworkException();
 }
 
-bool    rtp::DataGetter::authorizeClient(std::shared_ptr<NetworkAbstract::ISocket> socket, Emptier emptier, std::string const& pseudo, std::string const& authToken) {
+bool    rtp::DataGetter::authorizeClient(std::shared_ptr<NetworkAbstract::ISocket> socket, EmptierFrom emptier, std::string const& pseudo, std::string const& authToken) {
     NetworkAbstract::Message    message;
 
     message.setType(GameHandler::Command::AUTHORIZE);

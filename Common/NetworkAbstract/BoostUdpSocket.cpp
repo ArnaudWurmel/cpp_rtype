@@ -7,7 +7,9 @@
 #include <boost/lexical_cast.hpp>
 #include "BoostUdpSocket.hh"
 
-NetworkAbstract::BoostUdpSocket::BoostUdpSocket(boost::asio::io_service& io_service, std::condition_variable& cv) : ISocket(cv), _socket(io_service, boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 0)), _resolver(io_service) {}
+NetworkAbstract::BoostUdpSocket::BoostUdpSocket(boost::asio::io_service& io_service, std::condition_variable& cv) : ISocket(cv), _socket(io_service), _resolver(io_service) {
+    _socket.open(boost::asio::ip::udp::v4());
+}
 
 bool    NetworkAbstract::BoostUdpSocket::isOpen() const {
     return _socket.is_open();
@@ -40,13 +42,6 @@ void    NetworkAbstract::BoostUdpSocket::handleReadHeader(const boost::system::e
             _readM.decodeData();
             addMessage(_readM);
         }
-    }
-    startSession();
-}
-
-void    NetworkAbstract::BoostUdpSocket::handleReadBody(const boost::system::error_code &error, std::size_t bytes) {
-    if (!error && bytes == _readM.getBodySize()) {
-        addMessage(_readM);
         startSession();
     }
     else {

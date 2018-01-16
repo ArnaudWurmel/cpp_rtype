@@ -23,8 +23,8 @@ int rtp::CollideRect::getHeight() const {
 }
 
 void    rtp::CollideRect::translate(rtp::Vector2<int> const&   vector) {
-    _x += vector.x;
-    _y += vector.y;
+    _x = vector.x;
+    _y = vector.y;
 }
 
 rtp::CollideRect::~CollideRect() {}

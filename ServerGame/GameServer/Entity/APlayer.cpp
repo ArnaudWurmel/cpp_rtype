@@ -8,12 +8,18 @@
 
 unsigned int    rtp::APlayer::_clientIdIncr = 0;
 
-rtp::APlayer::APlayer(OnAuthorization const& authorizationCallback, std::string const& authToken) : AEntity("player.png", 1, CollideRect(0, 0, 0, 0)) {
+rtp::APlayer::APlayer(OnAuthorization const& authorizationCallback, std::string const& authToken) : AEntity("ShipSprite.png") {
     _id = _clientIdIncr++;
     _authorized = false;
     _authorizationCallback = authorizationCallback;
     _authToken = authToken;
     _functionPtrs.insert(std::make_pair(rtp::APlayer::Command::AUTHORIZE, std::bind(&rtp::APlayer::handleAuthorize, this, std::placeholders::_1)));
+    _collideRectList.push_back(CollideRect(0, 0, 24, 42));
+    _collideRectList.push_back(CollideRect(43, 0, 35, 42));
+    _collideRectList.push_back(CollideRect(86, 0, 49, 42));
+    _collideRectList.push_back(CollideRect(141, 0, 35, 42));
+    _collideRectList.push_back(CollideRect(195, 0, 23, 42));
+    _currentFrame = Center;
 }
 
 bool    rtp::APlayer::isAuthorized() const {
@@ -21,7 +27,6 @@ bool    rtp::APlayer::isAuthorized() const {
 }
 
 bool    rtp::APlayer::injectInput(NetworkAbstract::Message const& message) {
-    std::cout << "There" << std::endl;
     if (_functionPtrs.find(NetworkAbstract::getTypeOf<Command>(message)) != _functionPtrs.end()) {
         return _functionPtrs[NetworkAbstract::getTypeOf<Command>(message)](message);
     }
@@ -73,7 +78,15 @@ std::vector<std::string>    rtp::APlayer::getTokenFrom(std::string const& input,
 std::string&    rtp::APlayer::operator>>(std::string& dest) const {
     std::string content;
 
-    content = std::to_string(_id) + " " + _pseudo + " " + _spriteName + " " + std::to_string(_nbFrame) + " " + std::to_string(_currentFrame) + " " + std::to_string(getCollideRect().getX()) + " " + std::to_string(getCollideRect().getY()) + " " + std::to_string(getCollideRect().getWidth()) + " " + std::to_string(getCollideRect().getHeight());
+    content = std::to_string(_id) + " " + _pseudo + " " + _spriteName + " " + std::to_string(_position.x) + " " + std::to_string(_position.y) + " " + std::to_string(_currentFrame) + " ";
+    auto iterator = _collideRectList.begin();
+    while (iterator != _collideRectList.end()) {
+        content = content + std::to_string((*iterator).getX()) + "." + std::to_string((*iterator).getY()) + "." + std::to_string((*iterator).getWidth()) + "." + std::to_string((*iterator).getHeight());
+        ++iterator;
+        if (iterator != _collideRectList.end()) {
+            content += ";";
+        }
+    }
     dest += content;
     return dest;
 }

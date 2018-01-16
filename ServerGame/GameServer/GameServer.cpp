@@ -66,13 +66,31 @@ bool    rtp::GameServer::handleMessage(NetworkAbstract::Message const& message) 
 
 void    rtp::GameServer::serverLoop() {
     while (_controlSocket->isOpen()) {
-        if (_serverState == ServerState::Busy && _lockedAt.time_since_epoch().count() + 5000000 < std::chrono::system_clock::now().time_since_epoch().count() &&
-                _gameServer->getClient().empty()) {
-            if (!registerServer()) {
-                _controlSocket->close();
+        auto    playerListIt = _gameServer->getClient().begin();
+
+        while (playerListIt != _gameServer->getClient().end()) {
+            if ((*playerListIt)->haveTimedOut()) {
+                std::cout << "Deleted" << std::endl;
+                _gameServer->getClient().erase(playerListIt);
+            }
+            else {
+                ++playerListIt;
             }
         }
-
+        if (_serverState == ServerState::Busy && _lockedAt.time_since_epoch().count() + 5000000 < std::chrono::system_clock::now().time_since_epoch().count()) {
+            if (_gameServer->getClient().empty()) {
+                if (!registerServer()) {
+                    _controlSocket->close();
+                }
+                else {
+                    _gameServer->stop();
+                    _gameServer->init(_authToken);
+                }
+            }
+            else {
+                _gameServer->acceptIncommingConnexion(false);
+            }
+        }
         std::unique_lock<std::mutex>    lck(_inputLocker);
 
         _inputAvailable.wait_for(lck, std::chrono::milliseconds(200));
@@ -96,7 +114,6 @@ bool    rtp::GameServer::handleRegistering(NetworkAbstract::Message const& messa
     _authToken = std::string(message.getBody(), message.getBodySize());
     std::cout << "Token : " << _authToken << std::endl;
     _gameServer->init(_authToken);
-    _gameServer->acceptIncommingConnexion(true);
     return true;
 }
 
@@ -106,6 +123,7 @@ bool    rtp::GameServer::handleReserved(NetworkAbstract::Message const& message)
     response.setType(RESERVED);
     if (_serverState == Available) {
         _serverState = Busy;
+        _gameServer->acceptIncommingConnexion(true);
         _lockedAt = std::chrono::system_clock::now();
         std::cout << "Reserved" << std::endl;
         response.setBody("success", 7);
@@ -122,6 +140,7 @@ bool    rtp::GameServer::handlePing(NetworkAbstract::Message const& message) {
 
     response.setType(Command::PING);
 
+    std::cout << _stateTranslator[_serverState] << std::endl;
     response.setBody(_stateTranslator[_serverState].c_str(), _stateTranslator[_serverState].length());
     _controlSocket->write(response);
     return true;

@@ -44,18 +44,20 @@ void    rtp::RootViewController::loop() {
             }
         }
         ImGui::SFML::Update(_window, deltaClock.restart());
+        _starsTexture.loadFromImage(_starsImage);
+        _stars.updateStar();
+        _stars.drawStar(_starsTexture);
+        _window.clear(sf::Color::Black);
+        _window.draw(_starsSprite);
+        if (!_stackView.empty() && _stackView.top()->drawTitle()) {
+            _window.draw(_text);
+        }
         if (!_stackView.top()->render()) {
             _stackView.pop();
             if (!_stackView.empty()) {
                 _stackView.top()->viewDidReappear();
             }
         }
-        _starsTexture.loadFromImage(_starsImage);
-        _stars.updateStar();
-        _stars.drawStar(_starsTexture);
-        _window.clear(sf::Color::Black);
-        _window.draw(_starsSprite);
-        _window.draw(_text);
         ImGui::SFML::Render(_window);
         _window.display();
     }
@@ -75,6 +77,10 @@ rtp::DataGetter&    rtp::RootViewController::getDataGetter() {
 
 void    rtp::RootViewController::instanciate(std::shared_ptr<AViewController>& viewController) {
     _stackView.push(viewController);
+}
+
+sf::RenderWindow&   rtp::RootViewController::getWindow() {
+    return _window;
 }
 
 rtp::RootViewController::~RootViewController() {

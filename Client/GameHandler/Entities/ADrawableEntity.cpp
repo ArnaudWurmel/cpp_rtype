@@ -4,30 +4,28 @@
 
 #include <SFML/Graphics/Text.hpp>
 #include "ADrawableEntity.hh"
+#include "../../DataGetter/DataGetter.hh"
 
-rtp::ADrawableEntity::ADrawableEntity(std::string const &spritePath, int nbFrames, int currentFrame, int x, int y,
-                                      int width, int height, const std::string &title) {
+rtp::ADrawableEntity::ADrawableEntity(std::string const &spritePath, int currentFrame, int x, int y, const std::string &title) {
     _title = title;
-    _spritePath = spritePath;
-    _nbFrames = nbFrames;
+    _spritePath = "ressources/" + spritePath;
     _currentFrame = currentFrame;
     _x = x;
     _y = y;
-    _width = width;
-    if (getTextFromTitle().getLocalBounds().width > _width) {
-        _width = getTextFromTitle().getLocalBounds().width;
-    }
-    _height = height;
 }
 
 bool    rtp::ADrawableEntity::init() {
-    for (int i = 0; i < _nbFrames; i++) {
-        _frameList.push_back(sf::IntRect(_x * i, 0, _width, _height));
-    }
-    return _spriteImage.loadFromFile(_spritePath) && _renderTexture.create(_width, _height + 50) && _font.loadFromFile("ressources/zorque.ttf");
+    return _spriteImage.loadFromFile(_spritePath) && _font.loadFromFile("ressources/zorque.ttf");
 }
 
 void    rtp::ADrawableEntity::render() {
+    int width = _frameList[_currentFrame].width;
+    if (_frameList[_currentFrame].width < getTextFromTitle().getLocalBounds().width) {
+        width = getTextFromTitle().getLocalBounds().width;
+    }
+    if (!_renderTexture.create(width, _frameList[_currentFrame].height + 20)) {
+        return;
+    }
     _renderTexture.clear(sf::Color::Transparent);
     sf::Sprite  sprite;
     sf::Texture texture;
@@ -41,7 +39,23 @@ void    rtp::ADrawableEntity::render() {
     }
     _renderTexture.draw(sprite);
     _renderTexture.draw(getTextFromTitle());
+    _renderTexture.display();
     setTexture(_renderTexture.getTexture());
+    setPosition(_x, _y);
+}
+
+void    rtp::ADrawableEntity::parseFrame(std::vector<std::string> const& frameList) {
+    auto iterator = frameList.begin();
+
+    while (iterator != frameList.end()) {
+        std::vector<std::string>    frame = DataGetter::getTokenFrom(*iterator, '.');
+
+        if (frame.size() == 4) {
+            _frameList.push_back(sf::IntRect(std::stoi(frame[0]), std::stoi(frame[1]), std::stoi(frame[2]), std::stoi(frame[3])));
+            std::cout << *iterator << std::endl;
+        }
+        ++iterator;
+    }
 }
 
 sf::Text    rtp::ADrawableEntity::getTextFromTitle() const {
@@ -50,7 +64,9 @@ sf::Text    rtp::ADrawableEntity::getTextFromTitle() const {
     titleText.setCharacterSize(12);
     titleText.setString(_title);
     titleText.setColor(sf::Color::White);
-    titleText.setPosition((_width - titleText.getLocalBounds().width) / 2, _renderTexture.getSize().y - titleText.getLocalBounds().height);
+    titleText.setFont(_font);
+    std::cout << titleText.getGlobalBounds().width << " " << titleText.getLocalBounds().height << " " << _title << std::endl;
+    titleText.setPosition((_frameList[_currentFrame].width - titleText.getLocalBounds().width) / 2, _renderTexture.getSize().y - 20);
     return titleText;
 }
 

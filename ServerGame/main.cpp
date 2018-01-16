@@ -38,6 +38,7 @@ int main(int ac, char **av) {
     argumentLoader.enableArgument("--auth-port", true);
     argumentLoader.enableArgument("--auth-host", true);
     argumentLoader.enableArgument("--server-port", true);
+    argumentLoader.enableArgument("-d", false);
     if (!argumentLoader.loadArguments(ac, av)) {
         return 1;
     }

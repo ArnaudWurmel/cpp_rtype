@@ -13,31 +13,33 @@
 namespace rtp {
     class   ADrawableEntity : public sf::Sprite {
     public:
-        ADrawableEntity(std::string const& spritePath, int nbFrames, int currentFrame, int x, int y, int width, int height, std::string const& title = "");
+        ADrawableEntity(std::string const& spritePath, int currentFrame, int x, int y, std::string const& title = "");
         virtual ~ADrawableEntity();
 
     public:
         bool    init();
         void    render();
 
+    protected:
+        void    parseFrame(std::vector<std::string> const&);
+
     private:
         sf::Text    getTextFromTitle() const;
 
     private:
         std::string _spritePath;
-        int _nbFrames;
         int _currentFrame;
-        int _x;
-        int _y;
-        int _width;
-        int _height;
         std::string _title;
 
-    private:
+    protected:
         std::vector<sf::IntRect>    _frameList;
+
+    private:
         sf::Image   _spriteImage;
         sf::RenderTexture   _renderTexture;
         sf::Font    _font;
+        int _x;
+        int _y;
     };
 }
 

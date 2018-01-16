@@ -17,6 +17,7 @@ namespace NetworkAbstract {
         explicit BoostUdpClient(OnAuthorizationGranted const& onAuthorizationGranted, boost::asio::ip::udp::endpoint const& endpoint, std::string const& authToken) : T(std::bind(&NetworkAbstract::BoostUdpClient<T>::onAuthorization, this, std::placeholders::_1), authToken) {
             _endpoint = endpoint;
             _onAuthorizationGranted = onAuthorizationGranted;
+            _lastMessage = std::chrono::system_clock::now();
         }
 
         ~BoostUdpClient() = default;
@@ -24,6 +25,15 @@ namespace NetworkAbstract {
     public:
         boost::asio::ip::udp::endpoint const&   getEndpoint() const {
             return _endpoint;
+        }
+
+        bool    haveTimedOut() const {
+            return _lastMessage.time_since_epoch().count() + 10000000 < std::chrono::system_clock::now().time_since_epoch().count();
+        }
+
+        bool    injectInput(NetworkAbstract::Message const& message) {
+            _lastMessage = std::chrono::system_clock::now();
+            return T::injectInput(message);
         }
 
     private:
@@ -34,6 +44,7 @@ namespace NetworkAbstract {
     private:
         boost::asio::ip::udp::endpoint  _endpoint;
         OnAuthorizationGranted _onAuthorizationGranted;
+        std::chrono::time_point<std::chrono::system_clock> _lastMessage;
     };
 }
 

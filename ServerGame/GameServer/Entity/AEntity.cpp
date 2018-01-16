@@ -4,14 +4,19 @@
 
 #include "AEntity.hh"
 
-rtp::AEntity::AEntity(std::string const& spriteName, int nbFrame, CollideRect const& collideRect) : _collideRect(collideRect) {
+rtp::AEntity::AEntity(std::string const& spriteName) {
     _spriteName = spriteName;
-    _nbFrame = nbFrame;
     _currentFrame = 0;
+    _position.x = 500;
+    _position.y = 500;
+    _updated = false;
 }
 
-rtp::CollideRect const& rtp::AEntity::getCollideRect() const {
-    return _collideRect;
+rtp::CollideRect rtp::AEntity::getCollideRect() const {
+    rtp::CollideRect    rect = _collideRectList[_currentFrame];
+
+    rect.translate(_position);
+    return rect;
 }
 
 bool    rtp::AEntity::collide(AEntity const& entity) {
@@ -19,7 +24,21 @@ bool    rtp::AEntity::collide(AEntity const& entity) {
 }
 
 void    rtp::AEntity::translate(Vector2<int> const& translateValue) {
-    _collideRect.translate(translateValue);
+    _position.x += translateValue.x;
+    _position.y += translateValue.y;
+    _updated = true;
+}
+
+void    rtp::AEntity::addCollideRect(CollideRect const& rect) {
+    _collideRectList.push_back(rect);
+}
+
+bool    rtp::AEntity::isUpdated() const {
+    return _updated;
+}
+
+void    rtp::AEntity::setUpdated(bool updated) {
+    _updated = updated;
 }
 
 rtp::AEntity::~AEntity() = default;

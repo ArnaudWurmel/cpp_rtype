@@ -26,7 +26,7 @@ namespace   rtp {
         void    handleStopMatchmaking(NetworkAbstract::Message const&);
         void    handleServerFound(NetworkAbstract::Message const&);
 
-        void    authorizedToPlay(NetworkAbstract::Message const&);
+        void    authorizedToPlay(std::shared_ptr<NetworkAbstract::ISocket>, NetworkAbstract::Message const&);
 
     private:
         void    createListPlayer();

@@ -5,6 +5,8 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 #include "WaitingRoomViewController.hh"
+#include "../GameHandler/Entities/Player.hh"
+#include "GameViewController.hh"
 
 rtp::WaitingRoomViewController::WaitingRoomViewController(RootViewController& delegate, int roomId, bool isOwner) : _delegate(delegate) {
     _roomId = roomId;
@@ -122,17 +124,24 @@ void    rtp::WaitingRoomViewController::handleServerFound(NetworkAbstract::Messa
             std::shared_ptr<NetworkAbstract::ISocket>   udpSocket = _delegate.getDataGetter().getEmptyUdpSocket(_gameCv);
 
             if (udpSocket->connectSocket(serverConnectInfos[0], std::stoi(serverConnectInfos[1]))) {
-                std::cout << "Connected" << std::endl;
-                std::cout << DataGetter::authorizeClient(udpSocket, std::bind(&rtp::WaitingRoomViewController::authorizedToPlay, this, std::placeholders::_1), _delegate.getDataGetter().getPseudo(), authTokenList[1]) << std::endl;
-                std::cout << "Player authorized" << std::endl;
+                DataGetter::authorizeClient(udpSocket, std::bind(&rtp::WaitingRoomViewController::authorizedToPlay, this, std::placeholders::_1, std::placeholders::_2), _delegate.getDataGetter().getPseudo(), authTokenList[1]);
             }
         }
     }
 }
 
-void    rtp::WaitingRoomViewController::authorizedToPlay(NetworkAbstract::Message const& response) {
-    std::cout << "On authorizd" << std::endl;
+void    rtp::WaitingRoomViewController::authorizedToPlay(std::shared_ptr<NetworkAbstract::ISocket> from, NetworkAbstract::Message const& response) {
+    std::cout << "On authorized" << std::endl;
     std::cout << std::string(response.getBody(), response.getBodySize()) << std::endl;
+    try {
+        std::shared_ptr<Player> player = Player::instanciateFromInfo(std::string(response.getBody(), response.getBodySize()));
+        std::shared_ptr<AViewController>    viewController(new GameViewController(_delegate, from, player));
+
+        _delegate.instanciate(viewController);
+    }
+    catch (std::exception& e) {
+        std::cerr << "Error : " << e.what() << std::endl;
+    }
 }
 
-rtp::WaitingRoomViewController::~WaitingRoomViewController() = default;
+rtp::WaitingRoomViewController::~WaitingRoomViewController() {}
