@@ -93,15 +93,12 @@ bool    rtp::ClientRegister::playerStartMatchmaking(std::shared_ptr<RegisteredCl
     if (getPlayerRoomId(player) == -1) {
         return false;
     }
-    std::cout << "Here" << std::endl;
     auto iterator = std::find_if(_roomList.begin(), _roomList.end(), [&](std::unique_ptr<Room> const& room) {
         return room->isPlayerIn(player);
     });
     if (iterator == _roomList.end()) {
-        std::cout << "room end" << std::endl;
         return false;
     }
-    std::cout << "before findAServer" << std::endl;
     return (*iterator)->findAServer(player);
 }
 

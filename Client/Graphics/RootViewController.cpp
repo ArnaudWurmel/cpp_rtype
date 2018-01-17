@@ -6,7 +6,7 @@
 #include "imgui-SFML.h"
 #include "LoginViewController.hh"
 
-rtp::RootViewController::RootViewController() : _window(sf::VideoMode(1920, 1080, 32), "R-TYPE") {
+rtp::RootViewController::RootViewController() : _window(sf::VideoMode(600, 1000, 32), "R-TYPE") {
     _window.setFramerateLimit(60);
     ImGui::SFML::Init(_window);
     _stackView.push(std::shared_ptr<AViewController>(new LoginViewController(*this)));
@@ -23,7 +23,7 @@ rtp::RootViewController::RootViewController() : _window(sf::VideoMode(1920, 1080
     _text.setStyle(sf::Text::Bold);
     sf::FloatRect t = _text.getLocalBounds();
     _text.setOrigin(t.left + t.width / 2.0f, t.top + t.height / 2.0f);
-    _text.setPosition(_window.getSize().x / 2.0f, _window.getSize().y / 2.0f - 200);
+    _text.setPosition(_window.getSize().x / 2.0f, 100);
     Starfield s(_window.getSize().x, _window.getSize().y, 100);
     _stars = s;
 }

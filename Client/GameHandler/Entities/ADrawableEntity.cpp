@@ -52,7 +52,6 @@ void    rtp::ADrawableEntity::parseFrame(std::vector<std::string> const& frameLi
 
         if (frame.size() == 4) {
             _frameList.push_back(sf::IntRect(std::stoi(frame[0]), std::stoi(frame[1]), std::stoi(frame[2]), std::stoi(frame[3])));
-            std::cout << *iterator << std::endl;
         }
         ++iterator;
     }
@@ -65,8 +64,12 @@ sf::Text    rtp::ADrawableEntity::getTextFromTitle() const {
     titleText.setString(_title);
     titleText.setColor(sf::Color::White);
     titleText.setFont(_font);
-    std::cout << titleText.getGlobalBounds().width << " " << titleText.getLocalBounds().height << " " << _title << std::endl;
-    titleText.setPosition((_frameList[_currentFrame].width - titleText.getLocalBounds().width) / 2, _renderTexture.getSize().y - 20);
+    if (_frameList[_currentFrame].width > titleText.getLocalBounds().width) {
+        titleText.setPosition((_frameList[_currentFrame].width - titleText.getLocalBounds().width) / 2, _renderTexture.getSize().y - 20);
+    }
+    else {
+        titleText.setPosition(0, _renderTexture.getSize().y - 20);
+    }
     return titleText;
 }
 

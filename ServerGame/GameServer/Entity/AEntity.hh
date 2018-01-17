@@ -12,16 +12,19 @@
 namespace rtp {
     class   AEntity {
     public:
-        AEntity(std::string const&);
+        AEntity(std::string const&, int, int);
         virtual ~AEntity();
+
+    public:
+        virtual bool    collide(AEntity const&);
+        virtual bool    isUpdated() const;
+        void    setUpdated(bool);
+        virtual std::string getInfos() const;
 
     protected:
         virtual void    translate(Vector2<int> const&);
-        virtual bool    collide(AEntity const&);
         virtual CollideRect  getCollideRect() const;
         void    addCollideRect(CollideRect const&);
-        virtual bool    isUpdated() const;
-        void    setUpdated(bool);
 
     public:
         virtual std::string&    operator>>(std::string&) const = 0;

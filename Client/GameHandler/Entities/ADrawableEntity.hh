@@ -28,18 +28,20 @@ namespace rtp {
 
     private:
         std::string _spritePath;
-        int _currentFrame;
         std::string _title;
 
     protected:
         std::vector<sf::IntRect>    _frameList;
 
+    protected:
+        int _x;
+        int _y;
+        int _currentFrame;
+
     private:
         sf::Image   _spriteImage;
         sf::RenderTexture   _renderTexture;
         sf::Font    _font;
-        int _x;
-        int _y;
     };
 }
 

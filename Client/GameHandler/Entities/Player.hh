@@ -21,6 +21,9 @@ namespace rtp {
     public:
         int getId() const;
 
+    public:
+        void    updateFrom(std::vector<std::string> const&);
+
     private:
         int _id;
     };

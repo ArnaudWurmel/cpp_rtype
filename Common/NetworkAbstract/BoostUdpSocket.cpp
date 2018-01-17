@@ -71,7 +71,6 @@ void    NetworkAbstract::BoostUdpSocket::write(NetworkAbstract::Message message)
 }
 
 void    NetworkAbstract::BoostUdpSocket::handleWrite(boost::system::error_code const& e, std::size_t size) {
-    std::cout << e.message() << " " << size << std::endl;
     _mutex.lock();
     _writeList.pop();
     if (!_writeList.empty()) {

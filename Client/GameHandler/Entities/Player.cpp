@@ -11,7 +11,6 @@
 std::shared_ptr<rtp::Player>    rtp::Player::instanciateFromInfo(std::string const& pInfo) {
     std::vector<std::string>    tokenList = DataGetter::getTokenFrom(pInfo, ' ');
 
-    std::cout << pInfo << std::endl;
     if (tokenList.size() != 7) {
         throw ParsingNetworkException();
     }
@@ -26,6 +25,14 @@ rtp::Player::Player(int id, std::string const& pseudo, std::string const& sprite
 
 int rtp::Player::getId() const {
     return _id;
+}
+
+void    rtp::Player::updateFrom(std::vector<std::string> const& pInfos) {
+    if (pInfos.size() == 4) {
+        _x = std::stoi(pInfos[1]);
+        _y = std::stoi(pInfos[2]);
+        _currentFrame = std::stoi(pInfos[3]);
+    }
 }
 
 rtp::Player::~Player() {}

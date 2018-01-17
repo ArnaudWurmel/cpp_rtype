@@ -4,11 +4,11 @@
 
 #include "AEntity.hh"
 
-rtp::AEntity::AEntity(std::string const& spriteName) {
+rtp::AEntity::AEntity(std::string const& spriteName, int x, int y) {
     _spriteName = spriteName;
     _currentFrame = 0;
-    _position.x = 500;
-    _position.y = 500;
+    _position.x = x;
+    _position.y = y;
     _updated = false;
 }
 
@@ -39,6 +39,13 @@ bool    rtp::AEntity::isUpdated() const {
 
 void    rtp::AEntity::setUpdated(bool updated) {
     _updated = updated;
+}
+
+std::string rtp::AEntity::getInfos() const {
+    std::string info;
+
+    info = std::to_string(_position.x) + " " + std::to_string(_position.y) + " " + std::to_string(_currentFrame);
+    return info;
 }
 
 rtp::AEntity::~AEntity() = default;

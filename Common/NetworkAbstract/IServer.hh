@@ -21,6 +21,7 @@ namespace NetworkAbstract {
         virtual std::shared_ptr<ISocket>    getEmptyASocket(std::condition_variable&) = 0;
         virtual std::vector<std::shared_ptr<T> > const& getClient() const = 0;
         virtual std::vector<std::shared_ptr<T> >&   getClient() = 0;
+        virtual void broadcastToAllClient(NetworkAbstract::Message const&) = 0;
     };
 }
 

@@ -131,8 +131,6 @@ void    rtp::WaitingRoomViewController::handleServerFound(NetworkAbstract::Messa
 }
 
 void    rtp::WaitingRoomViewController::authorizedToPlay(std::shared_ptr<NetworkAbstract::ISocket> from, NetworkAbstract::Message const& response) {
-    std::cout << "On authorized" << std::endl;
-    std::cout << std::string(response.getBody(), response.getBodySize()) << std::endl;
     try {
         std::shared_ptr<Player> player = Player::instanciateFromInfo(std::string(response.getBody(), response.getBodySize()));
         std::shared_ptr<AViewController>    viewController(new GameViewController(_delegate, from, player));

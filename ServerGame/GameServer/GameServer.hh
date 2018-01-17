@@ -5,6 +5,7 @@
 #ifndef SERVERGAME_GAMESERVER_HH
 #define SERVERGAME_GAMESERVER_HH
 
+# include <thread>
 # include <chrono>
 # include <condition_variable>
 # include <string>
@@ -49,6 +50,7 @@ namespace rtp {
     private:
         bool    handleMessage(NetworkAbstract::Message const&);
         bool    waitCommand(Callback, Command);
+        void    runGame();
 
         //
         // Callback after I send a command
@@ -77,7 +79,10 @@ namespace rtp {
         std::map<Command, Callback> _callbackPtrs;
         std::map<ServerState, std::string> _stateTranslator;
         ServerState _serverState;
-        std::chrono::time_point<std::chrono::system_clock> _lockedAt;
+        std::chrono::time_point<std::chrono::steady_clock> _lockedAt;
+        std::unique_ptr<std::thread>    _gameRunner;
+        bool    _gameRunning;
+        std::mutex  _pLock;
     };
 }
 

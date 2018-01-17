@@ -28,10 +28,11 @@ namespace NetworkAbstract {
         }
 
         bool    haveTimedOut() const {
-            return _lastMessage.time_since_epoch().count() + 10000000 < std::chrono::system_clock::now().time_since_epoch().count();
+            return _lastMessage.time_since_epoch().count() + 1000000000 < std::chrono::system_clock::now().time_since_epoch().count();
         }
 
         bool    injectInput(NetworkAbstract::Message const& message) {
+            std::cout << "Got message" << std::endl;
             _lastMessage = std::chrono::system_clock::now();
             return T::injectInput(message);
         }
