@@ -23,8 +23,8 @@ bool    NetworkAbstract::BoostSocket::connectSocket(std::string const& host, uns
 }
 
 void    NetworkAbstract::BoostSocket::close() {
-    _socket.cancel();
     if (_socket.is_open()) {
+        _socket.cancel();
         _socket.close();
         _cv.notify_one();
     }
@@ -48,11 +48,11 @@ void    NetworkAbstract::BoostSocket::handleReadHeader(const boost::system::erro
                                     boost::bind(&NetworkAbstract::BoostSocket::handleReadBody, shared_from_this(), boost::asio::placeholders::error));
         }
         else {
-            BoostSocket::close();
+            close();
         }
     }
     else {
-        BoostSocket::close();
+        close();
     }
 }
 
@@ -105,7 +105,6 @@ void    NetworkAbstract::BoostSocket::handleWrite(boost::system::error_code cons
 }
 
 NetworkAbstract::BoostSocket::~BoostSocket() {
-    std::cout << "Socket Deleted" << std::endl;
     if (isOpen()) {
         close();
     }

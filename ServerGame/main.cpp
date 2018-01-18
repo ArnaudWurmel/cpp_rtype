@@ -24,10 +24,6 @@ static bool runGameServer(rtp::ArgumentLoader const& argumentLoader, std::shared
         std::cerr << "Can't connect to AuthServer" << std::endl;
         return false;
     }
-    if (!gameServer->registerServer()) {
-        std::cerr << "Can't register the server" << std::endl;
-        return false;
-    }
     return true;
 }
 
@@ -38,7 +34,6 @@ int main(int ac, char **av) {
     argumentLoader.enableArgument("--auth-port", true);
     argumentLoader.enableArgument("--auth-host", true);
     argumentLoader.enableArgument("--server-port", true);
-    argumentLoader.enableArgument("-d", false);
     if (!argumentLoader.loadArguments(ac, av)) {
         return 1;
     }

@@ -26,12 +26,6 @@ namespace rtp {
         NetworkException();
         ~NetworkException();
     };
-
-    class   ParsingNetworkException : public Exception {
-    public:
-        ParsingNetworkException();
-        ~ParsingNetworkException();
-    };
 }
 
 #endif //CPP_INDIE_STUDIO_EXCEPTION_HH

@@ -17,7 +17,6 @@ namespace   rtp {
         virtual void    viewDidReappear() = 0;
         virtual std::vector<rtp::DataGetter::Command>    getCommandObserver() const = 0;
         virtual void    handleInput(NetworkAbstract::Message const&) = 0;
-        virtual bool    drawTitle() const;
     };
 }
 

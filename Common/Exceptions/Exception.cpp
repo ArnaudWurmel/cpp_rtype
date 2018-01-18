@@ -16,6 +16,3 @@ rtp::Exception::~Exception() {}
 
 rtp::NetworkException::NetworkException() : Exception("Network Error, connexion reset by peer") {}
 rtp::NetworkException::~NetworkException() {}
-
-rtp::ParsingNetworkException::ParsingNetworkException() : Exception("Parsing from Network error, can't retrieve parameters") {}
-rtp::ParsingNetworkException::~ParsingNetworkException() {}

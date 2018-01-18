@@ -50,6 +50,7 @@ bool    rtp::Room::removePlayer(std::shared_ptr<RegisteredClient>& player) {
     }
     bool    isOwner = player->getId() == _ownerId;
     _playerList.erase(iterator);
+    std::cout << _playerList.size() << std::endl;
     if (isOwner && _playerList.size() > 0) {
         NetworkAbstract::Message    newOwnerMessage;
 
@@ -72,7 +73,7 @@ bool    rtp::Room::isPlayerIn(std::shared_ptr<RegisteredClient>& player) {
 }
 
 bool    rtp::Room::findAServer(std::shared_ptr<RegisteredClient>& player) {
-    if (player->getId() != _ownerId || _onMatchmaking) {
+    if (player->getId() != _ownerId || _onMatchmaking || _haveAServer) {
         return false;
     }
     auto    it = _playerList.begin();
@@ -82,12 +83,6 @@ bool    rtp::Room::findAServer(std::shared_ptr<RegisteredClient>& player) {
     while (it != _playerList.end()) {
         (*it)->write(message);
         ++it;
-    }
-    if (_matchmakingFinder && _haveAServer) {
-        _onMatchmaking = false;
-        if (_matchmakingFinder->joinable()) {
-            _matchmakingFinder->join();
-        }
     }
     _onMatchmaking = true;
     _matchmakingFinder = std::unique_ptr<std::thread>(new std::thread([&] {

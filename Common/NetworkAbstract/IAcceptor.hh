@@ -6,14 +6,10 @@
 #define SERVERAUTH_IACCEPTOR_HH
 
 # include "ISocket.h"
+# include "ISocketManager.hh"
 
 namespace NetworkAbstract {
     class   IAcceptor {
-    public:
-        enum    SocketType {
-            TCP = 0,
-            UDP = 1
-        };
     public:
         virtual ~IAcceptor() = default;
 
@@ -21,7 +17,7 @@ namespace NetworkAbstract {
         virtual bool startAccept() = 0;
         virtual bool haveAwaitingClient() = 0;
         virtual std::shared_ptr<NetworkAbstract::ISocket>   acceptClient() = 0;
-        virtual std::shared_ptr<NetworkAbstract::ISocket>   getEmptySocket(std::condition_variable&, SocketType) = 0;
+        virtual std::shared_ptr<NetworkAbstract::ISocket>   getEmptySocket(ISocketManager::SocketType, std::condition_variable&) = 0;
         virtual void    run() = 0;
         virtual void    stop() = 0;
         virtual bool    isRunning() const = 0;

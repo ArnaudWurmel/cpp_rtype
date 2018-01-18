@@ -5,16 +5,14 @@
 #ifndef SERVERGAME_GAMESERVER_HH
 #define SERVERGAME_GAMESERVER_HH
 
-# include <thread>
 # include <chrono>
 # include <condition_variable>
 # include <string>
-#include <map>
+# include <map>
 # include "../Logger/Logger.hpp"
-# include "../NetworkAbstract/ISocket.h"
-# include "../NetworkAbstract/IAcceptor.hh"
-#include "../NetworkAbstract/IServer.hh"
-#include "Entity/APlayer.hh"
+# include "../NetworkAbstract/ISocketManager.hh"
+#include "../NetworkAbstract/IUdpInputManager.hh"
+#include "APlayer.hh"
 
 # define TOKEN_SIZE 32
 
@@ -39,8 +37,8 @@ namespace rtp {
 
 
     public:
-        GameServer(unsigned short);
-        ~GameServer();
+        explicit GameServer(unsigned short);
+        ~GameServer() override;
 
     public:
         bool    connectToAuthServer(std::string const&, unsigned short);
@@ -50,7 +48,6 @@ namespace rtp {
     private:
         bool    handleMessage(NetworkAbstract::Message const&);
         bool    waitCommand(Callback, Command);
-        void    runGame();
 
         //
         // Callback after I send a command
@@ -71,7 +68,8 @@ namespace rtp {
 
     private:
         std::shared_ptr<NetworkAbstract::ISocket>   _controlSocket;
-        std::shared_ptr<NetworkAbstract::IServer<NetworkAbstract::BoostUdpClient<APlayer> > >   _gameServer;
+        std::unique_ptr<NetworkAbstract::ISocketManager>    _socketManager;
+        std::unique_ptr<NetworkAbstract::IUdpInputManager>  _inputManager;
         unsigned short  _port;
 
     private:
@@ -79,10 +77,7 @@ namespace rtp {
         std::map<Command, Callback> _callbackPtrs;
         std::map<ServerState, std::string> _stateTranslator;
         ServerState _serverState;
-        std::chrono::time_point<std::chrono::steady_clock> _lockedAt;
-        std::unique_ptr<std::thread>    _gameRunner;
-        bool    _gameRunning;
-        std::mutex  _pLock;
+        std::chrono::time_point<std::chrono::system_clock> _lockedAt;
     };
 }
 

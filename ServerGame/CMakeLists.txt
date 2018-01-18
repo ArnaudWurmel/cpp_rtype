@@ -2,15 +2,14 @@ cmake_minimum_required(VERSION 3.5.1)
 project(ServerGame)
 
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "-g")
 
 
 
-add_executable(ServerGame main.cpp NetworkAbstract/Message/endpacked.h NetworkAbstract/Message/Message.cpp NetworkAbstract/Message/Message.h NetworkAbstract/Message/packed.h NetworkAbstract/IAcceptor.cpp NetworkAbstract/IAcceptor.hh NetworkAbstract/ISocket.cpp NetworkAbstract/ISocket.h NetworkAbstract/BoostSocket.h NetworkAbstract/BoostSocket.cpp NetworkAbstract/BoostAcceptor.hh NetworkAbstract/BoostAcceptor.cpp NetworkAbstract/SocketReceiver.cpp NetworkAbstract/SocketReceiver.hh ArgumentLoader/ArgumentLoader.cpp ArgumentLoader/ArgumentLoader.hh Logger/Logger.hpp Logger/LoggerHelper.cpp Logger/LoggerHelper.hh ArgumentLoader/Configure.cpp ArgumentLoader/Configure.hh GameServer/GameServer.cpp GameServer/GameServer.hh NetworkAbstract/BoostUdpServer.hpp GameServer/Entity/APlayer.hh GameServer/Entity/APlayer.cpp GameServer/Entity/APlayer.hh NetworkAbstract/BoostUdpClient.hpp NetworkAbstract/IServer.hh GameServer/Entity/AEntity.hh GameServer/Entity/CollideRect.cpp GameServer/Entity/CollideRect.hh GameServer/Entity/AEntity.cpp NetworkAbstract/BoostUdpSocket.cpp NetworkAbstract/BoostUdpSocket.hh GameServer/Entity/Vector2.hh)
+add_executable(ServerGame main.cpp NetworkAbstract/Message/endpacked.h NetworkAbstract/Message/Message.cpp NetworkAbstract/Message/Message.h NetworkAbstract/Message/packed.h NetworkAbstract/IAcceptor.cpp NetworkAbstract/IAcceptor.hh NetworkAbstract/ISocket.cpp NetworkAbstract/ISocket.h NetworkAbstract/BoostSocket.h NetworkAbstract/BoostSocket.cpp NetworkAbstract/BoostAcceptor.hh NetworkAbstract/BoostAcceptor.cpp NetworkAbstract/SocketReceiver.cpp NetworkAbstract/SocketReceiver.hh ArgumentLoader/ArgumentLoader.cpp ArgumentLoader/ArgumentLoader.hh Logger/Logger.hpp Logger/LoggerHelper.cpp Logger/LoggerHelper.hh ArgumentLoader/Configure.cpp ArgumentLoader/Configure.hh GameServer/GameServer.cpp GameServer/GameServer.hh GameServer/APlayer.hh GameServer/APlayer.cpp GameServer/APlayer.hh NetworkAbstract/IServer.hh NetworkAbstract/BoostSocketManager.cpp NetworkAbstract/BoostSocketManager.hh NetworkAbstract/ISocketManager.hh NetworkAbstract/BoostUdpInputManager.hpp NetworkAbstract/BoostUdpClient.hpp NetworkAbstract/IUdpInputManager.hh NetworkAbstract/BoostSocketUdp.cpp NetworkAbstract/BoostSocketUdp.hh)
 set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
-find_package(Boost 1.58.0 REQUIRED COMPONENTS thread system)
+find_package(Boost 1.65.0 REQUIRED COMPONENTS thread system)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     target_link_libraries(ServerGame ${Boost_LIBRARIES})
