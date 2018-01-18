@@ -48,15 +48,18 @@ namespace NetworkAbstract {
         }
 
         void    handleNewData(NetworkAbstract::Message const& message, boost::asio::ip::udp::endpoint const& from) {
+            std::cout << "New data" << std::endl;
+            _clientLocker.lock();
             auto    iterator = std::find_if(_acceptedClient.begin(), _acceptedClient.end(), [&](std::shared_ptr<BoostUdpClient<ClientCallback> > const& client) {
                 return client->getEndpoint() == from;
             });
             if (iterator == _acceptedClient.end()) {
                 if (_acceptClient) {
-                    _acceptedClient.push_back(std::shared_ptr<BoostUdpClient<ClientCallback> >(new BoostUdpClient<ClientCallback>(std::bind(&NetworkAbstract::BoostUdpInputManager<ClientCallback>::authorizeWithToken, this->shared_from_this(), std::placeholders::_1, std::placeholders::_2), from)));
+                    _acceptedClient.push_back(std::shared_ptr<BoostUdpClient<ClientCallback> >(new BoostUdpClient<ClientCallback>(std::bind(&NetworkAbstract::BoostUdpInputManager<ClientCallback>::authorizeWithToken, this, std::placeholders::_1, std::placeholders::_2), from)));
                     iterator = _acceptedClient.end() - 1;
                 }
                 else {
+                    _clientLocker.unlock();
                     return ;
                 }
             }
@@ -70,6 +73,7 @@ namespace NetworkAbstract {
                     ++iterator;
                 }
             }
+            _clientLocker.unlock();
         }
 
         void    startSession() {
@@ -85,6 +89,30 @@ namespace NetworkAbstract {
                     startSession();
                 }
             }
+        }
+
+        void    writeToClient(boost::asio::ip::udp::endpoint const& endpoint, NetworkAbstract::Message const& message) {
+            _writingLocker.lock();
+            bool    onWriting = !_writingList.empty();
+            _writingList.push(std::make_pair(endpoint, message));
+            _writingList.back().second.encodeHeader();
+            _writingList.back().second.encodeData();
+            if (!onWriting) {
+                _socket.async_send_to(boost::asio::buffer(_writingList.front().second.data(), _writingList.front().second.totalSize()),
+                                      _writingList.front().first, boost::bind(&NetworkAbstract::BoostUdpInputManager<ClientCallback>::handleWrited, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
+            }
+            _writingLocker.unlock();
+        }
+
+        void    handleWrited(boost::system::error_code const& error, std::size_t writed) {
+            _writingLocker.lock();
+            _writingList.pop();
+            if (!_writingList.empty()) {
+                _socket.async_send_to(boost::asio::buffer(_writingList.front().second.data(), _writingList.front().second.totalSize()),
+                                      _writingList.front().first, boost::bind(&NetworkAbstract::BoostUdpInputManager<ClientCallback>::handleWrited, this->shared_from_this(), boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
+
+            }
+            _writingLocker.unlock();
         }
 
         bool    haveAcceptedClient() const {
@@ -106,10 +134,42 @@ namespace NetworkAbstract {
 
     private:
         bool    authorizeWithToken(std::shared_ptr<BoostUdpClient<ClientCallback> > registratedClient, std::string const& token) {
-            if (_authToken.compare(token)) {
+            std::vector<std::string>    tokenList = rtp::GameServer::getTokenFrom(token, ' ');
+            NetworkAbstract::Message    reply;
 
+            reply.setType(ClientCallback::Command::AUTHORIZE);
+            if (_authToken.compare(tokenList[1]) == 0) {
+                registratedClient->setPseudo(tokenList[0]);
+                NetworkAbstract::Message    newClientMessage;
+                std::string newClientBody;
+
+                *(registratedClient.get()) >> newClientBody;
+                reply.setBody(newClientBody.c_str(), newClientBody.length());
+                writeToClient(registratedClient->getEndpoint(), reply);
+                newClientMessage.setType(ClientCallback::Command::SPAWN_PLAYER);
+                newClientMessage.setBody(newClientBody.c_str(), newClientBody.length());
+                reply.setType(ClientCallback::Command::SPAWN_PLAYER);
+                _clientLocker.lock();
+                auto iterator = _acceptedClient.begin();
+                while (iterator != _acceptedClient.end()) {
+                    if ((*iterator)->getEndpoint() != registratedClient->getEndpoint()) {
+                        writeToClient((*iterator)->getEndpoint(), newClientMessage);
+                        std::string body;
+
+                        *((*iterator).get()) >> body;
+                        reply.setBody(body.c_str(), body.length());
+                        writeToClient((*iterator)->getEndpoint(), reply);
+                    }
+                    ++iterator;
+                }
+                _clientLocker.unlock();
+                return true;
             }
-            return false;
+            else {
+                reply.setBody("failure", 7);
+                writeToClient(registratedClient->getEndpoint(), reply);
+            }
+            return true;
         }
 
     private:
@@ -122,6 +182,11 @@ namespace NetworkAbstract {
         std::string _authToken;
         bool    _acceptClient;
         std::vector<std::shared_ptr<BoostUdpClient<ClientCallback> > >   _acceptedClient;
+        std::mutex  _clientLocker;
+
+    private:
+        std::queue<std::pair<boost::asio::ip::udp::endpoint, NetworkAbstract::Message> >    _writingList;
+        std::mutex  _writingLocker;
 
     private:
         NetworkAbstract::Message    _readM;

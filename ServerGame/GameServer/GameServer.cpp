@@ -65,7 +65,7 @@ bool    rtp::GameServer::handleMessage(NetworkAbstract::Message const& message) 
 
 void    rtp::GameServer::serverLoop() {
     bool    threadContinue = true;
-    std::thread networkManager([&] {
+    std::unique_ptr<std::thread> networkManager(new std::thread([&] {
         while (threadContinue && !_socketManager->isEnabled()) {}
         if (!registerServer()) {
             std::cout << "Disabled socket" << std::endl;
@@ -73,7 +73,6 @@ void    rtp::GameServer::serverLoop() {
             return ;
         }
         while (threadContinue && _controlSocket->isOpen()) {
-            std::cout << _inputManager->haveAcceptedClient() << std::endl;
             if (_serverState == ServerState::Busy && _lockedAt.time_since_epoch().count() + 5000000 < std::chrono::system_clock::now().time_since_epoch().count() && !_inputManager->haveAcceptedClient()) {
                 if (!registerServer()) {
                     std::cout << "Stopping server" << std::endl;
@@ -95,13 +94,18 @@ void    rtp::GameServer::serverLoop() {
                 }
             }
         }
+        std::cout << "Exited" << std::endl;
         _socketManager->disableSocket();
-    });
-    _socketManager->enableSocket();
-    if (networkManager.joinable()) {
-        threadContinue = false;
-        networkManager.join();
+    }));
+    try {
+        _socketManager->enableSocket();
     }
+    catch (std::exception& e) {
+        std::cout << e.what() << std::endl;
+    }
+    std::cout << "End" << std::endl;
+    threadContinue = false;
+    networkManager->join();
 }
 
 bool    rtp::GameServer::handleRegistering(NetworkAbstract::Message const& message) {
@@ -111,6 +115,8 @@ bool    rtp::GameServer::handleRegistering(NetworkAbstract::Message const& messa
     _serverState = Available;
     _authToken = std::string(message.getBody(), message.getBodySize());
     std::cout << "Token : " << _authToken << std::endl;
+    _inputManager->initSocket(_authToken);
+    _inputManager->run();
     return true;
 }
 
@@ -127,6 +133,7 @@ bool    rtp::GameServer::handleReserved(NetworkAbstract::Message const& message)
     else {
         response.setBody("failure", 7);
     }
+    _inputManager->startAcceptingClient();
     _controlSocket->write(message);
     return true;
 }
@@ -140,6 +147,25 @@ bool    rtp::GameServer::handlePing(NetworkAbstract::Message const& message) {
     _controlSocket->write(response);
     std::cout << _stateTranslator[_serverState] << std::endl;
     return true;
+}
+
+std::vector<std::string>    rtp::GameServer::getTokenFrom(std::string const& input, char sep) {
+    std::vector<std::string>    tokenList;
+    std::string::const_iterator   it;
+
+    it = input.begin();
+    while (it != input.end()) {
+        std::string token;
+        while (it != input.end() && *it != sep) {
+            token += *it;
+            ++it;
+        }
+        if (token.size())
+            tokenList.push_back(token);
+        while (it != input.end() && *it == sep)
+            ++it;
+    }
+    return tokenList;
 }
 
 rtp::GameServer::~GameServer() = default;

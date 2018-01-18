@@ -199,4 +199,23 @@ std::vector<std::unique_ptr<rtp::Room> > const&  rtp::DataGetter::getRoomList() 
     return _roomList;
 }
 
+std::shared_ptr<NetworkAbstract::ISocket>   rtp::DataGetter::getUdpSocket(std::condition_variable& cv) {
+    return _acceptor->getEmptySocket(NetworkAbstract::ISocketManager::UDP, cv);
+}
+
+bool    rtp::DataGetter::authorizeClient(std::shared_ptr<NetworkAbstract::ISocket> socket, EmptierFrom emptier, std::string const& pseudo, std::string const& authToken) {
+    NetworkAbstract::Message    message;
+
+    message.setType(GameHandler::Command::AUTHORIZE);
+    std::string body = pseudo + " " + authToken;
+    message.setBody(body.c_str(), body.length());
+    try {
+        return waitCommandExecution(socket, message, emptier);
+    }
+    catch (std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return false;
+    }
+}
+
 rtp::DataGetter::~DataGetter() = default;

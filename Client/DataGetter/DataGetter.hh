@@ -18,6 +18,7 @@ namespace rtp {
     public:
         using    Callback = bool (DataGetter::*)(NetworkAbstract::Message const&);
         using    Emptier = std::function<void   (NetworkAbstract::Message const&)>;
+        using    EmptierFrom = std::function<void (std::shared_ptr<NetworkAbstract::ISocket>, NetworkAbstract::Message const&)>;
 
     public:
         enum Command {
@@ -52,6 +53,7 @@ namespace rtp {
     public:
         std::string const&  getPseudo() const;
         std::vector<std::unique_ptr<Room> > const&  getRoomList() const;
+        std::shared_ptr<NetworkAbstract::ISocket>   getUdpSocket(std::condition_variable&);
 
     private:
         bool    executeCommand(NetworkAbstract::Message const&, Callback);
@@ -66,6 +68,7 @@ namespace rtp {
 
     public:
         static std::vector<std::string> getTokenFrom(std::string const&, char sep = ' ');
+        static bool authorizeClient(std::shared_ptr<NetworkAbstract::ISocket>, EmptierFrom, std::string const&, std::string const&);
 
     private:
         std::unique_ptr<NetworkAbstract::IAcceptor> _acceptor;

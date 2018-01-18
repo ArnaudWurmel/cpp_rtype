@@ -12,7 +12,7 @@
 # include "../Logger/Logger.hpp"
 # include "../NetworkAbstract/ISocketManager.hh"
 #include "../NetworkAbstract/IUdpInputManager.hh"
-#include "APlayer.hh"
+#include "Entities/APlayer.hh"
 
 # define TOKEN_SIZE 32
 
@@ -61,6 +61,9 @@ namespace rtp {
     private:
         bool    handlePing(NetworkAbstract::Message const&);
         bool    handleReserved(NetworkAbstract::Message const&);
+
+    public:
+        static std::vector<std::string> getTokenFrom(std::string const&, char sep = ' ');
 
     private:
         std::condition_variable _inputAvailable;

@@ -42,7 +42,6 @@ namespace rtp {
         bool    _onMatchmaking;
         std::mutex  _locker;
         std::shared_ptr<IServerRegister>    _iServerRegister;
-        std::shared_ptr<RegisteredServer>   _serverLocked;
 
     private:
         static unsigned int _roomId;

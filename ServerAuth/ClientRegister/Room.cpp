@@ -73,12 +73,16 @@ bool    rtp::Room::isPlayerIn(std::shared_ptr<RegisteredClient>& player) {
 }
 
 bool    rtp::Room::findAServer(std::shared_ptr<RegisteredClient>& player) {
-    if (player->getId() != _ownerId || _onMatchmaking || _haveAServer) {
+    if (player->getId() != _ownerId || _onMatchmaking) {
+        std::cout << "False returned" << std::endl;
         return false;
     }
     auto    it = _playerList.begin();
     NetworkAbstract::Message    message;
 
+    if (_matchmakingFinder && _matchmakingFinder->joinable()) {
+        _matchmakingFinder->join();
+    }
     message.setType(RegisteredClient::StartMatchmaking);
     while (it != _playerList.end()) {
         (*it)->write(message);
@@ -87,8 +91,11 @@ bool    rtp::Room::findAServer(std::shared_ptr<RegisteredClient>& player) {
     _onMatchmaking = true;
     _matchmakingFinder = std::unique_ptr<std::thread>(new std::thread([&] {
         while (_onMatchmaking) {
+            std::cout << "Before that lcok" << std::endl;
             std::unique_lock<std::mutex>    lck(_locker);
+            std::cout << "Before lockData()" << std::endl;
             _iServerRegister->lockData();
+            std::cout << "After lockdata" << std::endl;
             auto iterator = _iServerRegister->getServer().begin();
 
             while (iterator != _iServerRegister->getServer().end()) {
@@ -102,7 +109,6 @@ bool    rtp::Room::findAServer(std::shared_ptr<RegisteredClient>& player) {
 
                     bodyContent = (*iterator)->getIpAddr() + ":" + std::to_string((*iterator)->getPort()) + ";" + (*iterator)->getRegistrationToken();
                     message.setBody(bodyContent.c_str(), bodyContent.length());
-                    _serverLocked = (*iterator);
                     auto iteratorPlayer = _playerList.begin();
 
                     while (iteratorPlayer != _playerList.end()) {
@@ -126,8 +132,9 @@ bool    rtp::Room::stopMatchmaking(std::shared_ptr<RegisteredClient>& player) {
     if (player->getId() != _ownerId) {
         return false;
     }
-    _locker.lock();
+    std::cout << "Before lockData()" << std::endl;
     _iServerRegister->lockData();
+    std::cout << "After lockData()" << std::endl;
     auto    it = _playerList.begin();
     NetworkAbstract::Message    message;
 
@@ -139,7 +146,6 @@ bool    rtp::Room::stopMatchmaking(std::shared_ptr<RegisteredClient>& player) {
     _onMatchmaking = false;
     _haveAServer = false;
     _iServerRegister->unlockData();
-    _locker.unlock();
     _matchmakingFinder->join();
     _matchmakingFinder.reset();
     return true;
