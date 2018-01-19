@@ -7,7 +7,7 @@
 #include <boost/lexical_cast.hpp>
 #include "BoostUdpSocket.hh"
 
-NetworkAbstract::BoostUdpSocket::BoostUdpSocket(boost::asio::io_service& io_service, std::condition_variable& cv) : ISocket(cv), _socket(io_service), _resolver(io_service) {
+NetworkAbstract::BoostUdpSocket::BoostUdpSocket(boost::asio::io_service& io_service, std::condition_variable& cv) : ISocket(cv), _socket(io_service) {
     _socket.open(boost::asio::ip::udp::v4());
 }
 
@@ -16,8 +16,14 @@ bool    NetworkAbstract::BoostUdpSocket::isOpen() const {
 }
 
 bool    NetworkAbstract::BoostUdpSocket::connectSocket(std::string const& host, unsigned short port) {
-    boost::asio::ip::udp::resolver::query   query(boost::asio::ip::udp::v4(), host, std::to_string(port));
-    _serverEndpoint = *_resolver.resolve(query);
+    boost::asio::ip::udp::resolver  _resolver(_socket.get_io_service());
+    boost::asio::ip::udp::resolver::query   query(host, std::to_string(port));
+
+    auto iterator = _resolver.resolve(query).begin();
+    if (iterator == _resolver.resolve(query).end()) {
+        return false;
+    }
+    _serverEndpoint = (*iterator).endpoint();
     startSession();
     return true;
 }
