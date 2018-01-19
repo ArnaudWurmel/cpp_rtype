@@ -112,9 +112,10 @@ bool    rtp::GameHandler::handleUpdatePlayer(std::string const& pInfo) {
 
     auto iterator = _playerList.begin();
 
-    std::cout << "Update player" << std::endl;
+    //std::cout << "Update player" << std::endl;
     while (iterator != _playerList.end()) {
         if ((*iterator)->getId() == std::stoi(pInfosArr[0])) {
+            std::cout << pInfo << std::endl;
             (*iterator)->updateFrom(pInfosArr);
             return true;
         }

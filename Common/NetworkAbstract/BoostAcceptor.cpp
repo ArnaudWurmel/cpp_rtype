@@ -72,8 +72,6 @@ void    NetworkAbstract::BoostAcceptor::handle_accept(std::shared_ptr<BoostSocke
         _queueLocker.unlock();
         _notifier.notify_one();
     }
-    else {
-    }
     startAccept();
 }
 

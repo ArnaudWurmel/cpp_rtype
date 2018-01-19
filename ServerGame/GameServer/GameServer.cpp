@@ -112,10 +112,14 @@ void    rtp::GameServer::serverLoop() {
 }
 
 void    rtp::GameServer::handleGame() {
+    double   diff = 0.0;
     while (_gameRunning) {
-        _inputManager->updateAllPlayer();
+        std::chrono::milliseconds startPoint = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+        _inputManager->updateAllPlayer(diff);
         _inputManager->sendUpdate();
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::chrono::milliseconds endPoint = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
+        diff = (20 - (endPoint.count() - startPoint.count())) / 1000.0;
+        std::this_thread::sleep_for(std::chrono::milliseconds(20) - (endPoint - startPoint));
     }
 }
 

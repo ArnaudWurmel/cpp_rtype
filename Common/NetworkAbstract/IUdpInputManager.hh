@@ -19,7 +19,7 @@ namespace NetworkAbstract {
         virtual void    startAcceptingClient() = 0;
         virtual void    stopAcceptingClient() = 0;
         virtual bool    haveAcceptedClient() = 0;
-        virtual void    updateAllPlayer() = 0;
+        virtual void    updateAllPlayer(double) = 0;
         virtual void    sendUpdate() = 0;
     };
 }

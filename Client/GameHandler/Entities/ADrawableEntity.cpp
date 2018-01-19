@@ -37,6 +37,7 @@ void    rtp::ADrawableEntity::render() {
     if (_frameList.size()) {
         sprite.setTextureRect(_frameList[_currentFrame % _frameList.size()]);
     }
+    sprite.setPosition((width - sprite.getLocalBounds().width) / 2, 0);
     _renderTexture.draw(sprite);
     _renderTexture.draw(getTextFromTitle());
     _renderTexture.display();

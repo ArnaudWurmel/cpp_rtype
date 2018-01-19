@@ -145,13 +145,13 @@ namespace NetworkAbstract {
             return false;
         }
 
-        void    updateAllPlayer() override {
+        void    updateAllPlayer(double diff) override {
             _clientLocker.lock();
             auto iterator = _acceptedClient.begin();
 
             while (iterator != _acceptedClient.end()) {
                 if ((*iterator)->isAuthorized()) {
-                    (*iterator)->handleMoving(0.0);
+                    (*iterator)->handleMoving(diff);
                 }
                 ++iterator;
             }
@@ -171,6 +171,7 @@ namespace NetworkAbstract {
                     body = (*iterator)->getInfos();
                     updateMessage.setBody(body.c_str(), body.length());
                     broadcastToAllClient(updateMessage);
+                    (*iterator)->setUpdated(false);
                 }
                 ++iterator;
             }

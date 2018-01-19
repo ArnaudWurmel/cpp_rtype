@@ -51,7 +51,7 @@ namespace rtp {
         virtual bool    injectInput(NetworkAbstract::Message const&);
         std::string const&  getPseudo() const;
         unsigned int    getId() const;
-        void    handleMoving(float);
+        void    handleMoving(double);
         void    setPseudo(std::string const&);
         std::string getInfos() const override;
 
@@ -65,17 +65,17 @@ namespace rtp {
         bool    handleRight(NetworkAbstract::Message const&);
 
     private:
-        void    forward(float diff);
-        void    backward(float diff);
-        void    left(float diff);
-        void    right(float diff);
+        void    forward(double diff);
+        void    backward(double diff);
+        void    left(double diff);
+        void    right(double diff);
         void    resetAnimation();
 
     private:
         bool    _authorized;
         std::string _pseudo;
         std::map<Command, std::function<bool (NetworkAbstract::Message const&)> >   _functionPtrs;
-        std::vector<std::pair<bool, std::function<void (float)> > > _moveMapping;
+        std::vector<std::pair<bool, std::function<void (double)> > > _moveMapping;
         unsigned int    _id;
         unsigned int    _noUpdatedCount;
 

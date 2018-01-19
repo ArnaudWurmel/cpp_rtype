@@ -99,9 +99,10 @@ bool    rtp::APlayer::handleRight(NetworkAbstract::Message const &) {
     return true;
 }
 
-void    rtp::APlayer::handleMoving(float diff) {
+void    rtp::APlayer::handleMoving(double diff) {
     auto iterator = _moveMapping.begin();
 
+    std::cout << diff << std::endl;
     while (iterator != _moveMapping.end()) {
         if ((*iterator).first) {
             setUpdated(true);
@@ -110,35 +111,42 @@ void    rtp::APlayer::handleMoving(float diff) {
         }
         ++iterator;
     }
-    std::cout << _position.x << " " << _position.y << std::endl;
-/*    if (!isUpdated() && _currentFrame != Center) {
-        if (_noUpdatedCount >= 10) {
-            resetAnimation();
+    if (!isUpdated() && _currentFrame != Center) {
+        if (_noUpdatedCount >= 5) {
+            if (_currentFrame < Center) {
+                ++_currentFrame;
+            }
+            else if (_currentFrame > Center) {
+                --_currentFrame;
+            }
             setUpdated(true);
+            _noUpdatedCount = 0;
         }
-        ++_noUpdatedCount;
+        else {
+            ++_noUpdatedCount;
+        }
     }
     else {
         _noUpdatedCount = 0;
-    }*/
+    }
 }
 
-void    rtp::APlayer::forward(float diff) {
-    translate(Vector2<int> {0, -1});
+void    rtp::APlayer::forward(double diff) {
+    translate(Vector2<int> {0, (int)(-300 * diff)});
     _currentFrame = Center;
 }
 
-void    rtp::APlayer::backward(float diff) {
-    translate(Vector2<int> {0, 1});
+void    rtp::APlayer::backward(double diff) {
+    translate(Vector2<int> {0, (int)(300 * diff)});
     _currentFrame = Center;
 }
 
-void    rtp::APlayer::left(float diff) {
-    translate(Vector2<int> {-1, 0});
+void    rtp::APlayer::left(double diff) {
+    translate(Vector2<int> {(int)(-300 * diff), 0});
     if (_currentFrame != Left && _currentFrame != FullLeft) {
         _modifierFrameIncr = 0;
     }
-    if (_currentFrame == Left && _modifierFrameIncr >= 10) {
+    if (_currentFrame == Left && _modifierFrameIncr >= 5) {
         _currentFrame = FullLeft;
         _modifierFrameIncr = 0;
     }
@@ -150,12 +158,12 @@ void    rtp::APlayer::left(float diff) {
     }
 }
 
-void    rtp::APlayer::right(float diff) {
-    translate(Vector2<int> {1, 0});
+void    rtp::APlayer::right(double diff) {
+    translate(Vector2<int> {(int)(300 * diff), 0});
     if (_currentFrame != Right && _currentFrame != FullRight) {
         _modifierFrameIncr = 0;
     }
-    if (_currentFrame == Right && _modifierFrameIncr >= 10) {
+    if (_currentFrame == Right && _modifierFrameIncr >= 5) {
         _currentFrame = FullRight;
         _modifierFrameIncr = 0;
     }
