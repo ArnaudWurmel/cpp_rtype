@@ -240,4 +240,8 @@ bool    rtp::DataGetter::authorizeClient(std::shared_ptr<NetworkAbstract::ISocke
     }
 }
 
-rtp::DataGetter::~DataGetter() = default;
+rtp::DataGetter::~DataGetter() {
+    _controlSocket->close();
+    _controlSocket.reset();
+    _acceptor.reset();
+}
