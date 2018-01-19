@@ -1,7 +1,8 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.5.1)
 project(ClientNetwork)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS "-g")
 
 include_directories(
     ./dependency/imgui/
@@ -11,7 +12,7 @@ add_executable(ClientNetwork main.cpp ArgumentLoader/ArgumentLoader.hh ArgumentL
 set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME     OFF)
-find_package(Boost 1.65.0 REQUIRED COMPONENTS thread system)
+find_package(Boost 1.58.0 REQUIRED COMPONENTS thread system)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     target_link_libraries(ClientNetwork ${Boost_LIBRARIES} pthread)

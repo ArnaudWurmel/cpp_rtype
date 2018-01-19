@@ -5,6 +5,7 @@
 #ifndef CLIENTNETWORK_PLAYER_HH
 #define CLIENTNETWORK_PLAYER_HH
 
+# include <memory>
 # include "ADrawableEntity.hh"
 
 namespace rtp {

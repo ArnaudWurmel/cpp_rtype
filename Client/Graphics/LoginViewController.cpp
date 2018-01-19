@@ -2,6 +2,7 @@
 // Created by Arnaud WURMEL on 11/01/2018.
 //
 
+#include <cstring>
 #include "LoginViewController.hh"
 #include "imgui.h"
 #include "imgui-SFML.h"
