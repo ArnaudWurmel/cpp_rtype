@@ -16,10 +16,12 @@ bool    NetworkAbstract::BoostUdpSocket::isOpen() const {
 }
 
 bool    NetworkAbstract::BoostUdpSocket::connectSocket(std::string const& host, unsigned short port) {
-    boost::asio::ip::udp::resolver::query   query(boost::asio::ip::udp::v4(), host, std::to_string(port));
-    _serverEndpoint = *_resolver.resolve(query);
+    _serverEndpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string(host), port);
+    boost::system::error_code code;
+
+    _socket.connect(_serverEndpoint, code);
     startSession();
-    return true;
+    return !code && _socket.is_open();
 }
 
 void    NetworkAbstract::BoostUdpSocket::close() {
