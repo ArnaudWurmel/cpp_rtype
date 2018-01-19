@@ -7,7 +7,7 @@
 #include <boost/lexical_cast.hpp>
 #include "BoostUdpSocket.hh"
 
-NetworkAbstract::BoostUdpSocket::BoostUdpSocket(boost::asio::io_service& io_service, std::condition_variable& cv) : ISocket(cv), _socket(io_service), _resolver(io_service) {
+NetworkAbstract::BoostUdpSocket::BoostUdpSocket(boost::asio::io_service& io_service, std::condition_variable& cv) : ISocket(cv), _socket(io_service) {
     _socket.open(boost::asio::ip::udp::v4());
 }
 
