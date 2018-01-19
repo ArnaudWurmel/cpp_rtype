@@ -29,7 +29,6 @@ void    NetworkAbstract::BoostUdpSocket::close() {
     if (_socket.is_open()) {
         _socket.cancel();
         _socket.close();
-        _cv.notify_one();
     }
 }
 
