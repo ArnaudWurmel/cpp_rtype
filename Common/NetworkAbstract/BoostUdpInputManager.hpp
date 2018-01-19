@@ -168,7 +168,7 @@ namespace NetworkAbstract {
                     std::string body;
 
                     updateMessage.setType(ClientCallback::Command::UPDATE_PLAYER);
-                    *(*iterator).get() >> body;
+                    body = (*iterator)->getInfos();
                     updateMessage.setBody(body.c_str(), body.length());
                     broadcastToAllClient(updateMessage);
                 }
