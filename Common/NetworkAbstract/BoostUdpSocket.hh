@@ -40,6 +40,7 @@ namespace NetworkAbstract {
         std::queue<NetworkAbstract::Message> _writeList;
         boost::asio::ip::udp::endpoint  _serverEndpoint;
         boost::asio::ip::udp::endpoint  _readedEndpoint;
+        boost::asio::ip::udp::resolver  _resolver;
     };
 }
 

@@ -7,7 +7,7 @@
 #include <boost/lexical_cast.hpp>
 #include "BoostUdpSocket.hh"
 
-NetworkAbstract::BoostUdpSocket::BoostUdpSocket(boost::asio::io_service& io_service, std::condition_variable& cv) : ISocket(cv), _socket(io_service) {
+NetworkAbstract::BoostUdpSocket::BoostUdpSocket(boost::asio::io_service& io_service, std::condition_variable& cv) : ISocket(cv), _socket(io_service), _resolver(io_service) {
     _socket.open(boost::asio::ip::udp::v4());
 }
 
@@ -16,18 +16,17 @@ bool    NetworkAbstract::BoostUdpSocket::isOpen() const {
 }
 
 bool    NetworkAbstract::BoostUdpSocket::connectSocket(std::string const& host, unsigned short port) {
-    _serverEndpoint = boost::asio::ip::udp::endpoint(boost::asio::ip::address::from_string(host), port);
-    boost::system::error_code code;
-
-    _socket.connect(_serverEndpoint, code);
+    boost::asio::ip::udp::resolver::query   query(boost::asio::ip::udp::v4(), host, std::to_string(port));
+    _serverEndpoint = *_resolver.resolve(query);
     startSession();
-    return !code && _socket.is_open();
+    return true;
 }
 
 void    NetworkAbstract::BoostUdpSocket::close() {
     if (_socket.is_open()) {
         _socket.cancel();
         _socket.close();
+        _cv.notify_one();
     }
 }
 

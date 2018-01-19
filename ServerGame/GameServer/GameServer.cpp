@@ -74,6 +74,7 @@ void    rtp::GameServer::serverLoop() {
         }
         while (threadContinue && _controlSocket->isOpen()) {
             if (_serverState == ServerState::Busy && _lockedAt.time_since_epoch().count() + 5000000 < std::chrono::system_clock::now().time_since_epoch().count() && !_inputManager->haveAcceptedClient()) {
+                std::cout << "end" << std::endl;
                 threadContinue = false;
             }
             std::unique_lock<std::mutex> lck(_inputLocker);
@@ -137,15 +138,16 @@ bool    rtp::GameServer::handleReserved(NetworkAbstract::Message const& message)
 
     response.setType(RESERVED);
     if (_serverState == Available) {
-        _serverState = Busy;
         _lockedAt = std::chrono::system_clock::now();
+        _inputManager->startAcceptingClient();
+        _inputManager->run();
+        _serverState = Busy;
         std::cout << "Reserved" << std::endl;
         response.setBody("success", 7);
     }
     else {
         response.setBody("failure", 7);
     }
-    _inputManager->startAcceptingClient();
     _controlSocket->write(message);
     return true;
 }
