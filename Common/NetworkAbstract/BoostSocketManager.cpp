@@ -32,6 +32,7 @@ void    NetworkAbstract::BoostSocketManager::enableSocket() {
 void    NetworkAbstract::BoostSocketManager::disableSocket() {
     std::cout << "Disable socket" << std::endl;
     _ioService.stop();
+    _ioService.reset();
 }
 
 bool    NetworkAbstract::BoostSocketManager::isEnabled() const {

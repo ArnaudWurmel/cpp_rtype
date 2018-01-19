@@ -6,6 +6,7 @@
 #include "imgui-SFML.h"
 #include "WaitingRoomViewController.hh"
 #include "../GameHandler/Entities/Player.hh"
+#include "GameViewController.hh"
 
 rtp::WaitingRoomViewController::WaitingRoomViewController(RootViewController& delegate, int roomId, bool isOwner) : _delegate(delegate) {
     _roomId = roomId;
@@ -120,7 +121,7 @@ void    rtp::WaitingRoomViewController::handleServerFound(NetworkAbstract::Messa
         std::vector<std::string>    serverConnectInfos = rtp::DataGetter::getTokenFrom(authTokenList[0], ':');
         if (serverConnectInfos.size() == 2) {
             std::cout << "Server founded (" << std::string(serverMessage.getBody(), serverMessage.getBodySize()) << ")" << std::endl;
-            std::shared_ptr<NetworkAbstract::ISocket>   udpSocket = _delegate.getDataGetter().getUdpSocket(_gameCv);
+            std::shared_ptr<NetworkAbstract::ISocket>   udpSocket = _delegate.getDataGetter().getEmptyUdpSocket(_gameCv);
 
             if (udpSocket->connectSocket(serverConnectInfos[0], std::stoi(serverConnectInfos[1]))) {
                 DataGetter::authorizeClient(udpSocket, std::bind(&rtp::WaitingRoomViewController::authorizedToPlay, this, std::placeholders::_1, std::placeholders::_2), _delegate.getDataGetter().getPseudo(), authTokenList[1]);
@@ -131,15 +132,14 @@ void    rtp::WaitingRoomViewController::handleServerFound(NetworkAbstract::Messa
 
 void    rtp::WaitingRoomViewController::authorizedToPlay(std::shared_ptr<NetworkAbstract::ISocket> from, NetworkAbstract::Message const& response) {
     try {
-        std::cout << "Instancied : " << std::string(response.getBody(), response.getBodySize()) << std::endl;
         std::shared_ptr<Player> player = Player::instanciateFromInfo(std::string(response.getBody(), response.getBodySize()));
-        //std::shared_ptr<AViewController>    viewController(new GameViewController(_delegate, from, player));
+        std::shared_ptr<AViewController>    viewController(new GameViewController(_delegate, from, player));
 
-        //_delegate.instanciate(viewController);
+        _delegate.instanciate(viewController);
     }
     catch (std::exception& e) {
         std::cerr << "Error : " << e.what() << std::endl;
     }
 }
 
-rtp::WaitingRoomViewController::~WaitingRoomViewController() = default;
+rtp::WaitingRoomViewController::~WaitingRoomViewController() {}

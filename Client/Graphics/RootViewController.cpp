@@ -6,7 +6,7 @@
 #include "imgui-SFML.h"
 #include "LoginViewController.hh"
 
-rtp::RootViewController::RootViewController() : _window(sf::VideoMode(600, 800, 32), "R-TYPE") {
+rtp::RootViewController::RootViewController() : _window(sf::VideoMode(600, 1000, 32), "R-TYPE") {
     _window.setFramerateLimit(60);
     ImGui::SFML::Init(_window);
     _stackView.push(std::shared_ptr<AViewController>(new LoginViewController(*this)));
@@ -23,7 +23,7 @@ rtp::RootViewController::RootViewController() : _window(sf::VideoMode(600, 800, 
     _text.setStyle(sf::Text::Bold);
     sf::FloatRect t = _text.getLocalBounds();
     _text.setOrigin(t.left + t.width / 2.0f, t.top + t.height / 2.0f);
-    _text.setPosition(_window.getSize().x / 2.0f, _window.getSize().y / 2.0f - 200);
+    _text.setPosition(_window.getSize().x / 2.0f, 100);
     Starfield s(_window.getSize().x, _window.getSize().y, 100);
     _stars = s;
 }
@@ -44,18 +44,20 @@ void    rtp::RootViewController::loop() {
             }
         }
         ImGui::SFML::Update(_window, deltaClock.restart());
+        _starsTexture.loadFromImage(_starsImage);
+        _stars.updateStar();
+        _stars.drawStar(_starsTexture);
+        _window.clear(sf::Color::Black);
+        _window.draw(_starsSprite);
+        if (!_stackView.empty() && _stackView.top()->drawTitle()) {
+            _window.draw(_text);
+        }
         if (!_stackView.top()->render()) {
             _stackView.pop();
             if (!_stackView.empty()) {
                 _stackView.top()->viewDidReappear();
             }
         }
-        _starsTexture.loadFromImage(_starsImage);
-        _stars.updateStar();
-        _stars.drawStar(_starsTexture);
-        _window.clear(sf::Color::Black);
-        _window.draw(_starsSprite);
-        _window.draw(_text);
         ImGui::SFML::Render(_window);
         _window.display();
     }
@@ -75,6 +77,10 @@ rtp::DataGetter&    rtp::RootViewController::getDataGetter() {
 
 void    rtp::RootViewController::instanciate(std::shared_ptr<AViewController>& viewController) {
     _stackView.push(viewController);
+}
+
+sf::RenderWindow&   rtp::RootViewController::getWindow() {
+    return _window;
 }
 
 rtp::RootViewController::~RootViewController() {

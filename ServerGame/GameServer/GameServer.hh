@@ -9,6 +9,7 @@
 # include <condition_variable>
 # include <string>
 # include <map>
+#include <thread>
 # include "../Logger/Logger.hpp"
 # include "../NetworkAbstract/ISocketManager.hh"
 #include "../NetworkAbstract/IUdpInputManager.hh"
@@ -62,6 +63,9 @@ namespace rtp {
         bool    handlePing(NetworkAbstract::Message const&);
         bool    handleReserved(NetworkAbstract::Message const&);
 
+    private:
+        void    handleGame();
+
     public:
         static std::vector<std::string> getTokenFrom(std::string const&, char sep = ' ');
 
@@ -76,6 +80,8 @@ namespace rtp {
         unsigned short  _port;
 
     private:
+        bool    _gameRunning;
+        std::unique_ptr<std::thread>    _gameManager;
         std::string _authToken;
         std::map<Command, Callback> _callbackPtrs;
         std::map<ServerState, std::string> _stateTranslator;

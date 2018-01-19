@@ -18,7 +18,7 @@ namespace rtp {
     public:
         using    Callback = bool (DataGetter::*)(NetworkAbstract::Message const&);
         using    Emptier = std::function<void   (NetworkAbstract::Message const&)>;
-        using    EmptierFrom = std::function<void (std::shared_ptr<NetworkAbstract::ISocket>, NetworkAbstract::Message const&)>;
+        using    EmptierFrom = std::function<void   (std::shared_ptr<NetworkAbstract::ISocket>, NetworkAbstract::Message const&)>;
 
     public:
         enum Command {
@@ -49,11 +49,15 @@ namespace rtp {
         void    reset();
         void    emptyMessage(Emptier);
         bool    joinRoom(int roomId);
+        std::shared_ptr<NetworkAbstract::ISocket>   getEmptyUdpSocket(std::condition_variable&);
 
     public:
         std::string const&  getPseudo() const;
         std::vector<std::unique_ptr<Room> > const&  getRoomList() const;
-        std::shared_ptr<NetworkAbstract::ISocket>   getUdpSocket(std::condition_variable&);
+
+    public:
+        static bool waitCommandExecution(std::shared_ptr<NetworkAbstract::ISocket>, NetworkAbstract::Message const&, EmptierFrom);
+        static bool authorizeClient(std::shared_ptr<NetworkAbstract::ISocket>, EmptierFrom, std::string const&, std::string const& authToken);
 
     private:
         bool    executeCommand(NetworkAbstract::Message const&, Callback);
@@ -68,8 +72,6 @@ namespace rtp {
 
     public:
         static std::vector<std::string> getTokenFrom(std::string const&, char sep = ' ');
-        static bool authorizeClient(std::shared_ptr<NetworkAbstract::ISocket>, EmptierFrom, std::string const&, std::string const&);
-        static bool waitCommandExecution(std::shared_ptr<NetworkAbstract::ISocket>, NetworkAbstract::Message const&, EmptierFrom);
 
     private:
         std::unique_ptr<NetworkAbstract::IAcceptor> _acceptor;

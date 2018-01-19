@@ -8,7 +8,7 @@
 #include "BoostSocket.h"
 
 NetworkAbstract::BoostSocket::BoostSocket(boost::asio::io_service& io_service, std::condition_variable& cv) : ISocket(cv), _socket(io_service) {
-    _isOpen = truei;
+    _isOpen = true;
 }
 
 bool    NetworkAbstract::BoostSocket::isOpen() const {

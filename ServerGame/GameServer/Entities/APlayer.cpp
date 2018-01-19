@@ -80,6 +80,7 @@ std::string rtp::APlayer::getInfos() const {
 
 bool    rtp::APlayer::handleForward(NetworkAbstract::Message const &) {
     _moveMapping[mapForward].first = true;
+    std::cout << "Handle forward" << std::endl;
     return true;
 }
 
@@ -109,7 +110,8 @@ void    rtp::APlayer::handleMoving(float diff) {
         }
         ++iterator;
     }
-    if (!isUpdated() && _currentFrame != Center) {
+    std::cout << _position.x << " " << _position.y << std::endl;
+/*    if (!isUpdated() && _currentFrame != Center) {
         if (_noUpdatedCount >= 10) {
             resetAnimation();
             setUpdated(true);
@@ -118,7 +120,7 @@ void    rtp::APlayer::handleMoving(float diff) {
     }
     else {
         _noUpdatedCount = 0;
-    }
+    }*/
 }
 
 void    rtp::APlayer::forward(float diff) {

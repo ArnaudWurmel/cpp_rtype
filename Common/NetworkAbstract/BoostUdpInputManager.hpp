@@ -34,9 +34,8 @@ namespace NetworkAbstract {
         }
 
         void    stop() override {
-            if (_socket.is_open()) {
-                _socket.close();
-            }
+            _socket.cancel();
+            _acceptedClient.clear();
         }
 
         void    startAcceptingClient() override {
@@ -47,18 +46,19 @@ namespace NetworkAbstract {
             _acceptClient = false;
         }
 
+    private:
         void    handleNewData(NetworkAbstract::Message const& message, boost::asio::ip::udp::endpoint const& from) {
-            _clientLocker.lock();
             auto    iterator = std::find_if(_acceptedClient.begin(), _acceptedClient.end(), [&](std::shared_ptr<BoostUdpClient<ClientCallback> > const& client) {
                 return client->getEndpoint() == from;
             });
             if (iterator == _acceptedClient.end()) {
                 if (_acceptClient) {
+                    _clientLocker.lock();
                     _acceptedClient.push_back(std::shared_ptr<BoostUdpClient<ClientCallback> >(new BoostUdpClient<ClientCallback>(std::bind(&NetworkAbstract::BoostUdpInputManager<ClientCallback>::authorizeWithToken, this, std::placeholders::_1, std::placeholders::_2), from)));
+                    _clientLocker.unlock();
                     iterator = _acceptedClient.end() - 1;
                 }
                 else {
-                    _clientLocker.unlock();
                     return ;
                 }
             }
@@ -66,7 +66,9 @@ namespace NetworkAbstract {
             iterator = _acceptedClient.begin();
             while (iterator != _acceptedClient.end()) {
                 if ((*iterator)->hasTimedOut()) {
+                    _clientLocker.lock();
                     _acceptedClient.erase(iterator);
+                    _clientLocker.unlock();
                 }
                 else {
                     ++iterator;
@@ -82,7 +84,6 @@ namespace NetworkAbstract {
 
         void    handleReceiveData(const boost::system::error_code& error, std::size_t bytes_transferred) {
             if (!error) {
-                std::cout << "New data" << std::endl;
                 if (_readM.decodeHeader()) {
                     _readM.decodeData();
                     handleNewData(_readM, _clientEndpoint);
@@ -112,27 +113,72 @@ namespace NetworkAbstract {
             _writingList.pop();
             if (!_writingList.empty()) {
                 _socket.async_send_to(boost::asio::buffer(_writingList.front().second.data(), _writingList.front().second.totalSize()),
-                                      _writingList.front().first, boost::bind(&NetworkAbstract::BoostUdpInputManager<ClientCallback>::handleWrited, this->shared_from_this(), boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
+                                      _writingList.front().first, boost::bind(&NetworkAbstract::BoostUdpInputManager<ClientCallback>::handleWrited, this, boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));
 
             }
             _writingLocker.unlock();
         }
 
-        bool    haveAcceptedClient() const {
+    private:
+        void    broadcastToAllClient(NetworkAbstract::Message const& message) {
+            auto iterator = _acceptedClient.begin();
+
+            while (iterator != _acceptedClient.end()) {
+                writeToClient((*iterator)->getEndpoint(), message);
+                ++iterator;
+            }
+        }
+
+    public:
+        bool    haveAcceptedClient() {
+            _clientLocker.lock();
             auto iterator = _acceptedClient.begin();
 
             while (iterator != _acceptedClient.end()) {
                 if ((*iterator)->isAuthorized()) {
+                    _clientLocker.unlock();
                     return true;
                 }
                 ++iterator;
             }
+            _clientLocker.unlock();
             return false;
+        }
+
+        void    updateAllPlayer() override {
+            _clientLocker.lock();
+            auto iterator = _acceptedClient.begin();
+
+            while (iterator != _acceptedClient.end()) {
+                if ((*iterator)->isAuthorized()) {
+                    (*iterator)->handleMoving(0.0);
+                }
+                ++iterator;
+            }
+            _clientLocker.unlock();
+        }
+
+        void    sendUpdate() override {
+            _clientLocker.lock();
+            auto iterator = _acceptedClient.begin();
+
+            while (iterator != _acceptedClient.end()) {
+                if ((*iterator)->isUpdated() && (*iterator)->isAuthorized()) {
+                    NetworkAbstract::Message    updateMessage;
+                    std::string body;
+
+                    updateMessage.setType(ClientCallback::Command::UPDATE_PLAYER);
+                    *(*iterator).get() >> body;
+                    updateMessage.setBody(body.c_str(), body.length());
+                    broadcastToAllClient(updateMessage);
+                }
+                ++iterator;
+            }
+            _clientLocker.unlock();
         }
 
         ~BoostUdpInputManager() override {
             stop();
-            BoostSocketManager::_ioService.stop();
         }
 
     private:

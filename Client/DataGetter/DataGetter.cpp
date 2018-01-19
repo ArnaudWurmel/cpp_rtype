@@ -13,7 +13,7 @@ rtp::DataGetter::DataGetter() {
 
 void    rtp::DataGetter::reset() {
     _acceptor = std::make_unique<NetworkAbstract::BoostAcceptor>(_awaker);
-    _controlSocket = _acceptor->getEmptySocket(NetworkAbstract::ISocketManager::TCP, _awaker);
+    _controlSocket = _acceptor->getEmptySocket(_awaker, NetworkAbstract::IAcceptor::SocketType::TCP);
 }
 
 void    rtp::DataGetter::emptyMessage(Emptier emptier) {
@@ -177,6 +177,10 @@ std::string const&  rtp::DataGetter::getPseudo() const {
     return _pseudo;
 }
 
+std::shared_ptr<NetworkAbstract::ISocket>   rtp::DataGetter::getEmptyUdpSocket(std::condition_variable& awaker) {
+    return _acceptor->getEmptySocket(awaker, NetworkAbstract::IAcceptor::SocketType::UDP);
+}
+
 std::vector<std::string>    rtp::DataGetter::getTokenFrom(std::string const& input, char sep) {
     std::vector<std::string>    tokenList;
     std::string::const_iterator   it;
@@ -200,28 +204,23 @@ std::vector<std::unique_ptr<rtp::Room> > const&  rtp::DataGetter::getRoomList() 
     return _roomList;
 }
 
-std::shared_ptr<NetworkAbstract::ISocket>   rtp::DataGetter::getUdpSocket(std::condition_variable& cv) {
-    return _acceptor->getEmptySocket(NetworkAbstract::ISocketManager::UDP, cv);
-}
-
-bool    rtp::DataGetter::waitCommandExecution(std::shared_ptr<NetworkAbstract::ISocket> socket,
-                                              NetworkAbstract::Message const& command, EmptierFrom emptierFrom) {
+bool    rtp::DataGetter::waitCommandExecution(std::shared_ptr<NetworkAbstract::ISocket> socket, NetworkAbstract::Message const& command, EmptierFrom emptier) {
     int maxWaiting = 50;
 
     socket->write(command);
     while (maxWaiting > 0 && socket->isOpen()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
         if (socket->haveAvailableData()) {
-            std::cout << "Available data" << std::endl;
             NetworkAbstract::Message    message = socket->getAvailableMessage();
 
             if (message.getType() == command.getType()) {
-                emptierFrom(socket, message);
+                std::cout << "Called" << std::endl;
+                emptier(socket, message);
                 return true;
             }
             socket->addMessage(message);
         }
         --maxWaiting;
-        std::this_thread::sleep_for(std::chrono::milliseconds(200));
     }
     throw rtp::NetworkException();
 }

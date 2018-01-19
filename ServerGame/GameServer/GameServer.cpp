@@ -74,14 +74,7 @@ void    rtp::GameServer::serverLoop() {
         }
         while (threadContinue && _controlSocket->isOpen()) {
             if (_serverState == ServerState::Busy && _lockedAt.time_since_epoch().count() + 5000000 < std::chrono::system_clock::now().time_since_epoch().count() && !_inputManager->haveAcceptedClient()) {
-                if (!registerServer()) {
-                    std::cout << "Stopping server" << std::endl;
-                    threadContinue = false;
-                    _controlSocket->close();
-                }
-                _inputManager->stop();
-                _inputManager->initSocket(_authToken);
-                _inputManager->run();
+                threadContinue = false;
             }
             std::unique_lock<std::mutex> lck(_inputLocker);
             _inputAvailable.wait_for(lck, std::chrono::milliseconds(200));
@@ -94,8 +87,16 @@ void    rtp::GameServer::serverLoop() {
                 }
             }
         }
+        _gameRunning = false;
+        if (_gameManager) {
+            _gameManager->join();
+        }
+        std::cout << "End" << std::endl;
+        _gameManager.reset();
         _controlSocket->close();
         _inputManager->stop();
+        _inputManager.reset();
+        _controlSocket.reset();
         _socketManager->disableSocket();
     }));
     try {
@@ -109,6 +110,14 @@ void    rtp::GameServer::serverLoop() {
     networkManager->join();
 }
 
+void    rtp::GameServer::handleGame() {
+    while (_gameRunning) {
+        _inputManager->updateAllPlayer();
+        _inputManager->sendUpdate();
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    }
+}
+
 bool    rtp::GameServer::handleRegistering(NetworkAbstract::Message const& message) {
     if (message.getBodySize() != TOKEN_SIZE) {
         return false;
@@ -118,6 +127,8 @@ bool    rtp::GameServer::handleRegistering(NetworkAbstract::Message const& messa
     std::cout << "Token : " << _authToken << std::endl;
     _inputManager->initSocket(_authToken);
     _inputManager->run();
+    _gameRunning = true;
+    _gameManager = std::unique_ptr<std::thread>(new std::thread(&rtp::GameServer::handleGame, this));
     return true;
 }
 
@@ -169,4 +180,4 @@ std::vector<std::string>    rtp::GameServer::getTokenFrom(std::string const& inp
     return tokenList;
 }
 
-rtp::GameServer::~GameServer() = default;
+rtp::GameServer::~GameServer() {}

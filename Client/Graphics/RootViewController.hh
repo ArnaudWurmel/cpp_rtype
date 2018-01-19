@@ -23,6 +23,7 @@ namespace rtp {
         void    loop();
         rtp::DataGetter&    getDataGetter();
         void    instanciate(std::shared_ptr<AViewController>&);
+        sf::RenderWindow&   getWindow();
 
     private:
         void    emptierFunction(NetworkAbstract::Message const&);
