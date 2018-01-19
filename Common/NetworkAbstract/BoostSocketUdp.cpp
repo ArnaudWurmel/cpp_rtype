@@ -25,7 +25,6 @@ bool    NetworkAbstract::BoostUdpSocket::connectSocket(std::string const& host, 
 void    NetworkAbstract::BoostUdpSocket::close() {
     if (_socket.is_open()) {
         _socket.cancel();
-        _socket.close();
         _cv.notify_one();
     }
 }
@@ -45,9 +44,6 @@ void    NetworkAbstract::BoostUdpSocket::handleRead(const boost::system::error_c
         else {
             close();
         }
-    }
-    else {
-        close();
     }
 }
 
@@ -74,6 +70,7 @@ void    NetworkAbstract::BoostUdpSocket::write(NetworkAbstract::Message message)
 void    NetworkAbstract::BoostUdpSocket::handleWrite(boost::system::error_code const& e, std::size_t) {
     _mutex.lock();
     _writeList.pop();
+    std::cout << "Message writed : " << e.message() << std::endl;
     if (!_writeList.empty()) {
         _socket.async_send_to(boost::asio::buffer(_writeList.front().data(), _writeList.front().totalSize()), _serverEndpoint,
                               boost::bind(&NetworkAbstract::BoostUdpSocket::handleWrite, shared_from_this(), boost::asio::placeholders::error, boost::asio::placeholders::bytes_transferred));

@@ -48,7 +48,6 @@ namespace NetworkAbstract {
         }
 
         void    handleNewData(NetworkAbstract::Message const& message, boost::asio::ip::udp::endpoint const& from) {
-            std::cout << "New data" << std::endl;
             _clientLocker.lock();
             auto    iterator = std::find_if(_acceptedClient.begin(), _acceptedClient.end(), [&](std::shared_ptr<BoostUdpClient<ClientCallback> > const& client) {
                 return client->getEndpoint() == from;
@@ -83,11 +82,15 @@ namespace NetworkAbstract {
 
         void    handleReceiveData(const boost::system::error_code& error, std::size_t bytes_transferred) {
             if (!error) {
+                std::cout << "New data" << std::endl;
                 if (_readM.decodeHeader()) {
                     _readM.decodeData();
                     handleNewData(_readM, _clientEndpoint);
                     startSession();
                 }
+            }
+            else {
+                std::cout << error.message() << std::endl;
             }
         }
 
@@ -137,6 +140,7 @@ namespace NetworkAbstract {
             std::vector<std::string>    tokenList = rtp::GameServer::getTokenFrom(token, ' ');
             NetworkAbstract::Message    reply;
 
+            std::cout << _authToken << std::endl;
             reply.setType(ClientCallback::Command::AUTHORIZE);
             if (_authToken.compare(tokenList[1]) == 0) {
                 registratedClient->setPseudo(tokenList[0]);
@@ -146,6 +150,7 @@ namespace NetworkAbstract {
                 *(registratedClient.get()) >> newClientBody;
                 reply.setBody(newClientBody.c_str(), newClientBody.length());
                 writeToClient(registratedClient->getEndpoint(), reply);
+                std::cout << std::string(reply.getBody(), reply.getBodySize()) << std::endl;
                 newClientMessage.setType(ClientCallback::Command::SPAWN_PLAYER);
                 newClientMessage.setBody(newClientBody.c_str(), newClientBody.length());
                 reply.setType(ClientCallback::Command::SPAWN_PLAYER);

@@ -38,6 +38,7 @@ namespace NetworkAbstract {
         Message _readM;
         std::mutex  _mutex;
         std::queue<NetworkAbstract::Message>  _writeList;
+        bool    _isOpen;
     };
 }
 

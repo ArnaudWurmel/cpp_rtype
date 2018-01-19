@@ -6,7 +6,7 @@
 #include "imgui-SFML.h"
 #include "LoginViewController.hh"
 
-rtp::RootViewController::RootViewController() : _window(sf::VideoMode(1920, 1080, 32), "R-TYPE") {
+rtp::RootViewController::RootViewController() : _window(sf::VideoMode(600, 800, 32), "R-TYPE") {
     _window.setFramerateLimit(60);
     ImGui::SFML::Init(_window);
     _stackView.push(std::shared_ptr<AViewController>(new LoginViewController(*this)));

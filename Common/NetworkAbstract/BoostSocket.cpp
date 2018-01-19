@@ -7,10 +7,12 @@
 #include <boost/lexical_cast.hpp>
 #include "BoostSocket.h"
 
-NetworkAbstract::BoostSocket::BoostSocket(boost::asio::io_service& io_service, std::condition_variable& cv) : ISocket(cv), _socket(io_service) {}
+NetworkAbstract::BoostSocket::BoostSocket(boost::asio::io_service& io_service, std::condition_variable& cv) : ISocket(cv), _socket(io_service) {
+    _isOpen = truei;
+}
 
 bool    NetworkAbstract::BoostSocket::isOpen() const {
-    return _socket.is_open();
+    return _socket.is_open() && _isOpen;
 }
 
 bool    NetworkAbstract::BoostSocket::connectSocket(std::string const& host, unsigned short port) {
@@ -19,13 +21,14 @@ bool    NetworkAbstract::BoostSocket::connectSocket(std::string const& host, uns
 
     _socket.connect(endpoint, code);
     startSession();
+    _isOpen = !code && _socket.is_open();
     return !code && _socket.is_open();
 }
 
 void    NetworkAbstract::BoostSocket::close() {
     if (_socket.is_open()) {
+        _isOpen = false;
         _socket.cancel();
-        _socket.close();
         _cv.notify_one();
     }
 }

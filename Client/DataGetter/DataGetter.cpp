@@ -5,6 +5,7 @@
 #include "DataGetter.hh"
 #include "../NetworkAbstract/BoostAcceptor.hh"
 #include "../Exceptions/Exception.hh"
+#include "../GameHandler/GameHandler.hh"
 
 rtp::DataGetter::DataGetter() {
     reset();
@@ -201,6 +202,28 @@ std::vector<std::unique_ptr<rtp::Room> > const&  rtp::DataGetter::getRoomList() 
 
 std::shared_ptr<NetworkAbstract::ISocket>   rtp::DataGetter::getUdpSocket(std::condition_variable& cv) {
     return _acceptor->getEmptySocket(NetworkAbstract::ISocketManager::UDP, cv);
+}
+
+bool    rtp::DataGetter::waitCommandExecution(std::shared_ptr<NetworkAbstract::ISocket> socket,
+                                              NetworkAbstract::Message const& command, EmptierFrom emptierFrom) {
+    int maxWaiting = 50;
+
+    socket->write(command);
+    while (maxWaiting > 0 && socket->isOpen()) {
+        if (socket->haveAvailableData()) {
+            std::cout << "Available data" << std::endl;
+            NetworkAbstract::Message    message = socket->getAvailableMessage();
+
+            if (message.getType() == command.getType()) {
+                emptierFrom(socket, message);
+                return true;
+            }
+            socket->addMessage(message);
+        }
+        --maxWaiting;
+        std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    }
+    throw rtp::NetworkException();
 }
 
 bool    rtp::DataGetter::authorizeClient(std::shared_ptr<NetworkAbstract::ISocket> socket, EmptierFrom emptier, std::string const& pseudo, std::string const& authToken) {

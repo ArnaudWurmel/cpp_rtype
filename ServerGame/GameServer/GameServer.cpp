@@ -94,12 +94,12 @@ void    rtp::GameServer::serverLoop() {
                 }
             }
         }
-        std::cout << "Exited" << std::endl;
+        _controlSocket->close();
+        _inputManager->stop();
         _socketManager->disableSocket();
     }));
     try {
         _socketManager->enableSocket();
-        std::cout << "After enable" << std::endl;
     }
     catch (std::exception& e) {
         std::cout << e.what() << std::endl;

@@ -5,6 +5,7 @@
 #include "imgui.h"
 #include "imgui-SFML.h"
 #include "WaitingRoomViewController.hh"
+#include "../GameHandler/Entities/Player.hh"
 
 rtp::WaitingRoomViewController::WaitingRoomViewController(RootViewController& delegate, int roomId, bool isOwner) : _delegate(delegate) {
     _roomId = roomId;
@@ -130,10 +131,11 @@ void    rtp::WaitingRoomViewController::handleServerFound(NetworkAbstract::Messa
 
 void    rtp::WaitingRoomViewController::authorizedToPlay(std::shared_ptr<NetworkAbstract::ISocket> from, NetworkAbstract::Message const& response) {
     try {
+        std::cout << "Instancied : " << std::string(response.getBody(), response.getBodySize()) << std::endl;
         std::shared_ptr<Player> player = Player::instanciateFromInfo(std::string(response.getBody(), response.getBodySize()));
-        std::shared_ptr<AViewController>    viewController(new GameViewController(_delegate, from, player));
+        //std::shared_ptr<AViewController>    viewController(new GameViewController(_delegate, from, player));
 
-        _delegate.instanciate(viewController);
+        //_delegate.instanciate(viewController);
     }
     catch (std::exception& e) {
         std::cerr << "Error : " << e.what() << std::endl;

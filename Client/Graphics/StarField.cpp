@@ -10,7 +10,7 @@ Starfield::Starfield(int xRes, int yRes, unsigned int nbStars) {
     _rx = std::uniform_int_distribution<int>(0, xRes);
     _ry = std::uniform_int_distribution<int>(0, 0);
     while (_stars.size() <= _nbStars) {
-        _stars.push_back(Star(_rx(_rng), _ry(_rng), _rsize(_rng)));
+        _stars.push_back(Star(_rx(_rng), rand() % yRes, _rsize(_rng)));
     }
 }
 

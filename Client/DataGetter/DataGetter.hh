@@ -69,6 +69,7 @@ namespace rtp {
     public:
         static std::vector<std::string> getTokenFrom(std::string const&, char sep = ' ');
         static bool authorizeClient(std::shared_ptr<NetworkAbstract::ISocket>, EmptierFrom, std::string const&, std::string const&);
+        static bool waitCommandExecution(std::shared_ptr<NetworkAbstract::ISocket>, NetworkAbstract::Message const&, EmptierFrom);
 
     private:
         std::unique_ptr<NetworkAbstract::IAcceptor> _acceptor;
