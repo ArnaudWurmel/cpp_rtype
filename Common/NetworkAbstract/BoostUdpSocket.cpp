@@ -19,7 +19,7 @@ bool    NetworkAbstract::BoostUdpSocket::connectSocket(std::string const& host, 
     boost::asio::ip::udp::resolver  _resolver(_socket.get_io_service());
     boost::asio::ip::udp::resolver::query   query(host, std::to_string(port));
 
-    auto iterator = _resolver.resolve(query).begin();
+    auto iterator = _resolver.resolve(query);
     _serverEndpoint = (*iterator).endpoint();
     startSession();
     return true;
