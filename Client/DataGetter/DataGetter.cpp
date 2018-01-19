@@ -13,7 +13,7 @@ rtp::DataGetter::DataGetter() {
 
 void    rtp::DataGetter::reset() {
     _acceptor = std::make_unique<NetworkAbstract::BoostAcceptor>(_awaker);
-    _controlSocket = _acceptor->getEmptySocket(_awaker, NetworkAbstract::IAcceptor::SocketType::TCP);
+    _controlSocket = _acceptor->getEmptySocket(NetworkAbstract::ISocketManager::SocketType::TCP, _awaker);
 }
 
 void    rtp::DataGetter::emptyMessage(Emptier emptier) {
@@ -178,7 +178,7 @@ std::string const&  rtp::DataGetter::getPseudo() const {
 }
 
 std::shared_ptr<NetworkAbstract::ISocket>   rtp::DataGetter::getEmptyUdpSocket(std::condition_variable& awaker) {
-    return _acceptor->getEmptySocket(awaker, NetworkAbstract::IAcceptor::SocketType::UDP);
+    return _acceptor->getEmptySocket(NetworkAbstract::ISocketManager::SocketType::UDP, awaker);
 }
 
 std::vector<std::string>    rtp::DataGetter::getTokenFrom(std::string const& input, char sep) {
