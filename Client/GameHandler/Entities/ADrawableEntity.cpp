@@ -6,12 +6,13 @@
 #include "ADrawableEntity.hh"
 #include "../../DataGetter/DataGetter.hh"
 
-rtp::ADrawableEntity::ADrawableEntity(std::string const &spritePath, int currentFrame, int x, int y, const std::string &title) {
+rtp::ADrawableEntity::ADrawableEntity(std::string const &spritePath, int currentFrame, int x, int y, const std::string &title, int rotation) {
     _title = title;
     _spritePath = "ressources/" + spritePath;
     _currentFrame = currentFrame;
     _x = x;
     _y = y;
+    _rotation = rotation;
 }
 
 bool    rtp::ADrawableEntity::init() {
@@ -43,6 +44,7 @@ void    rtp::ADrawableEntity::render() {
     _renderTexture.display();
     setTexture(_renderTexture.getTexture());
     setPosition(_x, _y);
+    setRotation(_rotation);
 }
 
 void    rtp::ADrawableEntity::parseFrame(std::vector<std::string> const& frameList) {

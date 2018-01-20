@@ -10,9 +10,11 @@
 #include <map>
 #include "../../NetworkAbstract/Message/Message.h"
 #include "AEntity.hh"
+#include "AEntityShooter.hh"
+#include "ALivingEntity.hh"
 
 namespace rtp {
-    class APlayer : public AEntity {
+    class APlayer : public AEntity, public AEntityShooter, public ALivingEntity {
 
     public:
         enum    Movement {
@@ -38,7 +40,10 @@ namespace rtp {
             BACKWARD = 3,
             LEFT = 4,
             RIGHT = 5,
-            UPDATE_PLAYER = 6
+            UPDATE_PLAYER = 6,
+            SPAWN_ENTITY = 7,
+            UPDATE_ENTITY = 8,
+            DELETE_ENTITY = 9
         };
 
     public:
@@ -51,7 +56,7 @@ namespace rtp {
         virtual bool    injectInput(NetworkAbstract::Message const&);
         std::string const&  getPseudo() const;
         unsigned int    getId() const;
-        void    handleMoving(double);
+        void    update(double) override;
         void    setPseudo(std::string const&);
         std::string getInfos() const override;
 
@@ -69,7 +74,10 @@ namespace rtp {
         void    backward(double diff);
         void    left(double diff);
         void    right(double diff);
-        void    resetAnimation();
+        void    collideForward();
+        void    collideBackward();
+        void    collideLeft();
+        void    collideRight();
 
     private:
         bool    _authorized;
@@ -78,6 +86,7 @@ namespace rtp {
         std::vector<std::pair<bool, std::function<void (double)> > > _moveMapping;
         unsigned int    _id;
         unsigned int    _noUpdatedCount;
+        unsigned int    _lastShoot;
 
     private:
         unsigned int    _modifierFrameIncr;

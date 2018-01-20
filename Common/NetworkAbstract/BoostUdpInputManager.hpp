@@ -151,7 +151,7 @@ namespace NetworkAbstract {
 
             while (iterator != _acceptedClient.end()) {
                 if ((*iterator)->isAuthorized()) {
-                    (*iterator)->handleMoving(diff);
+                    (*iterator)->update(diff);
                 }
                 ++iterator;
             }
@@ -172,6 +172,33 @@ namespace NetworkAbstract {
                     updateMessage.setBody(body.c_str(), body.length());
                     broadcastToAllClient(updateMessage);
                     (*iterator)->setUpdated(false);
+                    auto subEntitiesList = (*iterator)->getNeededUpdateEntities();
+                    auto subEntitiesIterator = subEntitiesList.begin();
+                    NetworkAbstract::Message    deleteEntityMessage;
+                    NetworkAbstract::Message    updateEntityMessage;
+                    NetworkAbstract::Message    spawnEntityMessage;
+
+                    deleteEntityMessage.setType(ClientCallback::Command::DELETE_ENTITY);
+                    updateEntityMessage.setType(ClientCallback::Command::UPDATE_ENTITY);
+                    spawnEntityMessage.setType(ClientCallback::Command::SPAWN_ENTITY);
+                    while (subEntitiesIterator != subEntitiesList.end()) {
+                        if ((*subEntitiesIterator)->isExpectedToBeDeleted()) {
+                            deleteEntityMessage.setBody(std::to_string((*subEntitiesIterator)->getEntityId()).c_str(), std::to_string((*subEntitiesIterator)->getEntityId()).length());
+                            broadcastToAllClient(deleteEntityMessage);
+                        }
+                        else if (!(*subEntitiesIterator)->isSpawned()) {
+                            std::string bodySpawn;
+
+                            *(*subEntitiesIterator).get() >> bodySpawn;
+                            spawnEntityMessage.setBody(bodySpawn.c_str(), bodySpawn.length());
+                            broadcastToAllClient(spawnEntityMessage);
+                        }
+                        else {
+                            updateEntityMessage.setBody((*subEntitiesIterator)->getInfos().c_str(), (*subEntitiesIterator)->getInfos().length());
+                            broadcastToAllClient(updateEntityMessage);
+                        }
+                        ++subEntitiesIterator;
+                    }
                 }
                 ++iterator;
             }

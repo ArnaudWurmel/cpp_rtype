@@ -12,6 +12,7 @@ rtp::GameHandler::GameHandler(std::shared_ptr<NetworkAbstract::ISocket> socket, 
     if (player->init()) {
         _callbackList.insert(std::make_pair(Command::SPAWN_PLAYER, std::bind(&rtp::GameHandler::handlePlayerSpawn, this, std::placeholders::_1)));
         _callbackList.insert(std::make_pair(Command::UPDATE_PLAYER, std::bind(&rtp::GameHandler::handleUpdatePlayer, this, std::placeholders::_1)));
+        _callbackList.insert(std::make_pair(Command::SPAWN_ENTITY, std::bind(&rtp::GameHandler::handleSpawnEntity, this, std::placeholders::_1)));
     }
     else {
         throw ParsingNetworkException();
@@ -112,7 +113,6 @@ bool    rtp::GameHandler::handleUpdatePlayer(std::string const& pInfo) {
 
     auto iterator = _playerList.begin();
 
-    //std::cout << "Update player" << std::endl;
     while (iterator != _playerList.end()) {
         if ((*iterator)->getId() == std::stoi(pInfosArr[0])) {
             std::cout << pInfo << std::endl;
@@ -120,6 +120,18 @@ bool    rtp::GameHandler::handleUpdatePlayer(std::string const& pInfo) {
             return true;
         }
         ++iterator;
+    }
+    return true;
+}
+
+bool    rtp::GameHandler::handleSpawnEntity(std::string const& spawnMessage) {
+    try {
+        auto newEntity = AEntity::instanciateFromToken(DataGetter::getTokenFrom(spawnMessage));
+
+        _entitiesList.push_back(newEntity);
+    }
+    catch (std::exception& e) {
+        std::cout << "Error in entities creation : " << e.what() << std::endl;
     }
     return true;
 }

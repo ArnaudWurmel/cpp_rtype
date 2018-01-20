@@ -5,10 +5,11 @@
 #include <iostream>
 #include "APlayer.hh"
 #include "../../NetworkAbstract/Message/Message.h"
+#include "Bullet/AllyBullet.hh"
 
 unsigned int    rtp::APlayer::_clientIdIncr = 0;
 
-rtp::APlayer::APlayer() : AEntity("ShipSprite.png", 500, 500) {
+rtp::APlayer::APlayer() : AEntity("ShipSprite.png", 500, 500), ALivingEntity(1) {
     _id = _clientIdIncr++;
     _authorized = false;
     _functionPtrs.insert(std::make_pair(rtp::APlayer::Command::FORWARD, std::bind(&rtp::APlayer::handleForward, this, std::placeholders::_1)));
@@ -27,6 +28,7 @@ rtp::APlayer::APlayer() : AEntity("ShipSprite.png", 500, 500) {
     _moveMapping.push_back(std::make_pair(false, std::bind(&rtp::APlayer::right, this, std::placeholders::_1)));
     _modifierFrameIncr = 0;
     _noUpdatedCount = 0;
+    _lastShoot = 0;
 }
 
 bool    rtp::APlayer::isAuthorized() const {
@@ -73,7 +75,7 @@ std::string&    rtp::APlayer::operator>>(std::string& dest) const {
 }
 
 std::string rtp::APlayer::getInfos() const {
-    std::string pInfo = std::to_string(_id) + " " + AEntity::getInfos();
+    std::string pInfo = std::to_string(_id) + " " + AEntity::getInfoProtected();
 
     return pInfo;
 }
@@ -99,10 +101,9 @@ bool    rtp::APlayer::handleRight(NetworkAbstract::Message const &) {
     return true;
 }
 
-void    rtp::APlayer::handleMoving(double diff) {
+void    rtp::APlayer::update(double diff) {
     auto iterator = _moveMapping.begin();
 
-    std::cout << diff << std::endl;
     while (iterator != _moveMapping.end()) {
         if ((*iterator).first) {
             setUpdated(true);
@@ -129,6 +130,16 @@ void    rtp::APlayer::handleMoving(double diff) {
     else {
         _noUpdatedCount = 0;
     }
+    collideForward();
+    collideRight();
+    collideBackward();
+    collideLeft();
+    updateSubEntities(diff);
+    if (_lastShoot % 64 == 0) {
+        shoot(std::shared_ptr<ABullet>(new AllyBullet(_position, 1)));
+        _lastShoot = 0;
+    }
+    ++_lastShoot;
 }
 
 void    rtp::APlayer::forward(double diff) {
@@ -143,6 +154,7 @@ void    rtp::APlayer::backward(double diff) {
 
 void    rtp::APlayer::left(double diff) {
     translate(Vector2<int> {(int)(-300 * diff), 0});
+
     if (_currentFrame != Left && _currentFrame != FullLeft) {
         _modifierFrameIncr = 0;
     }
@@ -175,10 +187,32 @@ void    rtp::APlayer::right(double diff) {
     }
 }
 
-void    rtp::APlayer::resetAnimation() {
-    _currentFrame = Center;
+void    rtp::APlayer::collideForward() {
+    if (_position.y < 0) {
+        _position.y = 0;
+        setUpdated(true);
+    }
 }
 
-rtp::APlayer::~APlayer() {
-    std::cout << "Player deleted" << std::endl;
+void    rtp::APlayer::collideBackward() {
+    if (_position.y + getCollideRect().getHeight() >= HEIGHT) {
+        _position.y = HEIGHT - getCollideRect().getHeight() - 1;
+        setUpdated(true);
+    }
 }
+
+void    rtp::APlayer::collideLeft() {
+    if (_position.x < 0) {
+        _position.x = 0;
+        setUpdated(true);
+    }
+}
+
+void    rtp::APlayer::collideRight() {
+    if (_position.x + getCollideRect().getWidth() >= WIDTH) {
+        _position.x = WIDTH - getCollideRect().getWidth() - 1;
+        setUpdated(true);
+    }
+}
+
+rtp::APlayer::~APlayer() {}

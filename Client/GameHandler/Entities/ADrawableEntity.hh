@@ -13,7 +13,7 @@
 namespace rtp {
     class   ADrawableEntity : public sf::Sprite {
     public:
-        ADrawableEntity(std::string const& spritePath, int currentFrame, int x, int y, std::string const& title = "");
+        ADrawableEntity(std::string const& spritePath, int currentFrame, int x, int y, std::string const& title = "", int rotation = 0);
         virtual ~ADrawableEntity();
 
     public:
@@ -37,6 +37,7 @@ namespace rtp {
         int _x;
         int _y;
         int _currentFrame;
+        int _rotation;
 
     private:
         sf::Image   _spriteImage;

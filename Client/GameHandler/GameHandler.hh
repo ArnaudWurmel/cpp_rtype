@@ -7,6 +7,7 @@
 
 # include "Entities/Player.hh"
 # include "../NetworkAbstract/ISocket.h"
+#include "Entities/AEntity.hh"
 
 namespace rtp {
     class GameHandler {
@@ -18,7 +19,10 @@ namespace rtp {
             BACKWARD = 3,
             LEFT = 4,
             RIGHT = 5,
-            UPDATE_PLAYER = 6
+            UPDATE_PLAYER = 6,
+            SPAWN_ENTITY = 7,
+            UPDATE_ENTITY = 8,
+            DELETE_ENTITY = 9
         };
 
     public:
@@ -31,6 +35,9 @@ namespace rtp {
     private:
         bool    handlePlayerSpawn(std::string const&);
         bool    handleUpdatePlayer(std::string const&);
+        bool    handleSpawnEntity(std::string const&);
+        bool    handleDeleteEntity(std::string const&);
+        bool    handleUpdateEntity(std::string const&);
 
     private:
         void    handleTouchIsPressed();
@@ -42,7 +49,9 @@ namespace rtp {
     private:
         std::shared_ptr<NetworkAbstract::ISocket>   _gameSocket;
         std::vector<std::shared_ptr<Player> >   _playerList;
+        std::vector<std::shared_ptr<AEntity> >  _entitiesList;
         std::chrono::time_point<std::chrono::system_clock>       _lastMessage;
+        std::mutex  _entitySafer;
 
     private:
         std::map<Command, std::function<bool (std::string const&)> >    _callbackList;

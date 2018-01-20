@@ -9,7 +9,16 @@
 #include <vector>
 # include "CollideRect.hh"
 
+# ifndef WIDTH
+#  define WIDTH 600
+# endif /* !WIDTH */
+
+# ifndef HEIGHT
+#  define HEIGHT 1000
+# endif /* !HEIGHT */
+
 namespace rtp {
+    class   APlayer;
     class   AEntity {
     public:
         AEntity(std::string const&, int, int);
@@ -20,14 +29,20 @@ namespace rtp {
         virtual bool    isUpdated() const;
         void    setUpdated(bool);
         virtual std::string getInfos() const;
+        virtual unsigned int    getEntityId() const;
+        virtual bool    isExpectedToBeDeleted() const;
+
+    public:
+        virtual void    update(double) = 0;
 
     protected:
         virtual void    translate(Vector2<int> const&);
         virtual CollideRect  getCollideRect() const;
         void    addCollideRect(CollideRect const&);
+        virtual std::string getInfoProtected() const;
 
     public:
-        virtual std::string&    operator>>(std::string&) const = 0;
+        virtual std::string&    operator>>(std::string&) const;
 
     protected:
         std::vector<CollideRect> _collideRectList;
@@ -37,6 +52,11 @@ namespace rtp {
         int _currentFrame;
         Vector2<int>    _position;
         bool    _updated;
+        unsigned int    _entityId;
+        unsigned int    _rotation;
+
+    private:
+        static unsigned int _entityIdIncr;
     };
 }
 

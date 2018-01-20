@@ -3,6 +3,9 @@
 //
 
 #include "AEntity.hh"
+#include "APlayer.hh"
+
+unsigned int    rtp::AEntity::_entityIdIncr = 0;
 
 rtp::AEntity::AEntity(std::string const& spriteName, int x, int y) {
     _spriteName = spriteName;
@@ -10,6 +13,8 @@ rtp::AEntity::AEntity(std::string const& spriteName, int x, int y) {
     _position.x = x;
     _position.y = y;
     _updated = false;
+    _entityId = _entityIdIncr++;
+    _rotation = 0;
 }
 
 rtp::CollideRect rtp::AEntity::getCollideRect() const {
@@ -44,8 +49,38 @@ void    rtp::AEntity::setUpdated(bool updated) {
 std::string rtp::AEntity::getInfos() const {
     std::string info;
 
+    info = std::to_string(_entityId) + " " + std::to_string(_rotation) + " " + std::to_string(_position.x) + " " + std::to_string(_position.y) + " " + std::to_string(_currentFrame);
+    return info;
+}
+
+std::string rtp::AEntity::getInfoProtected() const {
+    std::string info;
+
     info = std::to_string(_position.x) + " " + std::to_string(_position.y) + " " + std::to_string(_currentFrame);
     return info;
+}
+
+std::string&    rtp::AEntity::operator>>(std::string& dest) const {
+    dest = dest + getInfos() + " " + _spriteName + " ";
+    std::string content;
+    auto iterator = _collideRectList.begin();
+    while (iterator != _collideRectList.end()) {
+        content = content + std::to_string((*iterator).getX()) + "." + std::to_string((*iterator).getY()) + "." + std::to_string((*iterator).getWidth()) + "." + std::to_string((*iterator).getHeight());
+        ++iterator;
+        if (iterator != _collideRectList.end()) {
+            content += ";";
+        }
+    }
+    dest = dest + content;
+    return dest;
+}
+
+unsigned int    rtp::AEntity::getEntityId() const {
+    return _entityId;
+}
+
+bool    rtp::AEntity::isExpectedToBeDeleted() const {
+    return false;
 }
 
 rtp::AEntity::~AEntity() = default;
