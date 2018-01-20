@@ -45,8 +45,7 @@ bool    rtp::GameHandler::update(sf::RenderWindow& window) {
     _entitySafer.unlock();
     std::cout << "Running : " << _threadRunning << std::endl;
     std::cout << "Is Open : " << _gameSocket->isOpen() << std::endl;
-    std::cout << "Timedout : " << (_lastMessage.time_since_epoch().count() + 10000000 > std::chrono::system_clock::now().time_since_epoch().count()) << std::endl;
-    return _threadRunning && _gameSocket->isOpen() && _lastMessage.time_since_epoch().count() + 10000000 > std::chrono::system_clock::now().time_since_epoch().count();
+    return _threadRunning && _gameSocket->isOpen();
 }
 
 bool    rtp::GameHandler::handlePlayerSpawn(std::string const& pInfo) {
@@ -195,6 +194,9 @@ void    rtp::GameHandler::updateLoop() {
             else {
                 std::cerr << "Doesn't handle type : <" << message.getType() << ">" << std::endl;
             }
+        }
+        if (_lastMessage.time_since_epoch().count() + 10000000 < std::chrono::system_clock::now().time_since_epoch().count()) {
+            _threadRunning = false;
         }
     }
 }
