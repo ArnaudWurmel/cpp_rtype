@@ -43,8 +43,6 @@ bool    rtp::GameHandler::update(sf::RenderWindow& window) {
         ++iteratorEntity;
     }
     _entitySafer.unlock();
-    std::cout << "Running : " << _threadRunning << std::endl;
-    std::cout << "Is Open : " << _gameSocket->isOpen() << std::endl;
     return _threadRunning && _gameSocket->isOpen();
 }
 
