@@ -9,7 +9,7 @@
 
 unsigned int    rtp::APlayer::_clientIdIncr = 0;
 
-rtp::APlayer::APlayer() : AEntity("ShipSprite.png", 500, 500), ALivingEntity(1) {
+rtp::APlayer::APlayer() : AEntity("ShipSprite.png", (WIDTH / 2), (HEIGHT - 100)), ALivingEntity(1) {
     _id = _clientIdIncr++;
     _authorized = false;
     _functionPtrs.insert(std::make_pair(rtp::APlayer::Command::FORWARD, std::bind(&rtp::APlayer::handleForward, this, std::placeholders::_1)));
@@ -137,8 +137,8 @@ void    rtp::APlayer::update(double diff) {
     if (!isUpdated()) {
         setUpdated(needUpdated());
     }
-    if (_lastShoot % 64 == 0) {
-        shoot(std::shared_ptr<ABullet>(new AllyBullet(_position, 1)));
+    if (_lastShoot % 32 == 0) {
+        shoot(std::shared_ptr<ABullet>(new AllyBullet(Vector2<int> { _position.x + getCollideRect().getWidth() / 2, _position.y}, 1)));
         _lastShoot = 0;
         setUpdated(true);
     }

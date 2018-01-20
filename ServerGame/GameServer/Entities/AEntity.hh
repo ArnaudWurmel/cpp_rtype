@@ -31,13 +31,13 @@ namespace rtp {
         virtual std::string getInfos() const;
         virtual unsigned int    getEntityId() const;
         virtual bool    isExpectedToBeDeleted() const;
+        virtual CollideRect  getCollideRect() const;
 
     public:
         virtual void    update(double) = 0;
 
     protected:
         virtual void    translate(Vector2<int> const&);
-        virtual CollideRect  getCollideRect() const;
         void    addCollideRect(CollideRect const&);
         virtual std::string getInfoProtected() const;
 

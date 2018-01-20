@@ -8,6 +8,7 @@
 # include "../AEntity.hh"
 # include "../Vector2.hh"
 # include "../SpawnableEntity.hh"
+# include "../ALivingEntity.hh"
 
 namespace rtp {
     class ABullet : public rtp::AEntity, public rtp::SpawnableEntity {
@@ -22,7 +23,7 @@ namespace rtp {
         ~ABullet() override;
 
     public:
-        virtual void    onCollide(APlayer&) = 0;
+        virtual void    onCollide(std::shared_ptr<APlayer>&) = 0;
 
     public:
         void    update(double) override;
@@ -35,6 +36,7 @@ namespace rtp {
         Vector2<int>    _direction;
         BulletType  _type;
         bool    _alive;
+        unsigned int    _frame;
     };
 }
 

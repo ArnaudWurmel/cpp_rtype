@@ -22,7 +22,7 @@ unsigned int    rtp::Room::getId() const {
 bool    rtp::Room::addPlayer(std::shared_ptr<RegisteredClient>& player) {
     std::unique_lock<std::mutex>    lck(_locker);
 
-    if (_playerList.size() >= 4 || _onMatchmaking) {
+    if (_playerList.size() >= 4 || _onMatchmaking || !_isOpen) {
         return false;
     }
     auto iterator = std::find_if(_playerList.begin(), _playerList.end(), [&] (std::shared_ptr<RegisteredClient> const& playerCmp) {
@@ -36,7 +36,7 @@ bool    rtp::Room::addPlayer(std::shared_ptr<RegisteredClient>& player) {
 }
 
 bool    rtp::Room::isOpen() const {
-    return _isOpen;
+    return _isOpen && !_haveAServer;
 }
 
 bool    rtp::Room::removePlayer(std::shared_ptr<RegisteredClient>& player) {

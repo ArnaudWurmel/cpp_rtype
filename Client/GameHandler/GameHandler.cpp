@@ -48,6 +48,7 @@ bool    rtp::GameHandler::update(sf::RenderWindow& window) {
 
 bool    rtp::GameHandler::handlePlayerSpawn(std::string const& pInfo) {
     try {
+        std::cout << "Spawn player : " << pInfo << std::endl;
         std::shared_ptr<Player> newPlayer = Player::instanciateFromInfo(pInfo);
 
         auto iterator = std::find_if(_playerList.begin(), _playerList.end(), [&](std::shared_ptr<Player> const& player) {

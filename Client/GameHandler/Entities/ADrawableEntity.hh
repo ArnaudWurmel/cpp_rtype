@@ -38,6 +38,7 @@ namespace rtp {
         int _y;
         int _currentFrame;
         int _rotation;
+        std::mutex  _renderLock;
 
     private:
         sf::Image   _spriteImage;

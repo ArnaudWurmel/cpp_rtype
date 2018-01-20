@@ -29,9 +29,11 @@ int rtp::Player::getId() const {
 
 void    rtp::Player::updateFrom(std::vector<std::string> const& pInfos) {
     if (pInfos.size() == 4) {
+        _renderLock.lock();
         _x = std::stoi(pInfos[1]);
         _y = std::stoi(pInfos[2]);
         _currentFrame = std::stoi(pInfos[3]);
+        _renderLock.unlock();
     }
 }
 

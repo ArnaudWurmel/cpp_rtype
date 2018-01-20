@@ -14,6 +14,7 @@
 # include "../NetworkAbstract/ISocketManager.hh"
 #include "../NetworkAbstract/IUdpInputManager.hh"
 #include "Entities/APlayer.hh"
+# include "MonsterInstanciater.hh"
 
 # define TOKEN_SIZE 32
 
@@ -87,6 +88,7 @@ namespace rtp {
         std::map<ServerState, std::string> _stateTranslator;
         ServerState _serverState;
         std::chrono::time_point<std::chrono::system_clock> _lockedAt;
+        MonsterInstanciater _monsterInstanciater;
     };
 }
 

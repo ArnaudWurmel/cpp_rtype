@@ -8,7 +8,7 @@ rtp::AllyBullet::AllyBullet(Vector2<int> position, unsigned int damage) : ABulle
     _damage = damage;
 }
 
-// Do nothing there is no TK.
-void    rtp::AllyBullet::onCollide(APlayer &) {}
+// Do nothing there is no .
+void    rtp::AllyBullet::onCollide(std::shared_ptr<APlayer>&) {}
 
 rtp::AllyBullet::~AllyBullet() = default;

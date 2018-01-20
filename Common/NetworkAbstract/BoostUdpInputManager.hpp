@@ -238,7 +238,7 @@ namespace NetworkAbstract {
 
                         *((*iterator).get()) >> body;
                         reply.setBody(body.c_str(), body.length());
-                        writeToClient((*iterator)->getEndpoint(), reply);
+                        writeToClient(registratedClient->getEndpoint(), reply);
                     }
                     ++iterator;
                 }

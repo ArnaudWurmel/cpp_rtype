@@ -17,6 +17,7 @@ std::string rtp::ABullet::getSpriteFromBulletType(BulletType type) {
 
 rtp::ABullet::ABullet(BulletType type, Vector2<int> position, Vector2<int> direction) : AEntity(getSpriteFromBulletType(type), position.x, position.y), _direction(direction), _type(type) {
     _alive = true;
+    _frame = 0;
     _collideRectList.push_back(CollideRect(0, 0, 9, 19));
     _collideRectList.push_back(CollideRect(11, 0, 9, 19));
     _collideRectList.push_back(CollideRect(22, 0, 10, 19));
@@ -32,6 +33,11 @@ void    rtp::ABullet::update(double diff) {
                             _position.y < 0 || _position.y + getCollideRect().getHeight() >= HEIGHT) {
         _alive = false;
     }
+    if (_frame % 5 == 0) {
+        _currentFrame = (_currentFrame + 1) % _collideRectList.size();
+        _frame = 0;
+    }
+    ++_frame;
 }
 
 bool    rtp::ABullet::isExpectedToBeDeleted() const {

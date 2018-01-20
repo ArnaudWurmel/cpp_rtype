@@ -66,14 +66,16 @@ bool    rtp::RegisteredClient::roomList(NetworkAbstract::Message const&) {
     auto iterator = _delegate.playerAskRoomList().begin();
 
     while (iterator != _delegate.playerAskRoomList().end()) {
-        content = content + std::to_string((*iterator)->getId());
-        auto iteratorPlayer = (*iterator)->getPlayerList().begin();
+        if ((*iterator)->isOpen()) {
+            content = content + std::to_string((*iterator)->getId());
+            auto iteratorPlayer = (*iterator)->getPlayerList().begin();
 
-        while (iteratorPlayer != (*iterator)->getPlayerList().end()) {
-            content = content + " " + (*iteratorPlayer)->getPseudo();
-            ++iteratorPlayer;
+            while (iteratorPlayer != (*iterator)->getPlayerList().end()) {
+                content = content + " " + (*iteratorPlayer)->getPseudo();
+                ++iteratorPlayer;
+            }
+            content = content + ";";
         }
-        content = content + ";";
         ++iterator;
     }
     message.setBody(content.c_str(), content.length());

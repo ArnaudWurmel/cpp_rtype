@@ -27,10 +27,12 @@ int rtp::AEntity::getId() const {
 
 void    rtp::AEntity::updateFrom(std::vector<std::string> const& tokenList) {
     if (tokenList.size() == 5) {
+        _renderLock.lock();
         _rotation = std::stoi(tokenList[1]);
         _x = std::stoi(tokenList[2]);
         _y = std::stoi(tokenList[3]);
         _currentFrame = std::stoi(tokenList[4]);
+        _renderLock.unlock();
     }
 }
 

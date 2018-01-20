@@ -20,6 +20,7 @@ bool    rtp::ADrawableEntity::init() {
 }
 
 void    rtp::ADrawableEntity::render() {
+    _renderLock.lock();
     int width = _frameList[_currentFrame].width;
     if (_frameList[_currentFrame].width < getTextFromTitle().getLocalBounds().width) {
         width = getTextFromTitle().getLocalBounds().width;
@@ -32,6 +33,7 @@ void    rtp::ADrawableEntity::render() {
     sf::Texture texture;
 
     if (!texture.loadFromImage(_spriteImage)) {
+        _renderLock.unlock();
         return ;
     }
     sprite.setTexture(texture);
@@ -45,6 +47,7 @@ void    rtp::ADrawableEntity::render() {
     setTexture(_renderTexture.getTexture());
     setPosition(_x, _y);
     setRotation(_rotation);
+    _renderLock.unlock();
 }
 
 void    rtp::ADrawableEntity::parseFrame(std::vector<std::string> const& frameList) {
