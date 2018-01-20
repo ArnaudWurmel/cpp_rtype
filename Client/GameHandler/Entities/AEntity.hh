@@ -19,8 +19,12 @@ namespace rtp {
     public:
         ~AEntity() override;
 
-    private:
+    public:
+        int getId() const;
+        void    updateFrom(std::vector<std::string> const&);
 
+    private:
+        int _entityId;
     };
 }
 

@@ -13,28 +13,20 @@ rtp::GameHandler::GameHandler(std::shared_ptr<NetworkAbstract::ISocket> socket, 
         _callbackList.insert(std::make_pair(Command::SPAWN_PLAYER, std::bind(&rtp::GameHandler::handlePlayerSpawn, this, std::placeholders::_1)));
         _callbackList.insert(std::make_pair(Command::UPDATE_PLAYER, std::bind(&rtp::GameHandler::handleUpdatePlayer, this, std::placeholders::_1)));
         _callbackList.insert(std::make_pair(Command::SPAWN_ENTITY, std::bind(&rtp::GameHandler::handleSpawnEntity, this, std::placeholders::_1)));
+        _callbackList.insert(std::make_pair(Command::DELETE_ENTITY, std::bind(&rtp::GameHandler::handleDeleteEntity, this, std::placeholders::_1)));
+        _callbackList.insert(std::make_pair(Command::UPDATE_ENTITY, std::bind(&rtp::GameHandler::handleUpdateEntity, this, std::placeholders::_1)));
     }
     else {
         throw ParsingNetworkException();
     }
     _lastMessage = std::chrono::system_clock::now();
+    _threadRunning = true;
+    _updaterThread = std::unique_ptr<std::thread>(new std::thread(&rtp::GameHandler::updateLoop, this));
 }
 
 bool    rtp::GameHandler::update(sf::RenderWindow& window) {
     handleTouchIsPressed();
-    while (_gameSocket->haveAvailableData()) {
-        NetworkAbstract::Message    message = _gameSocket->getAvailableMessage();
-
-        _lastMessage = std::chrono::system_clock::now();
-        if (_callbackList.find(NetworkAbstract::getTypeOf<Command>(message)) != _callbackList.end()) {
-            if (!_callbackList[NetworkAbstract::getTypeOf<Command>(message)](std::string(message.getBody(), message.getBodySize()))) {
-                return false;
-            }
-        }
-        else {
-            std::cerr << "Doesn't handle type : <" << message.getType() << ">" << std::endl;
-        }
-    }
+    _entitySafer.lock();
     auto iterator = _playerList.begin();
 
     while (iterator != _playerList.end()) {
@@ -42,7 +34,19 @@ bool    rtp::GameHandler::update(sf::RenderWindow& window) {
         window.draw(*(*iterator).get());
         ++iterator;
     }
-    return _gameSocket->isOpen() && _lastMessage.time_since_epoch().count() + 10000000 > std::chrono::system_clock::now().time_since_epoch().count();
+
+    auto    iteratorEntity  = _entitiesList.begin();
+
+    while (iteratorEntity != _entitiesList.end()) {
+        (*iteratorEntity)->render();
+        window.draw(*(*iteratorEntity).get());
+        ++iteratorEntity;
+    }
+    _entitySafer.unlock();
+    std::cout << "Running : " << _threadRunning << std::endl;
+    std::cout << "Is Open : " << _gameSocket->isOpen() << std::endl;
+    std::cout << "Timedout : " << (_lastMessage.time_since_epoch().count() + 10000000 > std::chrono::system_clock::now().time_since_epoch().count()) << std::endl;
+    return _threadRunning && _gameSocket->isOpen() && _lastMessage.time_since_epoch().count() + 10000000 > std::chrono::system_clock::now().time_since_epoch().count();
 }
 
 bool    rtp::GameHandler::handlePlayerSpawn(std::string const& pInfo) {
@@ -53,9 +57,12 @@ bool    rtp::GameHandler::handlePlayerSpawn(std::string const& pInfo) {
             return player->getId() == newPlayer->getId();
         });
         if (iterator != _playerList.end() || !newPlayer->init()) {
-            return false;
+            std::cout << "Here" << std::endl;
+            return true;
         }
+        _entitySafer.lock();
         _playerList.push_back(newPlayer);
+        _entitySafer.unlock();
     }
     catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
@@ -128,7 +135,11 @@ bool    rtp::GameHandler::handleSpawnEntity(std::string const& spawnMessage) {
     try {
         auto newEntity = AEntity::instanciateFromToken(DataGetter::getTokenFrom(spawnMessage));
 
-        _entitiesList.push_back(newEntity);
+        if (newEntity->init()) {
+            _entitySafer.lock();
+            _entitiesList.push_back(newEntity);
+            _entitySafer.unlock();
+        }
     }
     catch (std::exception& e) {
         std::cout << "Error in entities creation : " << e.what() << std::endl;
@@ -136,4 +147,59 @@ bool    rtp::GameHandler::handleSpawnEntity(std::string const& spawnMessage) {
     return true;
 }
 
-rtp::GameHandler::~GameHandler() {}
+bool    rtp::GameHandler::handleDeleteEntity(std::string const& deleteMessage) {
+    if (deleteMessage.length() > 0) {
+        try {
+            int entityId = std::stoi(deleteMessage);
+
+            auto iterator = std::find_if(_entitiesList.begin(), _entitiesList.end(), [&](std::shared_ptr<AEntity> const& entity) {
+                return entity->getId() == entityId;
+            });
+            if (iterator != _entitiesList.end()) {
+                _entitySafer.lock();
+                _entitiesList.erase(iterator);
+                _entitySafer.unlock();
+            }
+        }
+        catch (std::exception& e) {
+            std::cout << e.what() << std::endl;
+        }
+    }
+    return true;
+}
+
+bool    rtp::GameHandler::handleUpdateEntity(std::string const& updateMessage) {
+    std::vector<std::string>    tokenList = DataGetter::getTokenFrom(updateMessage);
+
+    auto iterator = std::find_if(_entitiesList.begin(), _entitiesList.end(), [&](std::shared_ptr<AEntity> const& entity) {
+        return entity->getId() == std::stoi(tokenList[0]);
+    });
+    if (iterator != _entitiesList.end()) {
+        (*iterator)->updateFrom(tokenList);
+    }
+    return true;
+}
+
+void    rtp::GameHandler::updateLoop() {
+    while (_threadRunning) {
+        while (_threadRunning && _gameSocket->haveAvailableData()) {
+            NetworkAbstract::Message    message = _gameSocket->getAvailableMessage();
+
+            _lastMessage = std::chrono::system_clock::now();
+            if (_callbackList.find(NetworkAbstract::getTypeOf<Command>(message)) != _callbackList.end()) {
+                if (!_callbackList[NetworkAbstract::getTypeOf<Command>(message)](std::string(message.getBody(), message.getBodySize()))) {
+                    _threadRunning = false;
+                    return ;
+                }
+            }
+            else {
+                std::cerr << "Doesn't handle type : <" << message.getType() << ">" << std::endl;
+            }
+        }
+    }
+}
+
+rtp::GameHandler::~GameHandler() {
+    _threadRunning = false;
+    _updaterThread->join();
+}

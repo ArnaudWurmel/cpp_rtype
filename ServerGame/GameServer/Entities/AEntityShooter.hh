@@ -21,8 +21,12 @@ namespace rtp {
         void    updateSubEntities(double);
         std::vector<std::shared_ptr<rtp::ABullet> > getNeededUpdateEntities();
 
+    protected:
+        bool    needUpdated() const;
+
     private:
         std::vector<std::shared_ptr<rtp::ABullet> > _entityList;
+        bool    _needUpdate;
     };
 }
 

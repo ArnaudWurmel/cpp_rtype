@@ -5,6 +5,7 @@
 #ifndef CLIENTNETWORK_GAMEHANDLER_HH
 #define CLIENTNETWORK_GAMEHANDLER_HH
 
+#include <thread>
 # include "Entities/Player.hh"
 # include "../NetworkAbstract/ISocket.h"
 #include "Entities/AEntity.hh"
@@ -47,11 +48,16 @@ namespace rtp {
         void    right();
 
     private:
+        void    updateLoop();
+
+    private:
         std::shared_ptr<NetworkAbstract::ISocket>   _gameSocket;
         std::vector<std::shared_ptr<Player> >   _playerList;
         std::vector<std::shared_ptr<AEntity> >  _entitiesList;
         std::chrono::time_point<std::chrono::system_clock>       _lastMessage;
         std::mutex  _entitySafer;
+        std::unique_ptr<std::thread>    _updaterThread;
+        bool    _threadRunning;
 
     private:
         std::map<Command, std::function<bool (std::string const&)> >    _callbackList;

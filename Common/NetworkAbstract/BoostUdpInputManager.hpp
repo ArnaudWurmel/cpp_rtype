@@ -192,6 +192,7 @@ namespace NetworkAbstract {
                             *(*subEntitiesIterator).get() >> bodySpawn;
                             spawnEntityMessage.setBody(bodySpawn.c_str(), bodySpawn.length());
                             broadcastToAllClient(spawnEntityMessage);
+                            (*subEntitiesIterator)->spawn();
                         }
                         else {
                             updateEntityMessage.setBody((*subEntitiesIterator)->getInfos().c_str(), (*subEntitiesIterator)->getInfos().length());

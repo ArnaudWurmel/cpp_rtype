@@ -82,7 +82,6 @@ std::string rtp::APlayer::getInfos() const {
 
 bool    rtp::APlayer::handleForward(NetworkAbstract::Message const &) {
     _moveMapping[mapForward].first = true;
-    std::cout << "Handle forward" << std::endl;
     return true;
 }
 
@@ -135,9 +134,13 @@ void    rtp::APlayer::update(double diff) {
     collideBackward();
     collideLeft();
     updateSubEntities(diff);
+    if (!isUpdated()) {
+        setUpdated(needUpdated());
+    }
     if (_lastShoot % 64 == 0) {
         shoot(std::shared_ptr<ABullet>(new AllyBullet(_position, 1)));
         _lastShoot = 0;
+        setUpdated(true);
     }
     ++_lastShoot;
 }

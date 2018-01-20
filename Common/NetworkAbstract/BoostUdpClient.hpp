@@ -22,7 +22,6 @@ namespace NetworkAbstract {
         }
 
         bool    injectInput(NetworkAbstract::Message const& message) {
-            std::cout << "Here : " << message.getType() << std::endl;
             if (message.getType() == T::Command::AUTHORIZE) {
                 std::cout << "Authorized Message" << std::endl;
                 T::setAuthorize(_authorizationCallback(this->shared_from_this(), std::string(message.getBody(), message.getBodySize())));

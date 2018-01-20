@@ -22,6 +22,7 @@ rtp::ABullet::ABullet(BulletType type, Vector2<int> position, Vector2<int> direc
     _collideRectList.push_back(CollideRect(22, 0, 10, 19));
     _collideRectList.push_back(CollideRect(34, 0, 9, 19));
     _collideRectList.push_back(CollideRect(45, 0, 9, 19));
+    _currentFrame = 0;
 }
 
 void    rtp::ABullet::update(double diff) {
