@@ -195,9 +195,9 @@ void    rtp::GameHandler::updateLoop() {
                 std::cerr << "Doesn't handle type : <" << message.getType() << ">" << std::endl;
             }
         }
-        if (_lastMessage.time_since_epoch().count() + 10000000 < std::chrono::system_clock::now().time_since_epoch().count()) {
+/*        if (_lastMessage.time_since_epoch().count() + 10000000 < std::chrono::system_clock::now().time_since_epoch().count()) {
             _threadRunning = false;
-        }
+        }*/
     }
 }
 
