@@ -7,6 +7,10 @@
 
 unsigned int    rtp::AEntity::_entityIdIncr = 0;
 
+unsigned int    rtp::AEntity::getNextId() {
+    return _entityIdIncr++;
+}
+
 rtp::AEntity::AEntity(std::string const& spriteName, int x, int y) {
     _spriteName = spriteName;
     _currentFrame = 0;
@@ -16,6 +20,17 @@ rtp::AEntity::AEntity(std::string const& spriteName, int x, int y) {
     _entityId = _entityIdIncr++;
     _rotation = 0;
 }
+
+rtp::AEntity::AEntity(unsigned int entityId, std::string const& spriteName, int x, int y) {
+    _spriteName = spriteName;
+    _currentFrame = 0;
+    _position.x = x;
+    _position.y = y;
+    _updated = false;
+    _entityId = entityId;
+    _rotation = 0;
+}
+
 
 rtp::CollideRect rtp::AEntity::getCollideRect() const {
     rtp::CollideRect    rect = _collideRectList[_currentFrame];

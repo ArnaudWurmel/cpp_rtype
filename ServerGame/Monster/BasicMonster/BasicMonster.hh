@@ -12,11 +12,14 @@
 namespace Monster {
     class BasicMonster : public rtp::AEnemy {
     public:
-        BasicMonster(int x, int y);
+        BasicMonster(unsigned int id, int x, int y);
         ~BasicMonster() override;
 
     public:
         void    update(double) override;
+
+    private:
+        unsigned int    _frame;
     };
 }
 

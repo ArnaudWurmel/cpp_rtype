@@ -31,6 +31,7 @@ rtp::RootViewController::RootViewController() : _window(sf::VideoMode(600, 1000,
 
 void    rtp::RootViewController::loop() {
     sf::Clock   deltaClock;
+    sf::Clock clock;
 
     while (!_stackView.empty() && _window.isOpen()) {
         _dataGetter.emptyMessage(std::bind(&rtp::RootViewController::emptierFunction, this, std::placeholders::_1));
@@ -60,7 +61,9 @@ void    rtp::RootViewController::loop() {
         }
         ImGui::SFML::Render(_window);
         _window.display();
-    }
+        sf::Time frameTime = clock.restart();
+        float framerate = 1 / (frameTime.asMilliseconds() * 0.001);
+        std::cout << framerate << std::endl;    }
 }
 
 void    rtp::RootViewController::emptierFunction(NetworkAbstract::Message const& message) {

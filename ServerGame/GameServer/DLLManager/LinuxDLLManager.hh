@@ -15,12 +15,12 @@ namespace rtp {
 
     public:
         bool    init() override;
-        AEnemy* getEnemyFromLib(int, int) override;
+        AEnemy* getEnemyFromLib(unsigned int, int, int) override;
 
     private:
         std::string _libPath;
         void    *_handler;
-        AEnemy  *(*_instancier)(int, int);
+        AEnemy  *(*_instancier)(unsigned int, int, int);
 
     private:
         static std::string  _ext;

@@ -15,7 +15,7 @@ namespace   rtp {
 
     public:
         virtual bool    init() = 0;
-        virtual AEnemy* getEnemyFromLib(int, int) = 0;
+        virtual AEnemy* getEnemyFromLib(unsigned int, int, int) = 0;
 
     public:
         static std::shared_ptr<ADLLManager> get(std::string const&);

@@ -29,18 +29,28 @@ bool    rtp::GameHandler::update(sf::RenderWindow& window) {
     _entitySafer.lock();
     auto iterator = _playerList.begin();
 
+    sf::Clock   clock;
     while (iterator != _playerList.end()) {
-        (*iterator)->render();
-        window.draw(*(*iterator).get());
-        ++iterator;
+        if ((*iterator)->shouldDelete()) {
+            _playerList.erase(iterator);
+        }
+        else {
+            (*iterator)->render();
+            window.draw(*(*iterator).get());
+            ++iterator;
+        }
     }
-
     auto    iteratorEntity  = _entitiesList.begin();
 
     while (iteratorEntity != _entitiesList.end()) {
-        (*iteratorEntity)->render();
-        window.draw(*(*iteratorEntity).get());
-        ++iteratorEntity;
+        if ((*iteratorEntity)->shouldDelete()) {
+            _entitiesList.erase(iteratorEntity);
+        }
+        else {
+            (*iteratorEntity)->render();
+            window.draw(*(*iteratorEntity).get());
+            ++iteratorEntity;
+        }
     }
     _entitySafer.unlock();
     return _threadRunning && _gameSocket->isOpen();
@@ -51,14 +61,15 @@ bool    rtp::GameHandler::handlePlayerSpawn(std::string const& pInfo) {
         std::cout << "Spawn player : " << pInfo << std::endl;
         std::shared_ptr<Player> newPlayer = Player::instanciateFromInfo(pInfo);
 
+        _entitySafer.lock();
         auto iterator = std::find_if(_playerList.begin(), _playerList.end(), [&](std::shared_ptr<Player> const& player) {
             return player->getId() == newPlayer->getId();
         });
         if (iterator != _playerList.end() || !newPlayer->init()) {
+            _entitySafer.unlock();
             std::cout << "Here" << std::endl;
             return true;
         }
-        _entitySafer.lock();
         _playerList.push_back(newPlayer);
         _entitySafer.unlock();
     }
@@ -149,14 +160,14 @@ bool    rtp::GameHandler::handleDeleteEntity(std::string const& deleteMessage) {
         try {
             int entityId = std::stoi(deleteMessage);
 
+            _entitySafer.lock();
             auto iterator = std::find_if(_entitiesList.begin(), _entitiesList.end(), [&](std::shared_ptr<AEntity> const& entity) {
                 return entity->getId() == entityId;
             });
             if (iterator != _entitiesList.end()) {
-                _entitySafer.lock();
-                _entitiesList.erase(iterator);
-                _entitySafer.unlock();
+                (*iterator)->deleteEntity();
             }
+            _entitySafer.unlock();
         }
         catch (std::exception& e) {
             std::cout << e.what() << std::endl;
@@ -168,12 +179,14 @@ bool    rtp::GameHandler::handleDeleteEntity(std::string const& deleteMessage) {
 bool    rtp::GameHandler::handleUpdateEntity(std::string const& updateMessage) {
     std::vector<std::string>    tokenList = DataGetter::getTokenFrom(updateMessage);
 
+    _entitySafer.lock();
     auto iterator = std::find_if(_entitiesList.begin(), _entitiesList.end(), [&](std::shared_ptr<AEntity> const& entity) {
         return entity->getId() == std::stoi(tokenList[0]);
     });
     if (iterator != _entitiesList.end()) {
         (*iterator)->updateFrom(tokenList);
     }
+    _entitySafer.unlock();
     return true;
 }
 
@@ -193,9 +206,6 @@ void    rtp::GameHandler::updateLoop() {
                 std::cerr << "Doesn't handle type : <" << message.getType() << ">" << std::endl;
             }
         }
-/*        if (_lastMessage.time_since_epoch().count() + 10000000 < std::chrono::system_clock::now().time_since_epoch().count()) {
-            _threadRunning = false;
-        }*/
     }
 }
 

@@ -23,7 +23,7 @@ bool    rtp::LinuxDLLManager::init() {
         std::cout << "Can't instanciate monster <" << dlerror() << ">" << std::endl;
         return false;
     }
-    _instancier = reinterpret_cast<AEnemy *(*)(int, int)>(dlsym(_handler, "instanciateMonster"));
+    _instancier = reinterpret_cast<AEnemy *(*)(unsigned int, int, int)>(dlsym(_handler, "instanciateMonster"));
     if ((error = dlerror()) != NULL) {
         std::cout << "Can't instanciate monster <" << error << ">" << std::endl;
         return false;
@@ -31,8 +31,8 @@ bool    rtp::LinuxDLLManager::init() {
     return true;
 }
 
-rtp::AEnemy *rtp::LinuxDLLManager::getEnemyFromLib(int x, int y) {
-    return _instancier(x, y);
+rtp::AEnemy *rtp::LinuxDLLManager::getEnemyFromLib(unsigned int id, int x, int y) {
+    return _instancier(id, x, y);
 }
 
 rtp::LinuxDLLManager::~LinuxDLLManager() {

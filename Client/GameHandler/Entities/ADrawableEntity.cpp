@@ -16,32 +16,35 @@ rtp::ADrawableEntity::ADrawableEntity(std::string const &spritePath, int current
 }
 
 bool    rtp::ADrawableEntity::init() {
-    return _spriteImage.loadFromFile(_spritePath) && _font.loadFromFile("ressources/zorque.ttf");
+    bool state = _spriteImage.loadFromFile(_spritePath) && _font.loadFromFile("ressources/zorque.ttf") && _spriteTexture.loadFromImage(_spriteImage);
+
+    if (state) {
+        int maxWidth = _frameList[0].width;
+        auto iterator = _frameList.begin();
+
+        while (iterator != _frameList.end()) {
+            if ((*iterator).width > maxWidth) {
+                maxWidth = (*iterator).width;
+            }
+            ++iterator;
+        }
+        if (!_renderTexture.create(maxWidth, _frameList[_currentFrame].height + 20)) {
+            return false;
+        }
+        _tmpSprite.setTexture(_spriteTexture);
+    }
+    return state;
 }
 
 void    rtp::ADrawableEntity::render() {
     _renderLock.lock();
-    int width = _frameList[_currentFrame].width;
-    if (_frameList[_currentFrame].width < getTextFromTitle().getLocalBounds().width) {
-        width = getTextFromTitle().getLocalBounds().width;
-    }
-    if (!_renderTexture.create(width, _frameList[_currentFrame].height + 20)) {
-        return;
-    }
     _renderTexture.clear(sf::Color::Transparent);
-    sf::Sprite  sprite;
-    sf::Texture texture;
 
-    if (!texture.loadFromImage(_spriteImage)) {
-        _renderLock.unlock();
-        return ;
-    }
-    sprite.setTexture(texture);
     if (_frameList.size()) {
-        sprite.setTextureRect(_frameList[_currentFrame % _frameList.size()]);
+        _tmpSprite.setTextureRect(_frameList[_currentFrame % _frameList.size()]);
     }
-    sprite.setPosition((width - sprite.getLocalBounds().width) / 2, 0);
-    _renderTexture.draw(sprite);
+    _tmpSprite.setPosition((_renderTexture.getSize().x - _tmpSprite.getLocalBounds().width) / 2, 0);
+    _renderTexture.draw(_tmpSprite);
     _renderTexture.draw(getTextFromTitle());
     _renderTexture.display();
     setTexture(_renderTexture.getTexture());
@@ -78,5 +81,14 @@ sf::Text    rtp::ADrawableEntity::getTextFromTitle() const {
     }
     return titleText;
 }
+
+bool rtp::ADrawableEntity::shouldDelete() const {
+    return _deleted;
+}
+
+void    rtp::ADrawableEntity::deleteEntity() {
+    _deleted = true;
+}
+
 
 rtp::ADrawableEntity::~ADrawableEntity() = default;

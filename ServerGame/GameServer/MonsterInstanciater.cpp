@@ -4,9 +4,18 @@
 
 #include <iostream>
 #include "MonsterInstanciater.hh"
+#include "../Exceptions/Exception.hh"
 
 rtp::MonsterInstanciater::MonsterInstanciater() {
-    _libFromMonsterType.insert(std::make_pair(MonsterType::BASIC, std::shared_ptr<ADLLManager>(ADLLManager::get("./Monster/BasicMonster/cmake-build-debug/libBasicMonster.dylib")));
+    _libFromMonsterType.insert(std::make_pair(MonsterType::BASIC, std::shared_ptr<ADLLManager>(ADLLManager::get("./Monster/BasicMonster/cmake-build-debug/libBasicMonster"))));
+    auto    iterator = _libFromMonsterType.begin();
+
+    while (iterator != _libFromMonsterType.end()) {
+        if (!(*iterator).second->init()) {
+            throw rtp::MissingFiles();
+        }
+        ++iterator;
+    }
 }
 
 std::vector<std::shared_ptr<rtp::AEnemy> >  rtp::MonsterInstanciater::instanciateWave(MonsterType type) {
@@ -16,22 +25,20 @@ std::vector<std::shared_ptr<rtp::AEnemy> >  rtp::MonsterInstanciater::instanciat
 
     if (_libFromMonsterType.find(type) != _libFromMonsterType.end()) {
         while (x < WIDTH) {
-            AEnemy  *enemy = _libFromMonsterType[type]->getEnemyFromLib(x, y);
+            AEnemy  *enemy = _libFromMonsterType[type]->getEnemyFromLib(AEntity::getNextId(), x, y);
 
             if (enemy != nullptr) {
-                std::cout << "Enemy instancied" << std::endl;
-                delete enemy;
-                return enemyList;
+                x = x + enemy->getCollideRect().getWidth();
+                if (x < WIDTH) {
+                    enemyList.push_back(std::shared_ptr<AEnemy>(enemy));
+                }
+                else {
+                    delete enemy;
+                }
             }
             else {
                 return enemyList;
             }
-//            x = x + enemy->getCollideRect().getWidth();
- //           if (x < WIDTH) {
-   //             enemyList.push_back(std::shared_ptr<AEnemy>(enemy));
-     //       }
-       //     else {
-         //   }
         }
     }
     return enemyList;

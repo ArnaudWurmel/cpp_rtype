@@ -19,6 +19,7 @@ std::shared_ptr<rtp::AEntity>   rtp::AEntity::instanciateFromToken(std::vector<s
 
 rtp::AEntity::AEntity(int entityId, int rotation, int x, int y, int currentFrame, std::string const &spriteName) : ADrawableEntity(spriteName, currentFrame, x, y, "", rotation) {
     _entityId = entityId;
+    _deleted = false;
 }
 
 int rtp::AEntity::getId() const {

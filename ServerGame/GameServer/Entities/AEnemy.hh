@@ -7,11 +7,13 @@
 
 # include "AEntity.hh"
 # include "ALivingEntity.hh"
+# include "SpawnableEntity.hh"
+# include "AEntityShooter.hh"
 
 namespace rtp {
-    class   AEnemy : public AEntity, public ALivingEntity {
+    class   AEnemy : public AEntity, public ALivingEntity, public SpawnableEntity, public AEntityShooter {
     public:
-        AEnemy(std::string const&, int, int, unsigned int);
+        AEnemy(unsigned int, std::string const&, int, int, unsigned int);
         ~AEnemy() override;
 
     public:

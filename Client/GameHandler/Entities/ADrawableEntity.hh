@@ -19,6 +19,8 @@ namespace rtp {
     public:
         bool    init();
         void    render();
+        bool    shouldDelete() const;
+        void    deleteEntity();
 
     protected:
         void    parseFrame(std::vector<std::string> const&);
@@ -39,11 +41,14 @@ namespace rtp {
         int _currentFrame;
         int _rotation;
         std::mutex  _renderLock;
+        bool    _deleted;
 
     private:
         sf::Image   _spriteImage;
         sf::RenderTexture   _renderTexture;
         sf::Font    _font;
+        sf::Texture _spriteTexture;
+        sf::Sprite  _tmpSprite;
     };
 }
 

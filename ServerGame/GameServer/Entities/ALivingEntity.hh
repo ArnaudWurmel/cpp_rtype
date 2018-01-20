@@ -15,7 +15,7 @@ namespace rtp {
         bool    isAlive() const;
         void    hit(unsigned int damage);
 
-    private:
+    protected:
         int    _lifePoint;
     };
 }

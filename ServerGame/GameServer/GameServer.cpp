@@ -112,16 +112,38 @@ void    rtp::GameServer::serverLoop() {
 }
 
 void    rtp::GameServer::handleGame() {
+    std::vector<std::shared_ptr<AEnemy> >   enemyList;
     double   diff = 0.0;
+    unsigned int    frame = 0;
+
     while (_gameRunning) {
         std::chrono::milliseconds startPoint = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
         _inputManager->updateAllPlayer(diff);
         _inputManager->sendUpdate();
+        if (frame % POP_RATE == 0 && _inputManager->haveAcceptedClient()) {
+            auto tmpEnemyList = _monsterInstanciater.instanciateWave(MonsterInstanciater::BASIC);
+            auto enemyListIt = tmpEnemyList.begin();
+
+            while (enemyListIt != tmpEnemyList.end()) {
+                enemyList.push_back(*enemyListIt);
+                ++enemyListIt;
+            }
+            std::cout << "Instanciate wave : " << tmpEnemyList.size() << std::endl;
+            frame = 0;
+        }
+        auto iterator = enemyList.begin();
+
+        while (iterator != enemyList.end()) {
+            (*iterator)->update(diff);
+            ++iterator;
+        }
+        ++frame;
+        _inputManager->sendUpdateForEnemies(enemyList);
         std::chrono::milliseconds endPoint = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
         diff = (20 - (endPoint.count() - startPoint.count())) / 1000.0;
         std::this_thread::sleep_for(std::chrono::milliseconds(20) - (endPoint - startPoint));
-        _monsterInstanciater.instanciateWave(MonsterInstanciater::BASIC);
     }
+    std::cout << "EXITING!!!" << std::endl;
 }
 
 bool    rtp::GameServer::handleRegistering(NetworkAbstract::Message const& message) {
@@ -133,8 +155,6 @@ bool    rtp::GameServer::handleRegistering(NetworkAbstract::Message const& messa
     std::cout << "Token : " << _authToken << std::endl;
     _inputManager->initSocket(_authToken);
     _inputManager->run();
-    _gameRunning = true;
-    _gameManager = std::unique_ptr<std::thread>(new std::thread(&rtp::GameServer::handleGame, this));
     return true;
 }
 
@@ -145,6 +165,8 @@ bool    rtp::GameServer::handleReserved(NetworkAbstract::Message const& message)
     if (_serverState == Available) {
         _lockedAt = std::chrono::system_clock::now();
         _inputManager->startAcceptingClient();
+        _gameRunning = true;
+        _gameManager = std::unique_ptr<std::thread>(new std::thread(&rtp::GameServer::handleGame, this));
         _inputManager->run();
         _serverState = Busy;
         std::cout << "Reserved" << std::endl;

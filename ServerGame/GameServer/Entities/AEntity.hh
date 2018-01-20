@@ -22,6 +22,7 @@ namespace rtp {
     class   AEntity {
     public:
         AEntity(std::string const&, int, int);
+        AEntity(unsigned int, std::string const&, int, int);
         virtual ~AEntity();
 
     public:
@@ -32,6 +33,9 @@ namespace rtp {
         virtual unsigned int    getEntityId() const;
         virtual bool    isExpectedToBeDeleted() const;
         virtual CollideRect  getCollideRect() const;
+
+    public:
+        static unsigned int    getNextId();
 
     public:
         virtual void    update(double) = 0;

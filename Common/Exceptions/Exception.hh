@@ -32,6 +32,12 @@ namespace rtp {
         ParsingNetworkException();
         ~ParsingNetworkException();
     };
+
+    class   MissingFiles : public Exception {
+    public:
+        MissingFiles();
+        ~MissingFiles();
+    };
 }
 
 #endif //CPP_INDIE_STUDIO_EXCEPTION_HH

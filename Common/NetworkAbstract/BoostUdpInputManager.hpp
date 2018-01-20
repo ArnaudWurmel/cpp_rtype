@@ -145,6 +145,37 @@ namespace NetworkAbstract {
             return false;
         }
 
+        void    sendUpdateForEnemies(std::vector<std::shared_ptr<rtp::AEnemy> > const& enemyList) override {
+            NetworkAbstract::Message    deleteEntityMessage;
+            NetworkAbstract::Message    updateEntityMessage;
+            NetworkAbstract::Message    spawnEntityMessage;
+
+            deleteEntityMessage.setType(ClientCallback::Command::DELETE_ENTITY);
+            updateEntityMessage.setType(ClientCallback::Command::UPDATE_ENTITY);
+            spawnEntityMessage.setType(ClientCallback::Command::SPAWN_ENTITY);
+            auto enemy = enemyList.begin();
+            while (enemy != enemyList.end()) {
+                if ((*enemy)->isExpectedToBeDeleted()) {
+                    deleteEntityMessage.setBody(std::to_string((*enemy)->getEntityId()).c_str(), std::to_string((*enemy)->getEntityId()).length());
+                    broadcastToAllClient(deleteEntityMessage);
+                }
+                else if (!(*enemy)->isSpawned()) {
+                    std::string bodySpawn;
+
+                    *(*enemy).get() >> bodySpawn;
+                    spawnEntityMessage.setBody(bodySpawn.c_str(), bodySpawn.length());
+                    broadcastToAllClient(spawnEntityMessage);
+                    (*enemy)->spawn();
+                }
+                else {
+                    updateEntityMessage.setBody((*enemy)->getInfos().c_str(), (*enemy)->getInfos().length());
+                    broadcastToAllClient(updateEntityMessage);
+                }
+                ++enemy;
+            }
+
+        }
+
         void    updateAllPlayer(double diff) override {
             _clientLocker.lock();
             auto iterator = _acceptedClient.begin();

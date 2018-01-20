@@ -9,14 +9,15 @@
 # include <condition_variable>
 # include <string>
 # include <map>
-#include <thread>
+# include <thread>
 # include "../Logger/Logger.hpp"
 # include "../NetworkAbstract/ISocketManager.hh"
-#include "../NetworkAbstract/IUdpInputManager.hh"
-#include "Entities/APlayer.hh"
+# include "../NetworkAbstract/IUdpInputManager.hh"
+# include "Entities/APlayer.hh"
 # include "MonsterInstanciater.hh"
 
 # define TOKEN_SIZE 32
+# define POP_RATE 180
 
 namespace rtp {
     class GameServer : private Logger<GameServer> {
