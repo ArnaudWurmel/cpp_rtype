@@ -7,11 +7,7 @@
 
 # include <thread>
 # include <mutex>
-#ifdef _WIN32
-# include "../NetworkAbstractWin/IAcceptor.hh"
-#else
 # include "../NetworkAbstract/IAcceptor.hh"
-#endif // _WIN32
 
 namespace rtp {
     class BaseServer {

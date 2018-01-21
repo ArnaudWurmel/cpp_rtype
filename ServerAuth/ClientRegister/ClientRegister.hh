@@ -9,11 +9,7 @@
 # include "RegisteredClient.hh"
 # include "../ServerRegister/ServerRegister.hh"
 # include "Room.hh"
-#ifdef _WIN32
-# include "../LoggerWin/Logger.hpp"
-#else
 # include "../Logger/Logger.hpp"
-#endif // _WIN32
 
 namespace rtp {
     class ClientRegister : public BaseServer, private Logger<ClientRegister> {

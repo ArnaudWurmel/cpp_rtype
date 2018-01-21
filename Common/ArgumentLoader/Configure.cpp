@@ -4,11 +4,7 @@
 
 #include <iostream>
 #include "Configure.hh"
-#ifdef _WIN32
-#include "../LoggerWin/LoggerHelper.hh"
-#else
 #include "../Logger/LoggerHelper.hh"
-#endif // _WIN32
 
 void    rtp::Configure::configure(std::vector<ArgumentLoader::Argument> const& argumentList) {
     Configure   configure;

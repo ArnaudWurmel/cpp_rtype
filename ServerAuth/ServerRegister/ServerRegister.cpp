@@ -3,13 +3,8 @@
 //
 
 #include "ServerRegister.hh"
-#ifdef _WIN32
-#include "../NetworkAbstractWin/IAcceptor.hh"
-#include "../NetworkAbstractWin/BoostAcceptor.hh"
-#else
 #include "../NetworkAbstract/IAcceptor.hh"
 #include "../NetworkAbstract/BoostAcceptor.hh"
-#endif // _WIN32
 
 rtp::ServerRegister::ServerRegister(unsigned short port) : BaseServer(port) {
     run();

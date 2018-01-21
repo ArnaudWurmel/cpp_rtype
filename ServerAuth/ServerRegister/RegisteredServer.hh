@@ -13,16 +13,12 @@
 # include <unordered_map>
 # include <chrono>
 #ifdef _WIN32
-# include "../NetworkAbstractWin/ISocket.h"
-# include "../NetworkAbstractWin/SocketReceiver.hh"
-# include "../LoggerWin/Logger.hpp"
 #include <BaseTsd.h>
 typedef SSIZE_T ssize_t;
-#else
+#endif // _WIN32
 # include "../NetworkAbstract/ISocket.h"
 # include "../NetworkAbstract/SocketReceiver.hh"
 # include "../Logger/Logger.hpp"
-#endif // _WIN32
 
 namespace rtp {
     class RegisteredServer : public NetworkAbstract::SocketReceiver, private Logger<RegisteredServer> {

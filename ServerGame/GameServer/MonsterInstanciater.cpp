@@ -4,11 +4,7 @@
 
 #include <iostream>
 #include "MonsterInstanciater.hh"
-#ifdef _WIN32
-#include "../ExceptionsWin/Exception.hh"
-#else
 #include "../Exceptions/Exception.hh"
-#endif // _WIN32
 
 rtp::MonsterInstanciater::MonsterInstanciater() {
     _libFromMonsterType.insert(std::make_pair(MonsterType::BASIC, std::shared_ptr<ADLLManager>(ADLLManager::get("./Monster/BasicMonster/cmake-build-debug/libBasicMonster"))));

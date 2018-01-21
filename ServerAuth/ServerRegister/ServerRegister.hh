@@ -11,15 +11,9 @@
 # include "RegisteredServer.hh"
 # include "../BaseServer/BaseServer.hh"
 # include "IServerRegister.hh"
-#ifdef _WIN32
-# include "../LoggerWin/Logger.hpp"
-# include "../ArgumentLoaderWin/ArgumentLoader.hh"
-# include "../NetworkAbstractWin/IAcceptor.hh"
-#else
 # include "../Logger/Logger.hpp"
 # include "../ArgumentLoader/ArgumentLoader.hh"
 # include "../NetworkAbstract/IAcceptor.hh"
-#endif // _WIN32
 
 namespace rtp {
     class ServerRegister : public BaseServer, private Logger<ServerRegister>, public IServerRegister {

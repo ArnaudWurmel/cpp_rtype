@@ -3,14 +3,8 @@
 #include "RTypeManager/RTypeManager.hh"
 #include "ClientRegister/ClientRegister.hh"
 
-#ifdef _WIN32
-#include "ArgumentLoaderWin/ArgumentLoader.hh"
-#include "ArgumentLoaderWin/Configure.hh"
-#else
 #include "ArgumentLoader/ArgumentLoader.hh"
 #include "ArgumentLoader/Configure.hh"
-#endif // _WIN32
-
 
 static bool runServerRegister(rtp::ArgumentLoader const& argumentLoader,
                               std::shared_ptr<rtp::ServerRegister>& serverRegister,

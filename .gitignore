@@ -70,3 +70,11 @@
 /ServerGame/.vs
 /ServerGame/Debug
 /ServerGame/ServerGame.dir
+/ServerGame/ArgumentLoader
+/ServerGame/Exceptions
+/ServerGame/Logger
+/ServerGame/NetworkAbstract
+/ServerAuth/ArgumentLoader
+/ServerAuth/NetworkAbstract
+/ServerAuth/Logger
+/ServerGame/Win32

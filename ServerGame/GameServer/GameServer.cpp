@@ -3,15 +3,9 @@
 //
 
 #include "GameServer.hh"
-#ifdef _WIN32
-#include "../NetworkAbstractWin/BoostSocket.h"
-#include "../NetworkAbstractWin/BoostSocketManager.hh"
-#include "../NetworkAbstractWin/BoostUdpInputManager.hpp"
-#else
 #include "../NetworkAbstract/BoostSocket.h"
 #include "../NetworkAbstract/BoostSocketManager.hh"
 #include "../NetworkAbstract/BoostUdpInputManager.hpp"
-#endif // _WIN32
 
 rtp::GameServer::GameServer(unsigned short port) : _port(port) {
     _serverState = NotRegistered;

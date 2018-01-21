@@ -8,11 +8,7 @@
 #include <string>
 #include <functional>
 #include <map>
-#ifdef _WIN32
-#include "../../NetworkAbstractWin/Message/Message.h"
-#else
 #include "../../NetworkAbstract/Message/Message.h"
-#endif // _WIN32
 #include "AEntity.hh"
 #include "AEntityShooter.hh"
 #include "ALivingEntity.hh"

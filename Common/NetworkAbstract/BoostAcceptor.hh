@@ -12,11 +12,7 @@
 # include <boost/asio.hpp>
 # include "IAcceptor.hh"
 # include "BoostSocket.h"
-#ifdef _WIN32
-# include "../LoggerWin/Logger.hpp"
-#else
 # include "../Logger/Logger.hpp"
-#endif // _WIN32
 
 namespace NetworkAbstract {
     class BoostAcceptor : public IAcceptor {

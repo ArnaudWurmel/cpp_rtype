@@ -12,15 +12,9 @@
 # include <thread>
 # include "Entities/APlayer.hh"
 # include "MonsterInstanciater.hh"
-#ifdef _WIN32
-# include "../LoggerWin/Logger.hpp"
-# include "../NetworkAbstractWin/ISocketManager.hh"
-# include "../NetworkAbstractWin/IUdpInputManager.hh"
-#else
 # include "../Logger/Logger.hpp"
 # include "../NetworkAbstract/ISocketManager.hh"
 # include "../NetworkAbstract/IUdpInputManager.hh"
-#endif // _WIN32
 
 # define TOKEN_SIZE 32
 # define POP_RATE 180
