@@ -3,6 +3,12 @@ project(BasicMonster VERSION 1.0.1 DESCRIPTION "mylib description")
 
 set(CMAKE_CXX_STANDARD 11)
 
+IF(WIN32)
+	execute_process(COMMAND "symlinks.bat")
+ELSE(WIN32)
+	execute_process(COMMAND bash "symlinks.sh")
+ENDIF(WIN32)
+
 add_library(
         BasicMonster SHARED
         mandatory.cpp
@@ -22,4 +28,4 @@ add_library(
         Entities/AEnemy.hh
         Entities/Bullet/ABullet.cpp
         Entities/Bullet/ABullet.hh
-        Entities/Bullet/EnemyBullet.cpp Entities/Bullet/EnemyBullet.hh)
+)

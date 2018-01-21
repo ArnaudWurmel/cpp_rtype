@@ -1,0 +1,1 @@
+mklink /D Entities ..\..\GameServer\Entities
