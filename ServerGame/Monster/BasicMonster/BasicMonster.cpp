@@ -6,7 +6,7 @@
 #include "BasicMonster.hh"
 #include "Entities/Vector2.hh"
 
-Monster::BasicMonster::BasicMonster(unsigned int id, int x, int y) : rtp::AEnemy(id, "BasicMonster.png", x, y, 2) {
+Monster::BasicMonster::BasicMonster(unsigned int id, int x, int y) : rtp::AEnemy(id, "BasicMonster" + std::to_string(rand() % 4) + ".png", x, y, 2) {
     addCollideRect(rtp::CollideRect(0, 0, 61, 41));
     addCollideRect(rtp::CollideRect(62, 0, 62, 39));
     addCollideRect(rtp::CollideRect(128, 0, 54, 39));
@@ -25,7 +25,6 @@ void    Monster::BasicMonster::update(double diff) {
     ++_frame;
     if (getCollideRect().getY() > HEIGHT) {
         this->hit(_lifePoint);
-        std::cout << "Deleted entity" << std::endl;
     }
 }
 
