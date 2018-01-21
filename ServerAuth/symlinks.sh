@@ -1,4 +1,4 @@
 #!/bin/sh
-ln -ls ..\Common\Logger Logger
-ln -ls ..\Common\NetworkAbstract NetworkAbstract
-ln -ls ..\Common\ArgumentLoader ArgumentLoader
+ln -s ../Common/Logger Logger
+ln -s ../Common/NetworkAbstract NetworkAbstract
+ln -s ../Common/ArgumentLoader ArgumentLoader
