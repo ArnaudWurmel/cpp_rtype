@@ -46,3 +46,17 @@
 /Client/ZERO_CHECK.vcxproj.filters
 /Client/.vs
 /Client/ClientGame.dir
+/ServerAuth/.vs
+/ServerAuth/ZERO_CHECK.vcxproj.filters
+/ServerAuth/CMakeFiles
+/ServerAuth/Debug
+/ServerAuth/ServerAuth.dir
+/ServerAuth/Win32
+/ServerAuth/ALL_BUILD.vcxproj
+/ServerAuth/ALL_BUILD.vcxproj.filters
+/ServerAuth/cmake_install.cmake
+/ServerAuth/CMakeCache.txt
+/ServerAuth/ServerAuth.sln
+/ServerAuth/ServerAuth.vcxproj
+/ServerAuth/ServerAuth.vcxproj.filters
+/ServerAuth/ZERO_CHECK.vcxproj

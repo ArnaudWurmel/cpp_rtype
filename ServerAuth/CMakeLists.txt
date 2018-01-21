@@ -38,10 +38,12 @@ add_executable(
 		ClientRegister/Room.cpp ClientRegister/Room.hh
 )
 
+set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ServerAuth)
+
 set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
-find_package(Boost 1.58.0 REQUIRED COMPONENTS system thread)
+find_package(Boost 1.58.0 REQUIRED COMPONENTS thread regex system)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     target_link_libraries(ServerAuth ${Boost_LIBRARIES})
