@@ -4,7 +4,11 @@
 
 #include <iostream>
 #include "APlayer.hh"
+#ifdef _WIN32
+#include "../../NetworkAbstractWin/Message/Message.h"
+#else
 #include "../../NetworkAbstract/Message/Message.h"
+#endif // _WIN32
 #include "Bullet/AllyBullet.hh"
 
 unsigned int    rtp::APlayer::_clientIdIncr = 0;

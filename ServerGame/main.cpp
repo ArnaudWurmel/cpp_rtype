@@ -1,7 +1,11 @@
 #include <iostream>
 #include <cstring>
-#include "ArgumentLoader/Configure.hh"
 #include "GameServer/GameServer.hh"
+#ifdef _WIN32
+#include "ArgumentLoaderWin/Configure.hh"
+#else
+#include "ArgumentLoader/Configure.hh"
+#endif // _WIN32
 
 static bool runGameServer(rtp::ArgumentLoader const& argumentLoader, std::shared_ptr<rtp::GameServer>& gameServer) {
     unsigned short  serverPort = 9999;

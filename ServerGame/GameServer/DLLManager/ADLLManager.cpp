@@ -4,12 +4,16 @@
 
 #include "ADLLManager.hh"
 
-#ifndef _WIN32
+#ifdef _WIN32
+	#include "WindowsDLLManager.hh"
+#else
     #include "LinuxDLLManager.hh"
 #endif
 
 std::shared_ptr<rtp::ADLLManager> rtp::ADLLManager::get(std::string const& path) {
-#ifndef _WIN32
+#ifdef _WIN32
+	return std::shared_ptr<rtp::ADLLManager>(new WindowsDLLManager(path));
+#else
     return std::shared_ptr<rtp::ADLLManager>(new LinuxDLLManager(path));
 #endif
 }
