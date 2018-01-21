@@ -1,11 +1,11 @@
 #include <iostream>
 #include <memory>
-#include "BasicMonster.hh"
+#include "BossMonster.hh"
 
-extern "C" {
-    rtp::AEnemy  *instanciateMonster(unsigned int, int, int);
-}
+#define DllExport   __declspec( dllexport )   
 
-rtp::AEnemy  *instanciateMonster(unsigned int id, int x, int y) {
+extern "C" DllExport rtp::AEnemy  *instanciateMonster(unsigned int, int, int);
+
+DllExport rtp::AEnemy *instanciateMonster(unsigned int id, int x, int y) {
     return new Monster::BasicMonster(id, x, y);
 }

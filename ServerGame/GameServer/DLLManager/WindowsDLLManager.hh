@@ -23,7 +23,7 @@ namespace rtp {
     private:
         std::string _libPath;
 #ifdef _WIN32
-		HMODULE	_handler;
+		HINSTANCE	_handler;
 #else
 		void    *_handler;
 #endif // _WIN32

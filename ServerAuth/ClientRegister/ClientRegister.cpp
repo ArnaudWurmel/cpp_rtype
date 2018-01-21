@@ -32,7 +32,7 @@ void    rtp::ClientRegister::serverLooping() {
             if (!(*iterator)->isOpen() || !(*iterator)->handleNewData()) {
                 playerLeaveRoom(*iterator);
                 say("Loose connection with client{" + std::to_string((*iterator)->getId()) + "}");
-                _clientList.erase(iterator);
+                iterator = _clientList.erase(iterator);
             }
             else {
                 ++iterator;
@@ -42,7 +42,7 @@ void    rtp::ClientRegister::serverLooping() {
 
         while (iteratorRoom != _roomList.end()) {
             if (!(*iteratorRoom)->isOpen()) {
-                _roomList.erase(iteratorRoom);
+                iteratorRoom = _roomList.erase(iteratorRoom);
             }
             else {
                 ++iteratorRoom;
@@ -71,7 +71,7 @@ bool    rtp::ClientRegister::playerLeaveRoom(std::shared_ptr<RegisteredClient> p
     });
     bool success = (*iterator)->removePlayer(player);
     if ((*iterator)->nbPlayerIn() == 0) {
-        _roomList.erase(iterator);
+        iterator = _roomList.erase(iterator);
     }
     return success;
 }

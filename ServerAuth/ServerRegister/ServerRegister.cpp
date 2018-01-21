@@ -33,7 +33,7 @@ void    rtp::ServerRegister::serverLooping() {
         while (iterator != _serverList.end()) {
             if (!(*iterator)->isOpen() || !(*iterator)->handleNewData()) {
                 say("Loose connection with server{" + std::to_string((*iterator)->getId()) + "}");
-                _serverList.erase(iterator);
+                iterator = _serverList.erase(iterator);
             }
             else {
                 ++iterator;

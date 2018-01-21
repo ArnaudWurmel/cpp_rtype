@@ -7,8 +7,13 @@
 #include "../Exceptions/Exception.hh"
 
 rtp::MonsterInstanciater::MonsterInstanciater() {
+#ifdef _WIN32
+	_libFromMonsterType.insert(std::make_pair(MonsterType::BASIC, std::shared_ptr<ADLLManager>(ADLLManager::get("../Monster/BasicMonster/Debug/BasicMonster"))));
+	_libFromMonsterType.insert(std::make_pair(MonsterType::BOSS, std::shared_ptr<ADLLManager>(ADLLManager::get("../Monster/BossMonster/Debug/BossMonster"))));
+#else
     _libFromMonsterType.insert(std::make_pair(MonsterType::BASIC, std::shared_ptr<ADLLManager>(ADLLManager::get("./Monster/BasicMonster/cmake-build-debug/libBasicMonster"))));
     _libFromMonsterType.insert(std::make_pair(MonsterType::BOSS, std::shared_ptr<ADLLManager>(ADLLManager::get("./Monster/BossMonster/cmake-build-debug/libBossMonster"))));
+#endif // _WIN32
 
     auto    iterator = _libFromMonsterType.begin();
 

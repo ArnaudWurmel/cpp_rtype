@@ -5,16 +5,17 @@
 #include <iostream>
 #include "WindowsDLLManager.hh"
 
-std::string rtp::WindowsDLLManager::_ext = ".dll";
+//std::string rtp::WindowsDLLManager::_ext = ".dll";
 
 rtp::WindowsDLLManager::WindowsDLLManager(std::string const& libPath) : _libPath(libPath) {}
 
 bool    rtp::WindowsDLLManager::init() {
 #ifdef _WIN32
-	std::string path = _libPath + ".dylib";
+	std::string path = _libPath + ".dll";
 	DWORD	error;
 
 	_handler = LoadLibrary(path.c_str());
+	std::cout << "Loading " << path.c_str() << std::endl;
 	if (!_handler) {
 		std::cout << "Can't instanciate monster <" << GetLastError() << ">" << std::endl;
 		return false;
