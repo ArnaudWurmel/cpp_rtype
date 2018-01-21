@@ -48,4 +48,8 @@ std::vector<std::shared_ptr<rtp::ABullet> > rtp::AEntityShooter::getNeededUpdate
     return entitiesArray;
 }
 
+std::vector<std::shared_ptr<rtp::ABullet> >&    rtp::AEntityShooter::getSubEntities() {
+    return _entityList;
+}
+
 rtp::AEntityShooter::~AEntityShooter() {}

@@ -19,6 +19,7 @@
 
 namespace rtp {
     class   APlayer;
+    class   AEnemy;
     class   AEntity {
     public:
         AEntity(std::string const&, int, int);

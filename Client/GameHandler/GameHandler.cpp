@@ -59,7 +59,6 @@ bool    rtp::GameHandler::update(sf::RenderWindow& window) {
 
 bool    rtp::GameHandler::handlePlayerSpawn(std::string const& pInfo) {
     try {
-        std::cout << "Spawn player : " << pInfo << std::endl;
         std::shared_ptr<Player> newPlayer = Player::instanciateFromInfo(pInfo);
 
         _entitySafer.lock();
@@ -160,6 +159,7 @@ bool    rtp::GameHandler::handleDeleteEntity(std::string const& deleteMessage) {
         try {
             int entityId = std::stoi(deleteMessage);
 
+            std::cout << "Delete : " << entityId << std::endl;
             _entitySafer.lock();
             auto iterator = std::find_if(_entitiesList.begin(), _entitiesList.end(), [&](std::shared_ptr<AEntity> const& entity) {
                 return entity->getId() == entityId;

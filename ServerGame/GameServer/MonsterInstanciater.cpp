@@ -28,7 +28,7 @@ std::vector<std::shared_ptr<rtp::AEnemy> >  rtp::MonsterInstanciater::instanciat
             AEnemy  *enemy = _libFromMonsterType[type]->getEnemyFromLib(AEntity::getNextId(), x, y);
 
             if (enemy != nullptr) {
-                x = x + enemy->getCollideRect().getWidth();
+                x = x + enemy->getCollideRect().getWidth() + 2;
                 if (x < WIDTH) {
                     enemyList.push_back(std::shared_ptr<AEnemy>(enemy));
                 }

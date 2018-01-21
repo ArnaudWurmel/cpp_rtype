@@ -2,6 +2,7 @@
 // Created by Arnaud WURMEL on 15/01/2018.
 //
 
+#include <iostream>
 #include "AEntity.hh"
 #include "APlayer.hh"
 
@@ -40,7 +41,15 @@ rtp::CollideRect rtp::AEntity::getCollideRect() const {
 }
 
 bool    rtp::AEntity::collide(AEntity const& entity) {
-    return false;
+    CollideRect self = getCollideRect();
+    CollideRect contactWith = entity.getCollideRect();
+
+    std::cout << "self{" << _position.x << "," << _position.y << "}" << std::endl;
+    std::cout << "entity{" << entity._position.x << "," << entity._position.y << "}" << std::endl;
+    return (this->_position.x < entity._position.x + contactWith.getWidth() &&
+            this->_position.x + self.getWidth() > entity._position.x &&
+            this->_position.y > entity._position.y + contactWith.getHeight() &&
+            this->_position.y + self.getHeight() < entity._position.y);
 }
 
 void    rtp::AEntity::translate(Vector2<int> const& translateValue) {

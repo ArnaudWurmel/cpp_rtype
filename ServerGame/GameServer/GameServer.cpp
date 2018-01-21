@@ -90,7 +90,6 @@ void    rtp::GameServer::serverLoop() {
         if (_gameManager) {
             _gameManager->join();
         }
-        std::cout << "End" << std::endl;
         _gameManager.reset();
         _controlSocket->close();
         _inputManager->stop();
@@ -126,7 +125,6 @@ void    rtp::GameServer::handleGame() {
                 enemyList.push_back(*enemyListIt);
                 ++enemyListIt;
             }
-            std::cout << "Instanciate wave : " << tmpEnemyList.size() << std::endl;
             frame = 0;
         }
         auto iterator = enemyList.begin();
@@ -137,6 +135,7 @@ void    rtp::GameServer::handleGame() {
         }
         ++frame;
         _inputManager->sendUpdateForEnemies(enemyList);
+        _inputManager->handleCollision(enemyList);
         std::chrono::milliseconds endPoint = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
         diff = (20 - (endPoint.count() - startPoint.count())) / 1000.0;
         std::this_thread::sleep_for(std::chrono::milliseconds(20) - (endPoint - startPoint));

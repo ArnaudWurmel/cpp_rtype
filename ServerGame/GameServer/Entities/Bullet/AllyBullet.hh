@@ -14,7 +14,8 @@ namespace rtp {
         ~AllyBullet() override;
 
     public:
-        void    onCollide(std::shared_ptr<APlayer>&) override;
+        void    onCollide(APlayer&) override;
+        void    onCollide(AEnemy&) override;
 
     private:
         unsigned int _damage;

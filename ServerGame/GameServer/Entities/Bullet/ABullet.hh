@@ -23,7 +23,8 @@ namespace rtp {
         ~ABullet() override;
 
     public:
-        virtual void    onCollide(std::shared_ptr<APlayer>&) = 0;
+        virtual void    onCollide(APlayer&) = 0;
+        virtual void    onCollide(AEnemy&) = 0;
 
     public:
         void    update(double) override;
@@ -32,7 +33,7 @@ namespace rtp {
     public:
         static std::string  getSpriteFromBulletType(BulletType);
 
-    private:
+    protected:
         Vector2<int>    _direction;
         BulletType  _type;
         bool    _alive;

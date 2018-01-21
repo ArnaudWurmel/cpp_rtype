@@ -145,7 +145,7 @@ namespace NetworkAbstract {
             return false;
         }
 
-        void    sendUpdateForEnemies(std::vector<std::shared_ptr<rtp::AEnemy> > const& enemyList) override {
+        void    sendUpdateForEnemies(std::vector<std::shared_ptr<rtp::AEnemy> >& enemyList) override {
             NetworkAbstract::Message    deleteEntityMessage;
             NetworkAbstract::Message    updateEntityMessage;
             NetworkAbstract::Message    spawnEntityMessage;
@@ -156,6 +156,8 @@ namespace NetworkAbstract {
             auto enemy = enemyList.begin();
             while (enemy != enemyList.end()) {
                 if (!(*enemy)->isAlive()) {
+                    std::cout << "Delete sended" << std::endl;
+                    enemyList.erase(enemy);
                     deleteEntityMessage.setBody(std::to_string((*enemy)->getEntityId()).c_str(), std::to_string((*enemy)->getEntityId()).length());
                     broadcastToAllClient(deleteEntityMessage);
                 }
@@ -166,14 +168,37 @@ namespace NetworkAbstract {
                     spawnEntityMessage.setBody(bodySpawn.c_str(), bodySpawn.length());
                     broadcastToAllClient(spawnEntityMessage);
                     (*enemy)->spawn();
+                    ++enemy;
                 }
                 else {
                     updateEntityMessage.setBody((*enemy)->getInfos().c_str(), (*enemy)->getInfos().length());
                     broadcastToAllClient(updateEntityMessage);
+                    ++enemy;
                 }
-                ++enemy;
             }
 
+        }
+
+        void    handleCollision(std::vector<std::shared_ptr<rtp::AEnemy> >& enemyList) override {
+            auto    iteratorPlayer = _acceptedClient.begin();
+
+            while (iteratorPlayer != _acceptedClient.end()) {
+                auto    iteratorBullet = (*iteratorPlayer)->getSubEntities().begin();
+
+                while (iteratorBullet != (*iteratorPlayer)->getSubEntities().end()) {
+                    auto    iteratorEnemy = enemyList.begin();
+
+                    while (iteratorEnemy != enemyList.end()) {
+                        if ((*iteratorBullet)->collide(*(*iteratorEnemy).get())) {
+                            std::cout << "On collide " << std::endl;
+                            (*iteratorBullet)->onCollide(*(*iteratorEnemy).get());
+                        }
+                        ++iteratorEnemy;
+                    }
+                    ++iteratorBullet;
+                }
+                ++iteratorPlayer;
+            }
         }
 
         void    updateAllPlayer(double diff) override {
@@ -238,7 +263,6 @@ namespace NetworkAbstract {
         }
 
         ~BoostUdpInputManager() override {
-            stop();
         }
 
     private:
@@ -256,7 +280,6 @@ namespace NetworkAbstract {
                 *(registratedClient.get()) >> newClientBody;
                 reply.setBody(newClientBody.c_str(), newClientBody.length());
                 writeToClient(registratedClient->getEndpoint(), reply);
-                std::cout << std::string(reply.getBody(), reply.getBodySize()) << std::endl;
                 newClientMessage.setType(ClientCallback::Command::SPAWN_PLAYER);
                 newClientMessage.setBody(newClientBody.c_str(), newClientBody.length());
                 reply.setType(ClientCallback::Command::SPAWN_PLAYER);

@@ -19,6 +19,7 @@ namespace rtp {
     public:
         void    shoot(std::shared_ptr<rtp::ABullet>);
         void    updateSubEntities(double);
+        std::vector<std::shared_ptr<rtp::ABullet> >&    getSubEntities();
         std::vector<std::shared_ptr<rtp::ABullet> > getNeededUpdateEntities();
 
     protected:

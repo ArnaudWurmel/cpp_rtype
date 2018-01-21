@@ -25,6 +25,7 @@ void    Monster::BasicMonster::update(double diff) {
     ++_frame;
     if (getCollideRect().getY() > HEIGHT) {
         this->hit(_lifePoint);
+        std::cout << "Deleted entity" << std::endl;
     }
 }
 

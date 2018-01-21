@@ -21,7 +21,8 @@ namespace NetworkAbstract {
         virtual void    stopAcceptingClient() = 0;
         virtual bool    haveAcceptedClient() = 0;
         virtual void    updateAllPlayer(double) = 0;
-        virtual void    sendUpdateForEnemies(std::vector<std::shared_ptr<rtp::AEnemy> > const&) = 0;
+        virtual void    sendUpdateForEnemies(std::vector<std::shared_ptr<rtp::AEnemy> >&) = 0;
+        virtual void    handleCollision(std::vector<std::shared_ptr<rtp::AEnemy> >& enemyList) = 0;
         virtual void    sendUpdate() = 0;
     };
 }
