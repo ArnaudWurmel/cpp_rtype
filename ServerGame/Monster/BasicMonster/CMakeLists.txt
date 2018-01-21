@@ -20,4 +20,6 @@ add_library(
         BasicMonster.cpp BasicMonster.hh
         Entities/AEnemy.cpp
         Entities/AEnemy.hh
-)
+        Entities/Bullet/ABullet.cpp
+        Entities/Bullet/ABullet.hh
+        Entities/Bullet/EnemyBullet.cpp Entities/Bullet/EnemyBullet.hh)

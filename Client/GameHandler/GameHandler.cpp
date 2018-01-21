@@ -36,9 +36,14 @@ bool    rtp::GameHandler::update(sf::RenderWindow& window) {
             _playerList.erase(iterator);
         }
         else {
-            (*iterator)->render();
-            window.draw(*(*iterator).get());
-            ++iterator;
+            if (!(*iterator)->isInit() && !(*iterator)->init()) {
+                _playerList.erase(iterator);
+            }
+            else {
+                (*iterator)->render();
+                window.draw(*(*iterator).get());
+                ++iterator;
+            }
         }
     }
     auto    iteratorEntity  = _entitiesList.begin();
@@ -48,9 +53,14 @@ bool    rtp::GameHandler::update(sf::RenderWindow& window) {
             _entitiesList.erase(iteratorEntity);
         }
         else {
-            (*iteratorEntity)->render();
-            window.draw(*(*iteratorEntity).get());
-            ++iteratorEntity;
+            if (!(*iteratorEntity)->isInit() && !(*iteratorEntity)->init()) {
+                _entitiesList.erase(iteratorEntity);
+            }
+            else {
+                (*iteratorEntity)->render();
+                window.draw(*(*iteratorEntity).get());
+                ++iteratorEntity;
+            }
         }
     }
     std::cout << _entitiesList.size() << std::endl;
@@ -66,7 +76,7 @@ bool    rtp::GameHandler::handlePlayerSpawn(std::string const& pInfo) {
         auto iterator = std::find_if(_playerList.begin(), _playerList.end(), [&](std::shared_ptr<Player> const& player) {
             return player->getId() == newPlayer->getId();
         });
-        if (iterator != _playerList.end() || !newPlayer->init()) {
+        if (iterator != _playerList.end()) {
             _entitySafer.unlock();
             return true;
         }
@@ -164,11 +174,9 @@ bool    rtp::GameHandler::handleSpawnEntity(std::string const& spawnMessage) {
     try {
         auto newEntity = AEntity::instanciateFromToken(DataGetter::getTokenFrom(spawnMessage));
 
-        if (newEntity->init()) {
-            _entitySafer.lock();
-            _entitiesList.push_back(newEntity);
-            _entitySafer.unlock();
-        }
+        _entitySafer.lock();
+        _entitiesList.push_back(newEntity);
+        _entitySafer.unlock();
     }
     catch (std::exception& e) {
         std::cout << "Error in entities creation : " << e.what() << std::endl;
