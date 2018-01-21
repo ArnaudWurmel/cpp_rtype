@@ -8,33 +8,27 @@ include_directories(
     ./dependency/imgui/
 )
 
-if(WIN32)
-	set(ARGUMENT_LOADER	ArgumentLoaderWin)
-	set(LOGGER		LoggerWin)
-	set(NETWORK_ABSTRACT	NetworkAbstractWin)
-	set(EXCEPTIONS		ExceptionsWin)
-else(WIN32)
-	set(ARGUMENT_LOADER	ArgumentLoader)
-	set(LOGGER		Logger)
-	set(NETWORK_ABSTRACT	NetworkAbstract)
-	set(EXCEPTIONS		Exceptions)
-endif(WIN32)
+IF(WIN32)
+	execute_process(COMMAND "symlinks.bat")
+ELSE(WIN32)
+	execute_process(COMMAND bash "symlinks.sh")
+ENDIF(WIN32)
 
 add_executable(
 	ClientNetwork
 	main.cpp
-	${ARGUMENT_LOADER}/ArgumentLoader.hh	${ARGUMENT_LOADER}/ArgumentLoader.cpp
-	${ARGUMENT_LOADER}/Configure.hh		${ARGUMENT_LOADER}/Configure.cpp
-	${LOGGER}/LoggerHelper.cpp		${LOGGER}/Logger.hpp
-	${LOGGER}/LoggerHelper.cpp 		${NETWORK_ABSTRACT}/Message/Message.cpp
-	${NETWORK_ABSTRACT}/Message/Message.h	${NETWORK_ABSTRACT}/BoostSocket.cpp
-	${NETWORK_ABSTRACT}/BoostAcceptor.cpp	${NETWORK_ABSTRACT}/BoostAcceptor.hh
-	${NETWORK_ABSTRACT}/IAcceptor.hh 	${NETWORK_ABSTRACT}/IAcceptor.cpp
-	${NETWORK_ABSTRACT}/ISocket.cpp		${NETWORK_ABSTRACT}/ISocket.h
-	${NETWORK_ABSTRACT}/SocketReceiver.hh	${NETWORK_ABSTRACT}/SocketReceiver.cpp
-	${NETWORK_ABSTRACT}/BoostUdpSocket.hh	${NETWORK_ABSTRACT}/BoostUdpSocket.cpp
+	ArgumentLoader/ArgumentLoader.hh	ArgumentLoader/ArgumentLoader.cpp
+	ArgumentLoader/Configure.hh		ArgumentLoader/Configure.cpp
+	Logger/LoggerHelper.cpp		Logger/Logger.hpp
+	Logger/LoggerHelper.cpp 		NetworkAbstract/Message/Message.cpp
+	NetworkAbstract/Message/Message.h	NetworkAbstract/BoostSocket.cpp
+	NetworkAbstract/BoostAcceptor.cpp	NetworkAbstract/BoostAcceptor.hh
+	NetworkAbstract/IAcceptor.hh 	NetworkAbstract/IAcceptor.cpp
+	NetworkAbstract/ISocket.cpp		NetworkAbstract/ISocket.h
+	NetworkAbstract/SocketReceiver.hh	NetworkAbstract/SocketReceiver.cpp
+	NetworkAbstract/BoostUdpSocket.hh	NetworkAbstract/BoostUdpSocket.cpp
 	DataGetter/DataGetter.cpp		DataGetter/DataGetter.hh
-	${EXCEPTIONS}/Exception.cpp		${EXCEPTIONS}/Exception.hh
+	Exceptions/Exception.cpp		Exceptions/Exception.hh
 	Graphics/RootViewController.cpp 	Graphics/RootViewController.hh
 	dependency/imgui/imgui-SFML.cpp		dependency/imgui/imgui.cpp 
 	dependency/imgui/imgui_draw.cpp		dependency/imgui/imgui_demo.cpp
@@ -50,14 +44,21 @@ add_executable(
 	GameHandler/Entities/Player.hh		GameHandler/Entities/ADrawableEntity.cpp
 	GameHandler/Entities/ADrawableEntity.hh Graphics/AViewController.cpp
 	GameHandler/Entities/AEntity.cpp	GameHandler/Entities/AEntity.hh)
+
 set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME     OFF)
 find_package(Boost 1.58.0 REQUIRED COMPONENTS thread regex system)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
-    target_link_libraries(ClientNetwork ${Boost_LIBRARIES} pthread)
+    target_link_libraries(ClientNetwork ${Boost_LIBRARIES})
 endif()
+
+if(WIN32)
+	target_link_libraries(ClientNetwork pthreadVC2)
+else(WIN32)
+	target_link_libraries(ClientNetwork pthread)
+endif(WIN32)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake_modules" ${CMAKE_MODULE_PATH})
 find_package(SFML 2 REQUIRED audio graphics window system)
@@ -81,12 +82,16 @@ endif(GLUT_FOUND)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ClientNetwork)
 
 if(WIN32)
+    target_compile_options(
+	ClientNetwork PRIVATE 
+	"/EHsc"
+    )
     set(SFML_AUDIO_DEBUG		$ENV{SFML_ROOT}/bin/sfml-audio-d-2.dll)
     set(SFML_GRAPHICS_DEBUG		$ENV{SFML_ROOT}/bin/sfml-graphics-d-2.dll)
     set(SFML_SYSTEM_DEBUG		$ENV{SFML_ROOT}/bin/sfml-system-d-2.dll)
     set(SFML_WINDOW_DEBUG		$ENV{SFML_ROOT}/bin/sfml-window-d-2.dll)
     set(SFML_AUDIO_RELEASE		$ENV{SFML_ROOT}/bin/sfml-audio-d-2.dll)
-    set(SFML_GRAPHICS_RELEASE	$ENV{SFML_ROOT}/bin/sfml-graphics-2.dll)
+    set(SFML_GRAPHICS_RELEASE		$ENV{SFML_ROOT}/bin/sfml-graphics-2.dll)
     set(SFML_SYSTEM_RELEASE		$ENV{SFML_ROOT}/bin/sfml-system-2.dll)
     set(SFML_WINDOW_RELEASE		$ENV{SFML_ROOT}/bin/sfml-window-2.dll)
     add_custom_command(
@@ -100,14 +105,21 @@ if(WIN32)
     )
 
     set (RESOURCES
-            Button.png
-            zorque.ttf
+		AllyBullet.png
+		BasicMonster0.png
+		BasicMonster1.png
+		BasicMonster2.png
+		BasicMonster3.png
+		BossMonster.png
+		Button.png
+		ShipSprite.png
+		zorque.ttf
             )
     foreach (file_i ${RESOURCES})
         add_custom_command(
                 TARGET ClientNetwork POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy
-                Graphics/utils/${file_i}
-                $<TARGET_FILE_DIR:ClientNetwork>/utils/${file_i})
+                ressources/${file_i}
+                $<TARGET_FILE_DIR:ClientNetwork>/ressources/${file_i})
     endforeach()
 endif(WIN32)

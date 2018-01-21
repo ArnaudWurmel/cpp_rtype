@@ -108,3 +108,8 @@
 /ServerGame/Monster/BossMonster/Win32
 /ServerGame/Monster/BossMonster/Debug
 /ServerGame/Monster/NetworkAbstract
+/Client/ClientNetwork.dir
+/Client/ClientNetwork.vcxproj.user
+/Client/ClientNetwork.sln
+/Client/ClientNetwork.vcxproj
+/Client/ClientNetwork.vcxproj.filters
