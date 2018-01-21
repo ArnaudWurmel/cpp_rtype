@@ -27,10 +27,11 @@ Table of Contents
    3. ServerGame to Client ........................................    4
       3.1 SPAWN_PLAYER ............................................    4
       3.2 UPDATE_PLAYER ...........................................    4 
-      3.3 SPAWN_ENTITY ............................................    4 
-      3.4 UPDATE_ENTITY ...........................................    4 
-      3.5 DELETE_ENTITY ...........................................    5 
-      3.6 SERVER_FOUND ............................................    5 
+      3.3 DELETE_PLAYER ...........................................    4 
+      3.4 SPAWN_ENTITY ............................................    4 
+      3.5 UPDATE_ENTITY ...........................................    4 
+      3.6 DELETE_ENTITY ...........................................    5 
+      3.7 SERVER_FOUND ............................................    5 
    4. ServerGame to ServerAuth ....................................    6 
       4.1 REGISTER ................................................    6 
    5. ServerAuth to Client ........................................    7 
@@ -168,7 +169,16 @@ RFC 0                               RType                   January 2018
    The UPDATE_PLAYER command is for use by the game server, and will
    be send to the client when a player moves.
 
-3.3 SPAWN_ENTITY
+3.3 DELETE_PLAYER
+
+   Command: DELETE_PLAYER
+   Parameters:
+   Return: <id>
+
+   The DELETE_PLAYER command is for use by the game server, and will
+   be send to the client when a player is deleted.
+
+3.4 SPAWN_ENTITY
 
    Command: SPAWN_ENTITY
    Parameters:
@@ -178,7 +188,7 @@ RFC 0                               RType                   January 2018
    The SPAWN_ENTITY command is for use by the game server, and will
    be send to the client when an entity appears.
 
-3.4 UPDATE_ENTITY
+3.5 UPDATE_ENTITY
 
    Command: UPDATE_ENTITY
    Parameters:
@@ -191,7 +201,7 @@ RFC 0                               RType                   January 2018
 
 RFC 0                               RType                   January 2018
 
-3.5 DELETE_ENTITY
+3.6 DELETE_ENTITY
 
    Command: DELETE_ENTITY
    Parameters:
@@ -200,7 +210,7 @@ RFC 0                               RType                   January 2018
    The DELETE_ENTITY command is for use by the game server, and will
    be send to the client when an entity is deleted.
 
-3.6 SERVER_FOUND
+3.7 SERVER_FOUND
 
    Command: SERVER_FOUND
    Parameters: 
