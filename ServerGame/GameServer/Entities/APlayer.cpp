@@ -142,9 +142,9 @@ void    rtp::APlayer::update(double diff) {
         setUpdated(needUpdated());
     }
     if (_lastShoot % 16 == 0) {
-        shoot(std::shared_ptr<ABullet>(new AllyBullet(Vector2<int> { _position.x + getCollideRect().getWidth() / 2, _position.y}, 1)));
+        /*shoot(std::shared_ptr<ABullet>(new AllyBullet(Vector2<int> { _position.x + getCollideRect().getWidth() / 2, _position.y}, 1)));
         _lastShoot = 0;
-        setUpdated(true);
+        setUpdated(true);*/
     }
     ++_lastShoot;
 }

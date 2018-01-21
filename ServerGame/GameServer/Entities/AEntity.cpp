@@ -44,18 +44,23 @@ bool    rtp::AEntity::collide(AEntity const& entity) {
     CollideRect self = getCollideRect();
     CollideRect contactWith = entity.getCollideRect();
 
-    std::cout << "self{" << _position.x << "," << _position.y << "}" << std::endl;
-    std::cout << "entity{" << entity._position.x << "," << entity._position.y << "}" << std::endl;
-    return (this->_position.x < entity._position.x + contactWith.getWidth() &&
-            this->_position.x + self.getWidth() > entity._position.x &&
-            this->_position.y > entity._position.y + contactWith.getHeight() &&
-            this->_position.y + self.getHeight() < entity._position.y);
+    if (self.getX() < contactWith.getX() + contactWith.getWidth() &&
+        self.getX() + self.getWidth() > contactWith.getX() &&
+        self.getY() < contactWith.getY() + contactWith.getHeight() &&
+        self.getHeight() + self.getY() > contactWith.getY()) {
+        return true;
+    }
+    return false;
 }
 
 void    rtp::AEntity::translate(Vector2<int> const& translateValue) {
     _position.x += translateValue.x;
     _position.y += translateValue.y;
     _updated = true;
+    if (_position.y < -100) {
+        std::cout << "Position should be deleted{" << _position.y << "}" << std::endl;
+        abort();
+    }
 }
 
 void    rtp::AEntity::addCollideRect(CollideRect const& rect) {
@@ -107,4 +112,6 @@ bool    rtp::AEntity::isExpectedToBeDeleted() const {
     return false;
 }
 
-rtp::AEntity::~AEntity() = default;
+rtp::AEntity::~AEntity() {
+    std::cout << "ENTITY DELETED" << std::endl;
+}

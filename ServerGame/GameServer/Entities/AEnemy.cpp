@@ -10,6 +10,7 @@ rtp::AEnemy::AEnemy(unsigned int id, std::string const& spriteName, int x, int y
 }
 
 bool rtp::AEnemy::isExpectedToBeDeleted() const {
+    std::cout << !isAlive() << std::endl;
     return !isAlive();
 }
 

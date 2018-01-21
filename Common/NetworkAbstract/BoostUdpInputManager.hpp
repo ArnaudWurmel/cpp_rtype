@@ -156,10 +156,9 @@ namespace NetworkAbstract {
             auto enemy = enemyList.begin();
             while (enemy != enemyList.end()) {
                 if (!(*enemy)->isAlive()) {
-                    std::cout << "Delete sended" << std::endl;
-                    enemyList.erase(enemy);
                     deleteEntityMessage.setBody(std::to_string((*enemy)->getEntityId()).c_str(), std::to_string((*enemy)->getEntityId()).length());
                     broadcastToAllClient(deleteEntityMessage);
+                    enemyList.erase(enemy);
                 }
                 else if (!(*enemy)->isSpawned()) {
                     std::string bodySpawn;
@@ -190,8 +189,10 @@ namespace NetworkAbstract {
 
                     while (iteratorEnemy != enemyList.end()) {
                         if ((*iteratorBullet)->collide(*(*iteratorEnemy).get())) {
-                            std::cout << "On collide " << std::endl;
                             (*iteratorBullet)->onCollide(*(*iteratorEnemy).get());
+                            if (!(*iteratorEnemy)->isExpectedToBeDeleted()) {
+                                deleteEntity(*(*iteratorEnemy).get());
+                            }
                         }
                         ++iteratorEnemy;
                     }
@@ -199,6 +200,14 @@ namespace NetworkAbstract {
                 }
                 ++iteratorPlayer;
             }
+        }
+
+        void    deleteEntity(rtp::AEnemy& e) {
+            NetworkAbstract::Message    deleteEntityMessage;
+
+            deleteEntityMessage.setType(ClientCallback::Command::DELETE_ENTITY);
+            deleteEntityMessage.setBody(std::to_string(e.getEntityId()).c_str(), std::to_string(e.getEntityId()).length());
+            broadcastToAllClient(deleteEntityMessage);
         }
 
         void    updateAllPlayer(double diff) override {

@@ -142,11 +142,19 @@ void    rtp::GameServer::handleGame() {
         ++frame;
         _inputManager->sendUpdateForEnemies(enemyList);
         _inputManager->handleCollision(enemyList);
+        iterator = enemyList.begin();
+        while (iterator != enemyList.end()) {
+            if ((*iterator)->isExpectedToBeDeleted()) {
+                enemyList.erase(iterator);
+            }
+            else {
+                ++iterator;
+            }
+        }
         std::chrono::milliseconds endPoint = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
         diff = (20 - (endPoint.count() - startPoint.count())) / 1000.0;
         std::this_thread::sleep_for(std::chrono::milliseconds(20) - (endPoint - startPoint));
     }
-    std::cout << "EXITING!!!" << std::endl;
 }
 
 bool    rtp::GameServer::handleRegistering(NetworkAbstract::Message const& message) {
