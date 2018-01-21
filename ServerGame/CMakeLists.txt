@@ -16,7 +16,7 @@ ELSE(WIN32)
 	set(ARGUMENT_LOADER	ArgumentLoader)
 	set(LOGGER		Logger)
 	set(NETWORK_ABSTRACT	NetworkAbstract)
-	set(EXCEPTIONS		Exception)
+	set(EXCEPTIONS		Exceptions)
 ENDIF(WIN32)
 
 add_executable(
