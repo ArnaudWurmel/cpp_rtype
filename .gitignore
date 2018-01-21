@@ -96,3 +96,15 @@
 /ServerGame/Monster/BasicMonster/BasicMonster.vcxproj.filters
 /ServerGame/Monster/BasicMonster/ZERO_CHECK.vcxproj
 /ServerGame/Monster/BasicMonster/ZERO_CHECK.vcxproj.filters
+/ServerGame/Monster/BasicMonster/.vs
+/ServerGame/Monster/BossMonster/.vs
+/ServerGame/Monster/BasicMonster/BasicMonster.dir
+/ServerGame/Monster/BasicMonster/Debug
+/ServerGame/Monster/BasicMonster/Win32
+/ServerGame/Monster/BasicMonster/NetworkAbstract
+/ServerGame/Monster/BossMonster/.vs
+/ServerGame/Monster/BossMonster/BossMonster.dir
+/ServerGame/Monster/BossMonster/NetworkAbstract
+/ServerGame/Monster/BossMonster/Win32
+/ServerGame/Monster/BossMonster/Debug
+/ServerGame/Monster/NetworkAbstract
