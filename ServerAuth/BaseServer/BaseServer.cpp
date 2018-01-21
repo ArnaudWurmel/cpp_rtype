@@ -3,7 +3,11 @@
 //
 
 #include "BaseServer.hh"
+#ifdef _WIN32
+#include "../NetworkAbstractWin/BoostAcceptor.hh"
+#else
 #include "../NetworkAbstract/BoostAcceptor.hh"
+#endif // _WIN32
 
 rtp::BaseServer::BaseServer(unsigned short port) {
     _threadRunning = true;

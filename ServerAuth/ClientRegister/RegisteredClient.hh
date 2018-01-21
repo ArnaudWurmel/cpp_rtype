@@ -8,9 +8,15 @@
 # include <memory>
 # include <unordered_map>
 # include <functional>
+#ifdef _WIN32
+# include "../NetworkAbstractWin/ISocket.h"
+# include "../NetworkAbstractWin/SocketReceiver.hh"
+# include "../LoggerWin/Logger.hpp"
+#else
 # include "../NetworkAbstract/ISocket.h"
 # include "../NetworkAbstract/SocketReceiver.hh"
 # include "../Logger/Logger.hpp"
+#endif // _WIN32
 
 namespace rtp {
 

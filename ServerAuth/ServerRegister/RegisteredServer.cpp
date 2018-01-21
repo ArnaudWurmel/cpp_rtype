@@ -2,6 +2,7 @@
 // Created by Arnaud WURMEL on 08/01/2018.
 //
 
+#include <cctype>
 #include <iostream>
 #include <algorithm>
 #include "RegisteredServer.hh"

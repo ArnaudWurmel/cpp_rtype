@@ -9,8 +9,12 @@
 # include <vector>
 # include <thread>
 # include "RegisteredClient.hh"
-# include "../Logger/Logger.hpp"
 #include "../ServerRegister/IServerRegister.hh"
+#ifdef _WIN32
+# include "../LoggerWin/Logger.hpp"
+#else
+# include "../Logger/Logger.hpp"
+#endif // _WIN32
 
 namespace rtp {
     class Room : public Logger<Room> {
