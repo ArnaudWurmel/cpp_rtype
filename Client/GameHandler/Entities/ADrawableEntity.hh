@@ -5,6 +5,7 @@
 #ifndef CLIENTNETWORK_ADRAWABLEENTITY_HH
 #define CLIENTNETWORK_ADRAWABLEENTITY_HH
 
+#include <mutex>
 #include <SFML/Graphics/Sprite.hpp>
 #include <string>
 #include <SFML/Graphics/RenderTexture.hpp>
