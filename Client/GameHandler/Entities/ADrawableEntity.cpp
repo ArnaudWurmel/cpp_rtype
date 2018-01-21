@@ -91,4 +91,6 @@ void    rtp::ADrawableEntity::deleteEntity() {
 }
 
 
-rtp::ADrawableEntity::~ADrawableEntity() = default;
+rtp::ADrawableEntity::~ADrawableEntity() {
+    std::cout << "Delted entity" << std::endl;
+}

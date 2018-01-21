@@ -62,8 +62,11 @@ void    rtp::RootViewController::loop() {
         ImGui::SFML::Render(_window);
         _window.display();
         sf::Time frameTime = clock.restart();
-        float framerate = 1 / (frameTime.asMilliseconds() * 0.001);
-        std::cout << framerate << std::endl;    }
+        if (frameTime.asMilliseconds() * 0.001 != 0.0) {
+            float framerate = 1 / (frameTime.asMilliseconds() * 0.001);
+            std::cout << framerate << std::endl;
+        }
+    }
 }
 
 void    rtp::RootViewController::emptierFunction(NetworkAbstract::Message const& message) {
