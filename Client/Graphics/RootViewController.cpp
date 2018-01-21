@@ -68,7 +68,8 @@ void    rtp::RootViewController::loop() {
 
 void    rtp::RootViewController::emptierFunction(NetworkAbstract::Message const& message) {
     if (!_stackView.empty()) {
-        if (std::find(_stackView.top()->getCommandObserver().begin(), _stackView.top()->getCommandObserver().end(), message.getType()) != _stackView.top()->getCommandObserver().end()) {
+        auto    vectorCommand = _stackView.top()->getCommandObserver();
+        if (std::find(vectorCommand.begin(), vectorCommand.end(), message.getType()) != vectorCommand.end()) {
             _stackView.top()->handleInput(message);
         }
     }
