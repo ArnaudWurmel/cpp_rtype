@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.5.1)
 project(ServerAuth)
 set(CMAKE_CXX_STANDARD 14)
 
-
 IF(WIN32)
 	execute_process(COMMAND "symlinks.bat")
 ELSE(WIN32)
