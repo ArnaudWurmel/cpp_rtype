@@ -13,7 +13,8 @@ namespace rtp {
     class MonsterInstanciater {
     public:
         enum    MonsterType {
-            BASIC = 0
+            BASIC = 0,
+            BOSS = 1
         };
 
     public:

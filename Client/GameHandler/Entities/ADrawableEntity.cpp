@@ -43,13 +43,15 @@ void    rtp::ADrawableEntity::render() {
     if (_frameList.size()) {
         _tmpSprite.setTextureRect(_frameList[_currentFrame % _frameList.size()]);
     }
+    sf::Transform transform;
+
     _tmpSprite.setPosition((_renderTexture.getSize().x - _tmpSprite.getLocalBounds().width) / 2, 0);
-    _renderTexture.draw(_tmpSprite);
+    transform.rotate(_rotation, { _tmpSprite.getLocalBounds().width / 2.f, _tmpSprite.getLocalBounds().height / 2.f });
+    _renderTexture.draw(_tmpSprite, transform);
     _renderTexture.draw(getTextFromTitle());
     _renderTexture.display();
     setTexture(_renderTexture.getTexture());
     setPosition(_x, _y);
-    setRotation(_rotation);
     _renderLock.unlock();
 }
 

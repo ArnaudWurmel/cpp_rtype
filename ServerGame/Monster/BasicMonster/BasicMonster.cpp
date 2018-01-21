@@ -6,7 +6,7 @@
 #include "BasicMonster.hh"
 #include "Entities/Vector2.hh"
 
-Monster::BasicMonster::BasicMonster(unsigned int id, int x, int y) : rtp::AEnemy(id, "BasicMonster" + std::to_string(rand() % 4) + ".png", x, y, 2) {
+Monster::BasicMonster::BasicMonster(unsigned int id, int x, int y) : rtp::AEnemy(id, "BasicMonster" + std::to_string(rand() % 4) + ".png", x, y, 1) {
     addCollideRect(rtp::CollideRect(0, 0, 61, 41));
     addCollideRect(rtp::CollideRect(62, 0, 62, 39));
     addCollideRect(rtp::CollideRect(128, 0, 54, 39));

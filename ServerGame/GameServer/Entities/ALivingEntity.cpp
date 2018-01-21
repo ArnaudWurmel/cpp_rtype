@@ -11,6 +11,7 @@ rtp::ALivingEntity::ALivingEntity(int lifePoint) {
 
 void rtp::ALivingEntity::hit(unsigned int damage) {
     _lifePoint -= damage;
+    std::cout << _lifePoint << std::endl;
 }
 
 bool    rtp::ALivingEntity::isAlive() const {

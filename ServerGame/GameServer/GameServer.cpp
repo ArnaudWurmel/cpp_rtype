@@ -118,13 +118,21 @@ void    rtp::GameServer::handleGame() {
     std::vector<std::shared_ptr<AEnemy> >   enemyList;
     double   diff = 0.0;
     unsigned int    frame = 0;
+    unsigned int    nbFrame = 1;
 
     while (_gameRunning) {
         std::chrono::milliseconds startPoint = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch());
         _inputManager->updateAllPlayer(diff);
         _inputManager->sendUpdate();
         if (frame % POP_RATE == 0 && _inputManager->haveAcceptedClient()) {
-            auto tmpEnemyList = _monsterInstanciater.instanciateWave(MonsterInstanciater::BASIC);
+            std::vector<std::shared_ptr<AEnemy> >   tmpEnemyList;
+
+            if (nbFrame % 7 == 0) {
+                tmpEnemyList = _monsterInstanciater.instanciateWave(MonsterInstanciater::BOSS);
+            }
+            else {
+                tmpEnemyList = _monsterInstanciater.instanciateWave(MonsterInstanciater::BASIC);
+            }
             auto enemyListIt = tmpEnemyList.begin();
 
             while (enemyListIt != tmpEnemyList.end()) {
@@ -132,6 +140,7 @@ void    rtp::GameServer::handleGame() {
                 ++enemyListIt;
             }
             frame = 0;
+            ++nbFrame;
         }
         auto iterator = enemyList.begin();
 

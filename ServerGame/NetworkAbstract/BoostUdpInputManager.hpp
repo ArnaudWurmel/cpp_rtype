@@ -189,13 +189,18 @@ namespace NetworkAbstract {
                     auto    iteratorEnemy = enemyList.begin();
 
                     while (iteratorEnemy != enemyList.end()) {
+                        bool    deleted = false;
                         if ((*iteratorBullet)->collide(*(*iteratorEnemy).get())) {
                             (*iteratorBullet)->onCollide(*(*iteratorEnemy).get());
-                            if (!(*iteratorEnemy)->isExpectedToBeDeleted()) {
+                            if (!(*iteratorEnemy)->isAlive()) {
                                 deleteEntity(*(*iteratorEnemy).get());
+                                enemyList.erase(iteratorEnemy);
+                                deleted = true;
                             }
                         }
-                        ++iteratorEnemy;
+                        if (!deleted) {
+                            ++iteratorEnemy;
+                        }
                     }
                     ++iteratorBullet;
                 }

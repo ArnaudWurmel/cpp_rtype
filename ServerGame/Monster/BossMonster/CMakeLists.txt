@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.9)
-project(BasicMonster VERSION 1.0.1 DESCRIPTION "mylib description")
+project(BossMonster VERSION 1.0.1 DESCRIPTION "mylib description")
 
 set(CMAKE_CXX_STANDARD 11)
 
 add_library(
-        BasicMonster SHARED
+        BossMonster SHARED
         mandatory.cpp
         Entities/AEntity.hh
         Entities/AEntity.cpp
@@ -17,7 +17,7 @@ add_library(
         Entities/SpawnableEntity.hh
         Entities/SpawnableEntity.cpp
         Entities/Vector2.hh
-        BasicMonster.cpp BasicMonster.hh
+        BossMonster.cpp BossMonster.hh
         Entities/AEnemy.cpp
         Entities/AEnemy.hh
 )

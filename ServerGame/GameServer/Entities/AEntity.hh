@@ -34,6 +34,7 @@ namespace rtp {
         virtual unsigned int    getEntityId() const;
         virtual bool    isExpectedToBeDeleted() const;
         virtual CollideRect  getCollideRect() const;
+        virtual void    translate(Vector2<int> const&);
 
     public:
         static unsigned int    getNextId();
@@ -42,7 +43,6 @@ namespace rtp {
         virtual void    update(double) = 0;
 
     protected:
-        virtual void    translate(Vector2<int> const&);
         void    addCollideRect(CollideRect const&);
         virtual std::string getInfoProtected() const;
 
