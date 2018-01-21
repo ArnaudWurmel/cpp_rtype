@@ -2,41 +2,34 @@ cmake_minimum_required(VERSION 3.5.1)
 project(ServerGame)
 set(CMAKE_CXX_STANDARD 14)
 
-
 include_directories(
         ./GameServer/Entities/
 )
 
 IF(WIN32)
-	set(ARGUMENT_LOADER	ArgumentLoaderWin)
-	set(LOGGER		LoggerWin)
-	set(NETWORK_ABSTRACT	NetworkAbstractWin)
-	set(EXCEPTIONS		ExceptionsWin)
+	execute_process(COMMAND "symlinks.bat")
 ELSE(WIN32)
-	set(ARGUMENT_LOADER	ArgumentLoader)
-	set(LOGGER		Logger)
-	set(NETWORK_ABSTRACT	NetworkAbstract)
-	set(EXCEPTIONS		Exceptions)
+	execute_process(COMMAND bash "symlinks.sh")
 ENDIF(WIN32)
 
 add_executable(
 	ServerGame
 	main.cpp
-	${NETWORK_ABSTRACT}/Message/endpacked.h		${NETWORK_ABSTRACT}/Message/Message.cpp
-	${NETWORK_ABSTRACT}/Message/Message.h		${NETWORK_ABSTRACT}/Message/packed.h
-	${NETWORK_ABSTRACT}/IAcceptor.cpp		${NETWORK_ABSTRACT}/IAcceptor.hh
-	${NETWORK_ABSTRACT}/ISocket.cpp			${NETWORK_ABSTRACT}/ISocket.h
-	${NETWORK_ABSTRACT}/BoostSocket.h		${NETWORK_ABSTRACT}/BoostSocket.cpp
-	${NETWORK_ABSTRACT}/BoostAcceptor.hh		${NETWORK_ABSTRACT}/BoostAcceptor.cpp
-	${NETWORK_ABSTRACT}/SocketReceiver.cpp		${NETWORK_ABSTRACT}/SocketReceiver.hh
-	${NETWORK_ABSTRACT}/IServer.hh 			${NETWORK_ABSTRACT}/BoostSocketManager.cpp
-	${NETWORK_ABSTRACT}/BoostSocketManager.hh	${NETWORK_ABSTRACT}/ISocketManager.hh
-	${NETWORK_ABSTRACT}/BoostUdpInputManager.hpp	${NETWORK_ABSTRACT}/BoostUdpClient.hpp
-	${NETWORK_ABSTRACT}/IUdpInputManager.hh		${NETWORK_ABSTRACT}/BoostSocketUdp.cpp
-	${NETWORK_ABSTRACT}/BoostSocketUdp.hh
-	${ARGUMENT_LOADER}/ArgumentLoader.cpp		${ARGUMENT_LOADER}/ArgumentLoader.hh
-	${ARGUMENT_LOADER}/Configure.cpp		${ARGUMENT_LOADER}/Configure.hh
-	${LOGGER}/Logger.hpp 	${LOGGER}/LoggerHelper.cpp	${LOGGER}/LoggerHelper.hh
+	NetworkAbstract/Message/endpacked.h		NetworkAbstract/Message/Message.cpp
+	NetworkAbstract/Message/Message.h		NetworkAbstract/Message/packed.h
+	NetworkAbstract/IAcceptor.cpp			NetworkAbstract/IAcceptor.hh
+	NetworkAbstract/ISocket.cpp			NetworkAbstract/ISocket.h
+	NetworkAbstract/BoostSocket.h			NetworkAbstract/BoostSocket.cpp
+	NetworkAbstract/BoostAcceptor.hh		NetworkAbstract/BoostAcceptor.cpp
+	NetworkAbstract/SocketReceiver.cpp		NetworkAbstract/SocketReceiver.hh
+	NetworkAbstract/IServer.hh 			NetworkAbstract/BoostSocketManager.cpp
+	NetworkAbstract/BoostSocketManager.hh		NetworkAbstract/ISocketManager.hh
+	NetworkAbstract/BoostUdpInputManager.hpp	NetworkAbstract/BoostUdpClient.hpp
+	NetworkAbstract/IUdpInputManager.hh		NetworkAbstract/BoostSocketUdp.cpp
+	NetworkAbstract/BoostSocketUdp.hh
+	ArgumentLoader/ArgumentLoader.cpp		ArgumentLoader/ArgumentLoader.hh
+	ArgumentLoader/Configure.cpp			ArgumentLoader/Configure.hh
+	Logger/Logger.hpp    Logger/LoggerHelper.cpp	Logger/LoggerHelper.hh
 	GameServer/GameServer.cpp GameServer/GameServer.hh
 	GameServer/Entities/APlayer.hh GameServer/Entities/APlayer.cpp
 	GameServer/Entities/APlayer.hh GameServer/Entities/AEntity.hh
@@ -52,7 +45,7 @@ add_executable(
 	GameServer/DLLManager/ADLLManager.hh GameServer/DLLManager/ADLLManager.cpp
 	GameServer/DLLManager/LinuxDLLManager.cpp GameServer/DLLManager/LinuxDLLManager.hh
 	GameServer/DLLManager/WindowsDLLManager.cpp GameServer/DLLManager/WindowsDLLManager.hh
-	${EXCEPTIONS}/Exception.hh			${EXCEPTIONS}/Exception.cpp
+	Exceptions/Exception.hh			Exceptions/Exception.cpp
 )
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ServerGame)
