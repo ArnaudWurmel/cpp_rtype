@@ -179,6 +179,7 @@ namespace NetworkAbstract {
         }
 
         void    handleCollision(std::vector<std::shared_ptr<rtp::AEnemy> >& enemyList) override {
+            _clientLocker.lock();
             auto    iteratorPlayer = _acceptedClient.begin();
 
             while (iteratorPlayer != _acceptedClient.end()) {
@@ -198,8 +199,22 @@ namespace NetworkAbstract {
                     }
                     ++iteratorBullet;
                 }
-                ++iteratorPlayer;
+                auto    iteratorEnemy = enemyList.begin();
+                bool    deleted = false;
+
+                while (!deleted && iteratorEnemy != enemyList.end()) {
+                    if ((*iteratorPlayer)->collide(*(*iteratorEnemy).get())) {
+                        deletePlayer(*iteratorPlayer);
+                        deleted = true;
+                        _acceptedClient.erase(iteratorPlayer);
+                    }
+                    ++iteratorEnemy;
+                }
+                if (!deleted) {
+                    ++iteratorPlayer;
+                }
             }
+            _clientLocker.unlock();
         }
 
         void    deleteEntity(rtp::AEnemy& e) {
@@ -208,6 +223,14 @@ namespace NetworkAbstract {
             deleteEntityMessage.setType(ClientCallback::Command::DELETE_ENTITY);
             deleteEntityMessage.setBody(std::to_string(e.getEntityId()).c_str(), std::to_string(e.getEntityId()).length());
             broadcastToAllClient(deleteEntityMessage);
+        }
+
+        void    deletePlayer(std::shared_ptr<BoostUdpClient<rtp::APlayer> >& e) {
+            NetworkAbstract::Message    deletePlayerMessage;
+
+            deletePlayerMessage.setType(ClientCallback::Command::DELETE_PLAYER);
+            deletePlayerMessage.setBody(std::to_string(e->getId()).c_str(), std::to_string(e->getId()).length());
+            broadcastToAllClient(deletePlayerMessage);
         }
 
         void    updateAllPlayer(double diff) override {

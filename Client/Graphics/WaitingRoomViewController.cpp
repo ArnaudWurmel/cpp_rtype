@@ -57,7 +57,7 @@ bool    rtp::WaitingRoomViewController::render() {
         return false;
     }
     ImGui::End();
-    return true;
+    return _continue;
 }
 
 void    rtp::WaitingRoomViewController::createListPlayer() {
@@ -132,7 +132,7 @@ void    rtp::WaitingRoomViewController::handleServerFound(NetworkAbstract::Messa
 
 void    rtp::WaitingRoomViewController::authorizedToPlay(std::shared_ptr<NetworkAbstract::ISocket> from, NetworkAbstract::Message const& response) {
     try {
-        std::shared_ptr<Player> player = Player::instanciateFromInfo(std::string(response.getBody(), response.getBodySize()));
+        std::shared_ptr<Player> player = Player::instanciateFromInfo(std::string(response.getBody(), response.getBodySize()), true);
         std::shared_ptr<AViewController>    viewController(new GameViewController(_delegate, from, player));
 
         _delegate.instanciate(viewController);

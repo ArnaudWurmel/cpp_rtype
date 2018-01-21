@@ -15,6 +15,7 @@ rtp::GameHandler::GameHandler(std::shared_ptr<NetworkAbstract::ISocket> socket, 
         _callbackList.insert(std::make_pair(Command::SPAWN_ENTITY, std::bind(&rtp::GameHandler::handleSpawnEntity, this, std::placeholders::_1)));
         _callbackList.insert(std::make_pair(Command::DELETE_ENTITY, std::bind(&rtp::GameHandler::handleDeleteEntity, this, std::placeholders::_1)));
         _callbackList.insert(std::make_pair(Command::UPDATE_ENTITY, std::bind(&rtp::GameHandler::handleUpdateEntity, this, std::placeholders::_1)));
+        _callbackList.insert(std::make_pair(Command::DELETE_PLAYER, std::bind(&rtp::GameHandler::handleDeletePlayer, this, std::placeholders::_1)));
     }
     else {
         throw ParsingNetworkException();
@@ -134,6 +135,27 @@ bool    rtp::GameHandler::handleUpdatePlayer(std::string const& pInfo) {
             return true;
         }
         ++iterator;
+    }
+    return true;
+}
+
+bool    rtp::GameHandler::handleDeletePlayer(std::string const& pInfo) {
+    try {
+        int pId = std::stoi(pInfo);
+
+        auto player = std::find_if(_playerList.begin(), _playerList.end(), [&](std::shared_ptr<Player> const& p) {
+            return p->getId() == pId;
+        });
+        if (player != _playerList.end()) {
+            bool isMe = (*player)->isMe();
+
+            std::cout << "IsMe : " << isMe << std::endl;
+            _playerList.erase(player);
+            return !isMe;
+        }
+    }
+    catch (std::exception& e) {
+        std::cout << e.what() << std::endl;
     }
     return true;
 }

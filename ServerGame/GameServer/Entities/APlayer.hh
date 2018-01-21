@@ -47,7 +47,8 @@ namespace rtp {
             UPDATE_PLAYER = 6,
             SPAWN_ENTITY = 7,
             UPDATE_ENTITY = 8,
-            DELETE_ENTITY = 9
+            DELETE_ENTITY = 9,
+            DELETE_PLAYER = 10
         };
 
     public:

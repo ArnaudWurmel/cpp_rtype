@@ -13,9 +13,9 @@ namespace NetworkAbstract {
 
 #if !_WIN32
 	struct __attribute__((packed)) AMessage {
-            unsigned short magicNumber;
-            int type;
-            unsigned int bodySize;
+            uint16_t magicNumber;
+            int32_t type;
+            uint32_t bodySize;
             char    *body;
         };
 
