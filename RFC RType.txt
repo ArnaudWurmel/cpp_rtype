@@ -1,0 +1,259 @@
+R-Type                                                       T. Marchand
+Request for Comments: 0                                                 
+                                                            January 2018
+
+
+                      		RType
+
+Status of This Memo
+
+   This memo defines an Experimental Protocol for the Internet
+   community.  Discussion and suggestions for improvement are requested.
+   Distribution of this memo is unlimited.
+
+Abstract
+
+Table of Contents
+
+   1. Commands formatting .........................................    4
+   2. ServerGame ..................................................    7
+      2.1 AUTHORIZE ...............................................    7
+   3. ServerAuth ..................................................   10
+      3.1 AUTHORIZE ...............................................    7
+   4. Client ......................................................   10
+      4.1 AUTHORIZE ...............................................    7
+
+
+
+
+                                                                 [Page 1]
+
+RFC 0                               RType                   January 2018
+
+1. Commands formatting
+
+  Each command is sent by sending a message, which is a structure
+  containing :
+	- a magic number
+	- a type
+	- a bodySize
+	- a body
+
+                                                                 [Page 1]
+
+RFC 0                               RType                   January 2018
+
+2.1 AUTHORIZE
+
+   Command: AUTHORIZE
+   Parameters: <nick> <token>
+   Return: <id> <nickname> <spritename> <positionx> <positiony>
+   <actualframe;x.y.width.height,width>
+
+   The AUTHORIZE command is for use by the client for the ServerGame.
+   The client must send his nickname and a token.
+   The server will compare its token to its own token, and if it matches,
+   will send to the client the player's information.
+   It will also inform every clients that a new player is connected.
+   This command isn't accessible 5 seconds after the game is started. 
+
+2.2 SPAWN_PLAYER
+
+   Command: SPAWN_PLAYER
+   Parameters: <id> <nickname> <spritename> <positionx> <positiony>
+   <actualframe;x.y.width.height,width>
+   Return:
+
+   The SPAWN_PLAYER command is for use by the server, and will be called
+   when a new player is connected to the game (by the AUTHORIZE command).
+
+
+2.3 FORWARD
+
+   Command: FORWARD
+   Parameters: 
+   Return:
+
+   The FORWARD command is for use by the client, and will be called
+   when a player press the upper arrow key. It will set the advanced
+   enum for the player.
+
+2.4 BACKWARD
+
+   Command: BACKWARD
+   Parameters: 
+   Return:
+
+   The BACKWARD command is for use by the client, and will be called
+   when a player press the down arrow key. It will set the advanced
+   enum for the player.
+
+2.5 LEFT
+
+   Command: LEFT
+   Parameters: 
+   Return:
+
+   The LEFT command is for use by the client, and will be called
+   when a player press the left arrow key. It will set the advanced
+   enum for the player.
+
+2.6 RIGHT
+
+   Command: RIGHT
+   Parameters: 
+   Return:
+
+   The RIGHT command is for use by the client, and will be called
+   when a player press the right arrow key. It will set the advanced
+   enum for the player.
+
+2.7 UPDATE_PLAYER
+
+   Command: UPDATE_PLAYER
+   Parameters:
+   Return: <id> <positionx> <positiony> <actualframe>
+
+   The UPDATE_PLAYER command is for use by the game server, and will
+   be send to the client when a player moves.
+
+2.8 SPAWN_ENTITY
+
+   Command: SPAWN_ENTITY
+   Parameters:
+   Return: <id> <rotation> <positionx> <positiony> <actualframe>
+   <sprite>
+
+   The SPAWN_ENTITY command is for use by the game server, and will
+   be send to the client when an entity appears.
+
+2.9 UPDATE_ENTITY
+
+   Command: UPDATE_ENTITY
+   Parameters:
+   Return: <id> <rotation> <positionx> <positiony> <actualframe>
+
+   The UPDATE_ENTITY command is for use by the game server, and will
+   be send to the client when an entity moves.
+
+2.10 DELETE_ENTITY
+
+   Command: DELETE_ENTITY
+   Parameters:
+   Return: <id>
+
+   The DELETE_ENTITY command is for use by the game server, and will
+   be send to the client when an entity is deleted.
+
+2.11 REGISTER
+
+   Command: REGISTER
+   Parameters: <port>
+   Return: <token>
+
+   The REGISTER command is for use by the game server, and will be
+   send to the auth server to get a token for a specific port (the
+   one used in AUTHORIZE).
+
+
+2.12 PING
+
+   Command: PING
+   Parameters: 
+   Return: AVAILABLE / RESERVED / BUSY
+
+   The PING command is for use by the auth server, and will be
+   send to the server to know about its disponibility.
+
+2.13 RESERVED
+
+   Command: RESERVED
+   Parameters: <port>
+   Return:
+
+   The RESERVED command is for use by the auth server, and will be
+   send to the server to start the game : it will listen on the
+   port for 5 seconds, and then start the game.
+
+2.14 CREATE_ROOM
+
+   Command: CREATE_ROOM
+   Parameters:
+   Return: <id>
+
+   The CREATE_ROOM command is for use by the auth server, and will be
+   send to the client to create a new room.
+
+2.15 LEAVE_ROOM
+
+   Command: LEAVE_ROOM
+   Parameters: 
+   Return: 
+
+   The LEAVE_ROOM command is for use by the auth server, and will be
+   send to the client to leave its room.
+
+2.16 ROOM_LIST
+
+   Command: ROOM_LIST
+   Parameters: 
+   Return: <roomid> <user1> <user2> ...
+
+   The PING command is for use by the auth server, and will be
+   send to the client to inform it of the actual rooms.
+
+2.17 JOIN_ROOM
+
+   Command: JOIN_ROOM
+   Parameters: <id room>
+   Return: SUCCESS / FAILURE
+
+   The JOIN_ROOM command is for use by the auth server, and will be
+   send to the client to join a room.
+
+2.18 START_MATCHMAKING
+
+   Command: START_MATCHMAKING
+   Parameters: 
+   Return:
+
+   The START_MATCHMAKING command is for use by the client, and will be
+   send to the game server to start a game. On success, it will return an
+   empty message. Else, after 4 seconds, it's an error.
+
+2.19 START_MATCHMAKING
+
+   Command: START_MATCHMAKING
+   Parameters: 
+   Return: 
+   The START_MATCHMAKING command is for use by the client, and will be
+   send to the game server to stop the matchmaking. On success, it will
+   return an empty message. Else, after 4 seconds, it's an error.
+
+2.20 SERVER_FOUND
+
+   Command: SERVER_FOUND
+   Parameters: 
+   Return: <ipserver> <port> <token>
+
+   The SERVER_FOUND command is for use by the game server, and will be
+   send to the client when the matchmaking thread is finished.
+
+2.30 NEW_OWNER
+
+   Command: NEW_OWNER
+   Parameters: 
+   Return:
+
+   The NEW_OWNER command is for use by the auth server, and will be
+   send to the client after the owner of the room has left. It will randomly
+   assign the ownership to a connected player in this room.
+
+2.31 SET_PSEUDO
+
+   Command: SET_PSEUDO
+   Parameters: <nickname>
+   Return: SUCCESS / FAILURE
+
+   The START_MATCHMAKING command is for use by the client, and will be
+   send to the auth server to change its nickname.
