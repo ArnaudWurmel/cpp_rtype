@@ -8,11 +8,52 @@ include_directories(
     ./dependency/imgui/
 )
 
-add_executable(ClientNetwork main.cpp ArgumentLoader/ArgumentLoader.hh ArgumentLoader/ArgumentLoader.cpp ArgumentLoader/Configure.hh ArgumentLoader/Configure.cpp Logger/LoggerHelper.cpp Logger/Logger.hpp Logger/LoggerHelper.cpp NetworkAbstract/Message/Message.cpp NetworkAbstract/Message/Message.h NetworkAbstract/BoostSocket.cpp NetworkAbstract/BoostAcceptor.cpp NetworkAbstract/BoostAcceptor.hh NetworkAbstract/IAcceptor.hh NetworkAbstract/IAcceptor.cpp NetworkAbstract/ISocket.cpp NetworkAbstract/ISocket.h NetworkAbstract/SocketReceiver.hh NetworkAbstract/SocketReceiver.cpp DataGetter/DataGetter.cpp DataGetter/DataGetter.hh Exceptions/Exception.cpp Exceptions/Exception.hh Graphics/RootViewController.cpp Graphics/RootViewController.hh 	dependency/imgui/imgui-SFML.cpp dependency/imgui/imgui.cpp dependency/imgui/imgui_draw.cpp dependency/imgui/imgui_demo.cpp Graphics/LoginViewController.cpp Graphics/LoginViewController.hh Graphics/AViewController.hh Graphics/RoomListViewController.cpp Graphics/RoomListViewController.hh Graphics/Star.cpp Graphics/Star.hpp Graphics/StarField.cpp Graphics/StarField.hpp DataGetter/Room.cpp DataGetter/Room.hh Graphics/WaitingRoomViewController.cpp Graphics/WaitingRoomViewController.hh Graphics/GameViewController.hh Graphics/GameViewController.cpp NetworkAbstract/BoostUdpSocket.hh NetworkAbstract/BoostUdpSocket.cpp GameHandler/GameHandler.cpp GameHandler/GameHandler.hh GameHandler/Entities/Player.cpp GameHandler/Entities/Player.hh GameHandler/Entities/ADrawableEntity.cpp GameHandler/Entities/ADrawableEntity.hh Graphics/AViewController.cpp GameHandler/Entities/AEntity.cpp GameHandler/Entities/AEntity.hh)
+if(WIN32)
+	set(ARGUMENT_LOADER	ArgumentLoaderWin)
+	set(LOGGER		LoggerWin)
+	set(NETWORK_ABSTRACT	NetworkAbstractWin)
+	set(EXCEPTIONS		ExceptionsWin)
+else(WIN32)
+	set(ARGUMENT_LOADER	ArgumentLoader)
+	set(LOGGER		Logger)
+	set(NETWORK_ABSTRACT	NetworkAbstract)
+	set(EXCEPTIONS		Exceptions)
+endif(WIN32)
+
+add_executable(
+	ClientNetwork
+	main.cpp
+	${ARGUMENT_LOADER}/ArgumentLoader.hh	${ARGUMENT_LOADER}/ArgumentLoader.cpp
+	${ARGUMENT_LOADER}/Configure.hh		${ARGUMENT_LOADER}/Configure.cpp
+	${LOGGER}/LoggerHelper.cpp		${LOGGER}/Logger.hpp
+	${LOGGER}/LoggerHelper.cpp 		${NETWORK_ABSTRACT}/Message/Message.cpp
+	${NETWORK_ABSTRACT}/Message/Message.h	${NETWORK_ABSTRACT}/BoostSocket.cpp
+	${NETWORK_ABSTRACT}/BoostAcceptor.cpp	${NETWORK_ABSTRACT}/BoostAcceptor.hh
+	${NETWORK_ABSTRACT}/IAcceptor.hh 	${NETWORK_ABSTRACT}/IAcceptor.cpp
+	${NETWORK_ABSTRACT}/ISocket.cpp		${NETWORK_ABSTRACT}/ISocket.h
+	${NETWORK_ABSTRACT}/SocketReceiver.hh	${NETWORK_ABSTRACT}/SocketReceiver.cpp
+	${NETWORK_ABSTRACT}/BoostUdpSocket.hh	${NETWORK_ABSTRACT}/BoostUdpSocket.cpp
+	DataGetter/DataGetter.cpp		DataGetter/DataGetter.hh
+	${EXCEPTIONS}/Exception.cpp		${EXCEPTIONS}/Exception.hh
+	Graphics/RootViewController.cpp 	Graphics/RootViewController.hh
+	dependency/imgui/imgui-SFML.cpp		dependency/imgui/imgui.cpp 
+	dependency/imgui/imgui_draw.cpp		dependency/imgui/imgui_demo.cpp
+	Graphics/LoginViewController.cpp	Graphics/LoginViewController.hh
+	Graphics/AViewController.hh		Graphics/RoomListViewController.cpp
+	Graphics/RoomListViewController.hh	Graphics/Star.cpp
+	Graphics/Star.hpp			Graphics/StarField.cpp
+	Graphics/StarField.hpp			DataGetter/Room.cpp
+	DataGetter/Room.hh			Graphics/WaitingRoomViewController.cpp
+	Graphics/WaitingRoomViewController.hh	Graphics/GameViewController.hh
+	Graphics/GameViewController.cpp		GameHandler/GameHandler.cpp
+	GameHandler/GameHandler.hh		GameHandler/Entities/Player.cpp
+	GameHandler/Entities/Player.hh		GameHandler/Entities/ADrawableEntity.cpp
+	GameHandler/Entities/ADrawableEntity.hh Graphics/AViewController.cpp
+	GameHandler/Entities/AEntity.cpp	GameHandler/Entities/AEntity.hh)
 set(Boost_USE_STATIC_LIBS        ON)
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME     OFF)
-find_package(Boost 1.58.0 REQUIRED COMPONENTS thread system)
+find_package(Boost 1.58.0 REQUIRED COMPONENTS thread regex system)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     target_link_libraries(ClientNetwork ${Boost_LIBRARIES} pthread)
@@ -26,10 +67,16 @@ if(SFML_FOUND)
 endif(SFML_FOUND)
 
 find_package(OpenGL REQUIRED)
-find_package(GLUT REQUIRED)
-include_directories( ${OPENGL_INCLUDE_DIRS}  ${GLUT_INCLUDE_DIRS} )
+if(OPENGL_FOUND)
+	include_directories(${OPENGL_INCLUDE_DIRS})
+	target_link_libraries(ClientNetwork ${OPENGL_LIBRARIES})
+endif(OPENGL_FOUND)
 
-target_link_libraries(ClientNetwork ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} )
+find_package(GLUT REQUIRED)
+if(GLUT_FOUND)
+	include_directories(${GLUT_INCLUDE_DIRS})
+	target_link_libraries(ClientNetwork ${GLUT_LIBRARY})
+endif(GLUT_FOUND)
 
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ClientNetwork)
 

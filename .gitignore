@@ -60,3 +60,13 @@
 /ServerAuth/ServerAuth.vcxproj
 /ServerAuth/ServerAuth.vcxproj.filters
 /ServerAuth/ZERO_CHECK.vcxproj
+/ServerGame/ALL_BUILD.vcxproj
+/ServerGame/ALL_BUILD.vcxproj.filters
+/ServerGame/ZERO_CHECK.vcxproj.filters
+/ServerGame/ServerGame.sln
+/ServerGame/ServerGame.vcxproj
+/ServerGame/ServerGame.vcxproj.filters
+/ServerGame/ZERO_CHECK.vcxproj
+/ServerGame/.vs
+/ServerGame/Debug
+/ServerGame/ServerGame.dir
