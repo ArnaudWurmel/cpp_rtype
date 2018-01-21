@@ -2,6 +2,7 @@
 // Created by Arnaud WURMEL on 20/01/2018.
 //
 
+#include <iostream>
 #include "BasicMonster.hh"
 #include "Entities/Vector2.hh"
 
@@ -22,6 +23,9 @@ void    Monster::BasicMonster::update(double diff) {
         _frame = 0;
     }
     ++_frame;
+    if (getCollideRect().getY() > HEIGHT) {
+        this->hit(_lifePoint);
+    }
 }
 
 Monster::BasicMonster::~BasicMonster() = default;

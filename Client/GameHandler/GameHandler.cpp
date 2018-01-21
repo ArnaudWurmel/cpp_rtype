@@ -52,6 +52,7 @@ bool    rtp::GameHandler::update(sf::RenderWindow& window) {
             ++iteratorEntity;
         }
     }
+    std::cout << _entitiesList.size() << std::endl;
     _entitySafer.unlock();
     return _threadRunning && _gameSocket->isOpen();
 }
@@ -67,7 +68,6 @@ bool    rtp::GameHandler::handlePlayerSpawn(std::string const& pInfo) {
         });
         if (iterator != _playerList.end() || !newPlayer->init()) {
             _entitySafer.unlock();
-            std::cout << "Here" << std::endl;
             return true;
         }
         _playerList.push_back(newPlayer);

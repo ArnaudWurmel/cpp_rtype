@@ -2,6 +2,7 @@
 // Created by Arnaud WURMEL on 20/01/2018.
 //
 
+#include <iostream>
 #include "ALivingEntity.hh"
 
 rtp::ALivingEntity::ALivingEntity(int lifePoint) {

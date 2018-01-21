@@ -155,7 +155,7 @@ namespace NetworkAbstract {
             spawnEntityMessage.setType(ClientCallback::Command::SPAWN_ENTITY);
             auto enemy = enemyList.begin();
             while (enemy != enemyList.end()) {
-                if ((*enemy)->isExpectedToBeDeleted()) {
+                if (!(*enemy)->isAlive()) {
                     deleteEntityMessage.setBody(std::to_string((*enemy)->getEntityId()).c_str(), std::to_string((*enemy)->getEntityId()).length());
                     broadcastToAllClient(deleteEntityMessage);
                 }

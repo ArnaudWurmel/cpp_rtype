@@ -17,6 +17,9 @@ namespace rtp {
         ~AEnemy() override;
 
     public:
+        bool    isExpectedToBeDeleted() const override;
+
+    public:
         void    update(double) override = 0;
     };
 }

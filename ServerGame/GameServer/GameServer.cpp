@@ -68,13 +68,11 @@ void    rtp::GameServer::serverLoop() {
     std::unique_ptr<std::thread> networkManager(new std::thread([&] {
         while (threadContinue && !_socketManager->isEnabled()) {}
         if (!registerServer()) {
-            std::cout << "Disabled socket" << std::endl;
             _socketManager->disableSocket();
             return ;
         }
         while (threadContinue && _controlSocket->isOpen()) {
             if (_serverState == ServerState::Busy && _lockedAt.time_since_epoch().count() + 5000000 < std::chrono::system_clock::now().time_since_epoch().count() && !_inputManager->haveAcceptedClient()) {
-                std::cout << "end" << std::endl;
                 threadContinue = false;
             }
             std::unique_lock<std::mutex> lck(_inputLocker);
