@@ -13,6 +13,11 @@ rtp::ADrawableEntity::ADrawableEntity(std::string const &spritePath, int current
     _x = x;
     _y = y;
     _rotation = rotation;
+    _isInit = false;
+}
+
+bool    rtp::ADrawableEntity::isInit() const {
+    return _isInit;
 }
 
 bool    rtp::ADrawableEntity::init() {
@@ -33,6 +38,7 @@ bool    rtp::ADrawableEntity::init() {
         }
         _tmpSprite.setTexture(_spriteTexture);
     }
+    _isInit = state;
     return state;
 }
 

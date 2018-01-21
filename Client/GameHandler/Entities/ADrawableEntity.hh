@@ -5,6 +5,7 @@
 #ifndef CLIENTNETWORK_ADRAWABLEENTITY_HH
 #define CLIENTNETWORK_ADRAWABLEENTITY_HH
 
+#include <mutex>
 #include <SFML/Graphics/Sprite.hpp>
 #include <string>
 #include <SFML/Graphics/RenderTexture.hpp>
@@ -21,6 +22,7 @@ namespace rtp {
         void    render();
         bool    shouldDelete() const;
         void    deleteEntity();
+        bool    isInit() const;
 
     protected:
         void    parseFrame(std::vector<std::string> const&);
@@ -42,6 +44,7 @@ namespace rtp {
         int _rotation;
         std::mutex  _renderLock;
         bool    _deleted;
+        bool    _isInit;
 
     private:
         sf::Image   _spriteImage;
